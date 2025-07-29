@@ -1,7 +1,7 @@
 ---
 title: Welcome to My Technical Leadership Blog
 slug: welcome-technical-leadership-blog
-status: draft
+status: published
 visibility: public
 featured: true
 meta_title: Xavier Fuentes - Technical Leadership & Engineering Management Blog
