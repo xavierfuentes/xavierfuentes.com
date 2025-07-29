@@ -1,0 +1,82 @@
+name: Validate Pull Request
+
+on:
+  pull_request:
+    paths:
+      - 'content/**'
+
+jobs:
+  validate-content:
+    name: Validate Content Changes
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Validate content
+        run: npm run validate
+        
+      - name: Check for content changes
+        id: changes
+        run: |
+          # Get list of changed files
+          CHANGED_FILES=$(git diff --name-only origin/main...HEAD | grep '^content/' || true)
+          
+          if [ -n "$CHANGED_FILES" ]; then
+            echo "Content files changed:"
+            echo "$CHANGED_FILES"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            
+            # Count posts and pages
+            POST_COUNT=$(echo "$CHANGED_FILES" | grep '^content/posts/' | wc -l || echo "0")
+            PAGE_COUNT=$(echo "$CHANGED_FILES" | grep '^content/pages/' | wc -l || echo "0")
+            DRAFT_COUNT=$(echo "$CHANGED_FILES" | grep '/drafts/' | wc -l || echo "0")
+            
+            echo "post_count=$POST_COUNT" >> $GITHUB_OUTPUT
+            echo "page_count=$PAGE_COUNT" >> $GITHUB_OUTPUT
+            echo "draft_count=$DRAFT_COUNT" >> $GITHUB_OUTPUT
+          else
+            echo "No content files changed"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Comment on PR
+        if: steps.changes.outputs.has_changes == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const postCount = '${{ steps.changes.outputs.post_count }}';
+            const pageCount = '${{ steps.changes.outputs.page_count }}';
+            const draftCount = '${{ steps.changes.outputs.draft_count }}';
+            
+            let comment = '## 📝 Content Changes Summary\n\n';
+            
+            if (postCount > 0) {
+              comment += `- **${postCount}** post(s) will be published\n`;
+            }
+            if (pageCount > 0) {
+              comment += `- **${pageCount}** page(s) will be published\n`;
+            }
+            if (draftCount > 0) {
+              comment += `- **${draftCount}** draft(s) will remain unpublished\n`;
+            }
+            
+            comment += '\n✅ Content validation passed! Ready to merge and publish to Ghost.\n';
+            comment += '\n> **Note:** Content will be automatically published to Ghost when this PR is merged to `main`.';
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

@@ -1,0 +1,41 @@
+{
+  "name": "xavierfuentes-com",
+  "version": "1.0.0",
+  "description": "Technical leadership blog content management system for xavierfuentes.com - GitHub-based Ghost CMS workflow",
+  "main": "scripts/publish.js",
+  "scripts": {
+    "publish": "node scripts/publish.js",
+    "validate": "node scripts/validate.js",
+    "test": "node scripts/validate.js"
+  },
+  "keywords": [
+    "technical-leadership",
+    "blog",
+    "ghost-cms",
+    "content-management",
+    "markdown",
+    "github-actions",
+    "career-progression",
+    "engineering-leadership"
+  ],
+  "author": {
+    "name": "Xavier Fuentes",
+    "url": "https://xavierfuentes.com",
+    "organization": "Mad Monkey Club"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@tryghost/admin-api": "^1.13.9",
+    "front-matter": "^4.0.2",
+    "marked": "^12.0.0",
+    "glob": "^10.3.10",
+    "js-yaml": "^4.1.0",
+    "turndown": "^7.1.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
