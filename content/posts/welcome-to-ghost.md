@@ -76,3 +76,5 @@ Whether you're a recruiter evaluating my background, a CTO looking for insights,
 ---
 
 **Building the future of technical leadership, one insight at a time** 🚀
+
+*Last updated: July 2025*
