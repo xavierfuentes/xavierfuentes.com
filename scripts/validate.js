@@ -202,9 +202,18 @@ class ContentValidator {
     }
   }
 
-  isValidDate(dateString) {
-    const date = new Date(dateString);
-    return date instanceof Date && !isNaN(date.getTime()) && dateString.includes('T');
+  isValidDate(dateValue) {
+    // Handle both string and Date object inputs
+    if (dateValue instanceof Date) {
+      return !isNaN(dateValue.getTime());
+    }
+    
+    if (typeof dateValue !== 'string') {
+      return false;
+    }
+    
+    const date = new Date(dateValue);
+    return date instanceof Date && !isNaN(date.getTime()) && dateValue.includes('T');
   }
 
   isValidUrl(string) {
