@@ -75,4 +75,4 @@ Whether you're a recruiter evaluating my background, a CTO looking for insights,
 
 ---
 
-**Building the future of technical leadership, one post at a time** 🚀
+**Building the future of technical leadership, one insight at a time** 🚀
