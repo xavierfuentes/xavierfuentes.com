@@ -70,6 +70,7 @@ class GhostContentManager {
       
       if (existingContent) {
         console.log(`🔄 Updating existing ${type}: ${frontmatterData.slug}`);
+        console.log('🔍 Content being sent to Ghost:', JSON.stringify(ghostContent, null, 2));
         const updatedContent = await this.updateContent(existingContent.id, ghostContent, type);
         return { action: 'updated', content: updatedContent };
       } else {
@@ -154,10 +155,18 @@ class GhostContentManager {
   }
 
   async updateContent(id, content, type) {
-    if (type === 'post') {
-      return await this.api.posts.edit({ id, ...content });
-    } else {
-      return await this.api.pages.edit({ id, ...content });
+    try {
+      if (type === 'post') {
+        return await this.api.posts.edit({ id, ...content });
+      } else {
+        return await this.api.pages.edit({ id, ...content });
+      }
+    } catch (error) {
+      console.error(`❌ Error updating ${type} (ID: ${id}):`, error.message);
+      if (error.response && error.response.data) {
+        console.error('Response data:', JSON.stringify(error.response.data, null, 2));
+      }
+      throw error;
     }
   }
 }
