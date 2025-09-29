@@ -1,0 +1,226 @@
+{
+  "name": "Research to Draft",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "8a9c6d3f-2b4e-4f5a-9c1d-3e4f5a6b7c8d",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "9744c9a8-0863-4287-bdb6-e119efe54398",
+          "mode": "id"
+        },
+        "filterType": "manual",
+        "conditions": {
+          "or": [
+            {
+              "and": [
+                {
+                  "key": "Should Process|checkbox",
+                  "condition": "equals",
+                  "checkboxValue": true
+                }
+              ]
+            }
+          ]
+        },
+        "options": {
+          "limit": 5
+        }
+      },
+      "id": "notion-query",
+      "name": "Get Pipeline Items",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.1,
+      "position": [400, 300],
+      "credentials": {
+        "notionApi": {
+          "id": "1",
+          "name": "Notion"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "model": {
+          "__rl": true,
+          "value": "gpt-4-turbo-preview",
+          "mode": "list"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a professional content writer specialising in technology leadership and startup strategy. Write a high-quality article draft.\n\nSOURCE:\nTitle: {{ $json.properties.Title.title[0].plain_text }}\nDescription: {{ $json.properties.Description.rich_text[0].plain_text || 'No description' }}\nPillar: {{ $json.properties['Content Pillar'].select.name }}\nAudience: {{ $json.properties['Target Audience'].multi_select.map(a => a.name).join(', ') }}\n\nREQUIREMENTS:\n- UK English (colour, optimise, whilst)\n- 1500-2000 words\n- Professional but personal tone\n- Structure: Hook → Context → Framework → Case Study → Implementation → Next Steps\n- Include specific examples and numbers\n- Pass the \"so what?\" test\n\nWrite a complete article draft with practical insights the audience can implement immediately."
+            }
+          ]
+        },
+        "options": {
+          "maxTokens": 4000,
+          "temperature": 0.7
+        }
+      },
+      "id": "openai-draft",
+      "name": "Generate Draft",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.3,
+      "position": [600, 300],
+      "credentials": {
+        "openAiApi": {
+          "id": "2",
+          "name": "OpenAI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "create",
+        "databaseId": {
+          "__rl": true,
+          "value": "0d7b48da-0a60-4c34-8fec-bb1617b8c8a6",
+          "mode": "id"
+        },
+        "title": "={{ 'AI Draft: ' + $('Get Pipeline Items').item.json.properties.Title.title[0].plain_text }}",
+        "properties": {
+          "Content Type|select": "Blog Post",
+          "Platform|select": "Xavierfuentes.com",
+          "Status|select": "Draft",
+          "Parent Post|relation": [
+            "={{ $('Get Pipeline Items').item.json.id }}"
+          ],
+          "Word Count|number": "={{ $json.message.content.split(' ').length }}"
+        },
+        "content": {
+          "children": [
+            {
+              "object": "block",
+              "type": "paragraph",
+              "paragraph": {
+                "rich_text": [
+                  {
+                    "type": "text",
+                    "text": {
+                      "content": "={{ $json.message.content }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "id": "create-asset",
+      "name": "Create Asset",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.1,
+      "position": [800, 300],
+      "credentials": {
+        "notionApi": {
+          "id": "1",
+          "name": "Notion"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $('Get Pipeline Items').item.json.id }}",
+          "mode": "id"
+        },
+        "properties": {
+          "Should Process|checkbox": false,
+          "Draft Ready|checkbox": true,
+          "Status|select": "Drafted"
+        }
+      },
+      "id": "update-pipeline",
+      "name": "Update Pipeline",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.1,
+      "position": [1000, 300],
+      "credentials": {
+        "notionApi": {
+          "id": "1",
+          "name": "Notion"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Pipeline Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Pipeline Items": {
+      "main": [
+        [
+          {
+            "node": "Generate Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Draft": {
+      "main": [
+        [
+          {
+            "node": "Create Asset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Asset": {
+      "main": [
+        [
+          {
+            "node": "Update Pipeline",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9b5e7f42-3c4d-4a8e-9f1b-2c3d4e5f6a7b",
+  "id": "xfTGH8K9zYvNpRLm",
+  "meta": {
+    "instanceId": "8a8b0c5d9e0f1234567890abcdef1234567890ab"
+  },
+  "tags": []
+}

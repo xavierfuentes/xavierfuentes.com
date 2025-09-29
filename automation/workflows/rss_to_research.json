@@ -1,5 +1,5 @@
 {
-  "name": "Content Pipeline - Feeder",
+  "name": "1. RSS to Research",
   "nodes": [
     {
       "parameters": {
@@ -14,7 +14,10 @@
       },
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
-      "position": [-880, 640],
+      "position": [
+        -880,
+        640
+      ],
       "id": "99d7a881-c8cf-42f6-9beb-3f17bfa55abb",
       "name": "Schedule",
       "alwaysOutputData": true
@@ -43,7 +46,10 @@
       },
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
-      "position": [-656, 640],
+      "position": [
+        -656,
+        640
+      ],
       "id": "fd3813f4-7e72-4aad-b732-ff4ee5aae0f8",
       "name": "Fetch Active Sources",
       "alwaysOutputData": true,
@@ -57,11 +63,14 @@
     },
     {
       "parameters": {
-        "jsCode": "// Validates RSS feed URLs from Notion database and checks if sources are stale\n// Adds metadata for downstream processing and filters invalid sources\nconst out = [];\n\nfor (const it of $input.all()) {\n  // Your data has property_url directly, not nested in properties\n  const url = it.json.property_url; // Changed this line\n  const sourceName = it.json.property_source_name || it.json.name || \"Unknown\"; // Multiple fallbacks\n  const lastScraped = it.json.property_last_scraped?.start;\n\n  console.log(`Processing source: ${sourceName}, URL: ${url}`);\n\n  // Calculate staleness\n  let isStale = false;\n  if (lastScraped) {\n    const days = (Date.now() - new Date(lastScraped).getTime()) / 86400000;\n    isStale = days > 7;\n  }\n\n  // Add feed URL for downstream processing\n  it.json.feedUrl = url;\n  it.json.sourceName = sourceName;\n  it.json.isStale = isStale;\n\n  // Add validation status\n  it.json.isValidUrl = !!(url && /^https?:\\/\\//.test(url));\n  it.json.validationError = null;\n\n  // Add priority multiplier\n  it.json.priorityMultiplier = it.json.property_priority_multiplier || 1.0;\n\n  if (!url) {\n    it.json.validationError = \"No URL provided\";\n    console.log(`❌ ${sourceName}: No URL provided`);\n  } else if (!/^https?:\\/\\//.test(url)) {\n    it.json.validationError = \"Invalid URL format\";\n    console.log(`❌ ${sourceName}: Invalid URL format: ${url}`);\n  } else {\n    console.log(`✅ ${sourceName}: Valid URL: ${url}`);\n  }\n\n  // ALWAYS add to output\n  out.push(it);\n}\n\nconsole.log(\n  `Validated ${out.length} sources (${\n    out.filter((s) => s.json.isValidUrl).length\n  } valid, ${out.filter((s) => !s.json.isValidUrl).length} invalid)`\n);\n\nreturn out;"
+        "jsCode": "// Validates RSS feed URLs from Notion database and checks if sources are stale\n// Adds metadata for downstream processing and filters invalid sources\nconst out = [];\n\nfor (const it of $input.all()) {\n  // Your data has property_url directly, not nested in properties\n  const url = it.json.property_url; // Changed this line\n  const sourceName = it.json.property_source_name || it.json.name || \"Unknown\"; // Multiple fallbacks\n  const lastScraped = it.json.property_last_scraped?.start;\n\n  console.log(`Processing source: ${sourceName}, URL: ${url}`);\n\n  // Calculate staleness\n  let isStale = false;\n  if (lastScraped) {\n    const days = (Date.now() - new Date(lastScraped).getTime()) / 86400000;\n    isStale = days > 7;\n  }\n\n  // Add feed URL for downstream processing\n  it.json.feedUrl = url;\n  it.json.sourceName = sourceName;\n  it.json.isStale = isStale;\n\n  // Add validation status\n  it.json.isValidUrl = !!(url && /^https?:\\/\\//.test(url));\n  it.json.validationError = null;\n\n  // Add priority multiplier\n  it.json.priorityMultiplier = it.json.property_priority_multiplier || 1.0;\n\n  // Add content quality level\n  it.json.sourceContentQuality = it.json.property_content_quality || \"Unknown\";\n\n  if (!url) {\n    it.json.validationError = \"No URL provided\";\n    console.log(`❌ ${sourceName}: No URL provided`);\n  } else if (!/^https?:\\/\\//.test(url)) {\n    it.json.validationError = \"Invalid URL format\";\n    console.log(`❌ ${sourceName}: Invalid URL format: ${url}`);\n  } else {\n    console.log(`✅ ${sourceName}: Valid URL: ${url}`);\n  }\n\n  // ALWAYS add to output\n  out.push(it);\n}\n\nconsole.log(\n  `Validated ${out.length} sources (${\n    out.filter((s) => s.json.isValidUrl).length\n  } valid, ${out.filter((s) => !s.json.isValidUrl).length} invalid)`\n);\n\nreturn out;"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [-208, 640],
+      "position": [
+        -208,
+        640
+      ],
       "id": "21fba95c-7d88-4d86-b6cf-902e7cd93856",
       "name": "Validate Sources"
     },
@@ -71,7 +80,10 @@
       },
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
-      "position": [16, 640],
+      "position": [
+        16,
+        640
+      ],
       "id": "fb7e7807-30ad-4dae-b098-027c9e27c4a2",
       "name": "Loop Feeds"
     },
@@ -92,7 +104,10 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [256, 912],
+      "position": [
+        256,
+        912
+      ],
       "id": "08c663b7-23c4-4ebc-98b0-ea7ab2244de2",
       "name": "Download RSS",
       "alwaysOutputData": true,
@@ -125,17 +140,23 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [496, 912],
+      "position": [
+        496,
+        912
+      ],
       "id": "65eb6bcf-28fe-4fad-afdb-fdad3fdd7578",
       "name": "Fetch OK?"
     },
     {
       "parameters": {
-        "jsCode": "// Parses RSS and Atom feed XML into structured article objects\n// Handles both feed formats, extracts metadata, and cleans HTML content\nconst xml = $(\"Download RSS\").item.json.data || \"\";\nconst items = [];\n\nconsole.log(`Parsing feed data (${xml.length} characters)`);\n\n// Detect feed type\nconst isAtom =\n  xml.includes(\"<feed\") && xml.includes('xmlns=\"http://www.w3.org/2005/Atom\"');\nconst isRss = xml.includes(\"<rss\") || xml.includes(\"<item\");\n\nconsole.log(`Feed type: ${isAtom ? \"Atom\" : isRss ? \"RSS\" : \"Unknown\"}`);\n\nif (isAtom) {\n  // Parse Atom feed\n  const entryRegex = /<entry[^>]*>[\\s\\S]*?<\\/entry>/gi;\n  let match;\n\n  while ((match = entryRegex.exec(xml)) !== null) {\n    const entryXml = match[0];\n\n    // Extract Atom fields\n    const title = extractTag(entryXml, \"title\");\n    const linkMatch = entryXml.match(/<link[^>]*href=\"([^\"]*)\"[^>]*\\/?>/);\n    const link = linkMatch ? linkMatch[1] : \"\";\n    const content =\n      extractTag(entryXml, \"content\") || extractTag(entryXml, \"summary\") || \"\";\n    const updated = extractTag(entryXml, \"updated\");\n    const id = extractTag(entryXml, \"id\");\n\n    if (!title || !link) continue;\n\n    // Clean content and create description\n    const cleanContent = cleanText(content);\n    const description = cleanContent.slice(0, 800);\n\n    // Convert updated date to publishedAt\n    const publishedAt = updated\n      ? new Date(updated).toISOString()\n      : new Date().toISOString();\n\n    items.push({\n      json: {\n        // Feed metadata\n        sourceName: $(\"Loop Feeds\").item.json.sourceName,\n        sourceId: $(\"Loop Feeds\").item.json.id || \"unknown\",\n        feedUrl: $(\"Loop Feeds\").item.json.feedUrl,\n\n        // Article fields\n        title: cleanText(title),\n        link: link,\n        description: description,\n        guid: id || link,\n        author: extractTag(entryXml, \"name\") || \"Unknown\",\n        category: extractTag(entryXml, \"category\") || \"General\",\n        publishedAt: publishedAt,\n        scrapedAt: new Date().toISOString(),\n\n        // Quality signals\n        sourcePriorityMultiplier: $(\"Loop Feeds\").item.json.priorityMultiplier,\n        wordCount: cleanContent\n          ? cleanContent.split(/\\s+/).filter(Boolean).length\n          : 0,\n        feedType: \"atom\",\n      },\n    });\n  }\n} else if (isRss) {\n  // Parse RSS feed\n  const itemRegex = /<item[\\s\\S]*?<\\/item>/gi;\n  let match;\n\n  while ((match = itemRegex.exec(xml)) !== null) {\n    const block = match[0];\n\n    const title = extractTag(block, \"title\");\n    const link = extractTag(block, \"link\") || extractTag(block, \"guid\");\n    if (!title || !link) continue;\n\n    const body =\n      extractTag(block, \"content:encoded\") ||\n      extractTag(block, \"description\") ||\n      \"\";\n    const description = cleanText(body).slice(0, 800);\n\n    const pubDate =\n      extractTag(block, \"pubDate\") || extractTag(block, \"published\");\n    const publishedAt = pubDate\n      ? new Date(pubDate).toISOString()\n      : new Date().toISOString();\n\n    items.push({\n      json: {\n        // Feed metadata\n        sourceName: $(\"Loop Feeds\").item.json.sourceName,\n        sourceId: $(\"Loop Feeds\").item.json.id || \"unknown\",\n        feedUrl: $(\"Loop Feeds\").item.json.feedUrl,\n\n        // Article fields\n        title: cleanText(title),\n        link: link,\n        description: description,\n        guid: extractTag(block, \"guid\") || link,\n        author:\n          extractTag(block, \"dc:creator\") ||\n          extractTag(block, \"author\") ||\n          \"Unknown\",\n        category: extractTag(block, \"category\") || \"General\",\n        publishedAt: publishedAt,\n        scrapedAt: new Date().toISOString(),\n\n        // Quality signals\n        wordCount: body\n          ? cleanText(body).split(/\\s+/).filter(Boolean).length\n          : 0,\n        feedType: \"rss\",\n      },\n    });\n  }\n}\n\n// Helper function to extract tag content\nfunction extractTag(xml, tagName) {\n  const regex = new RegExp(`<${tagName}[^>]*>([\\\\s\\\\S]*?)<\\\\/${tagName}>`, \"i\");\n  const match = xml.match(regex);\n  return match ? match[1] : \"\";\n}\n\n// Enhanced function to completely remove HTML and clean text\nfunction cleanText(text) {\n  if (typeof text !== \"string\" || !text) return \"\";\n\n  let cleaned = text;\n\n  // Remove CDATA sections first\n  cleaned = cleaned.replace(/<!\\[CDATA\\[([\\s\\S]*?)\\]\\]>/g, \"$1\");\n\n  // Remove HTML comments\n  cleaned = cleaned.replace(/<!--[\\s\\S]*?-->/g, \"\");\n\n  // Remove script, style, and other unwanted tags completely\n  cleaned = cleaned.replace(\n    /<(script|style|noscript|iframe|object|embed|form|input|button)[^>]*>[\\s\\S]*?<\\/\\1>/gi,\n    \"\"\n  );\n\n  // Remove self-closing tags\n  cleaned = cleaned.replace(\n    /<(img|br|hr|input|meta|link|area|base|col|source|track|wbr)[^>]*\\/?>/gi,\n    \" \"\n  );\n\n  // Remove ALL HTML tags - be very aggressive\n  cleaned = cleaned.replace(/<\\/?[^>]*>/g, \" \");\n\n  // Remove any remaining < or > characters\n  cleaned = cleaned.replace(/[<>]/g, \"\");\n\n  // Decode HTML entities - comprehensive list\n  const entities = {\n    \"&amp;\": \"&\",\n    \"&lt;\": \"<\",\n    \"&gt;\": \">\",\n    \"&quot;\": '\"',\n    \"&#39;\": \"'\",\n    \"&apos;\": \"'\",\n    \"&nbsp;\": \" \",\n    \"&copy;\": \"©\",\n    \"&reg;\": \"®\",\n    \"&trade;\": \"™\",\n    \"&hellip;\": \"...\",\n    \"&mdash;\": \"—\",\n    \"&ndash;\": \"—\",\n    \"&lsquo;\": \"'\",\n    \"&rsquo;\": \"'\",\n    \"&ldquo;\": '\"',\n    \"&rdquo;\": '\"',\n    \"&bull;\": \"•\",\n    \"&middot;\": \"·\",\n    \"&sect;\": \"§\",\n    \"&para;\": \"¶\",\n    \"&dagger;\": \"†\",\n    \"&Dagger;\": \"‡\",\n    \"&permil;\": \"‰\",\n    \"&lsaquo;\": \"‹\",\n    \"&rsaquo;\": \"›\",\n    \"&euro;\": \"€\",\n    \"&pound;\": \"£\",\n    \"&yen;\": \"¥\",\n    \"&cent;\": \"¢\",\n  };\n\n  // Replace known entities\n  for (const [entity, replacement] of Object.entries(entities)) {\n    cleaned = cleaned.replace(new RegExp(entity, \"gi\"), replacement);\n  }\n\n  // Handle numeric entities (decimal)\n  cleaned = cleaned.replace(/&#(\\d+);/g, (match, num) => {\n    const code = parseInt(num, 10);\n    if (code >= 32 && code <= 126) return String.fromCharCode(code);\n    if (code === 8217) return \"'\"; // Right single quotation mark\n    if (code === 8216) return \"'\"; // Left single quotation mark\n    if (code === 8220) return '\"'; // Left double quotation mark\n    if (code === 8221) return '\"'; // Right double quotation mark\n    if (code === 8211) return \"—\"; // En dash\n    if (code === 8212) return \"—\"; // Em dash\n    if (code === 8230) return \"...\"; // Horizontal ellipsis\n    return \" \";\n  });\n\n  // Handle hexadecimal entities\n  cleaned = cleaned.replace(/&#x([0-9a-f]+);/gi, (match, hex) => {\n    const code = parseInt(hex, 16);\n    if (code >= 32 && code <= 126) return String.fromCharCode(code);\n    return \" \";\n  });\n\n  // Remove any remaining HTML entities\n  cleaned = cleaned.replace(/&[a-zA-Z][a-zA-Z0-9]{1,30};/g, \" \");\n\n  // Remove URLs that might be embedded\n  cleaned = cleaned.replace(/https?:\\/\\/[^\\s]+/g, \"\");\n  cleaned = cleaned.replace(/www\\.[^\\s]+/g, \"\");\n\n  // Remove email addresses\n  cleaned = cleaned.replace(\n    /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/g,\n    \"\"\n  );\n\n  // Remove common leftover HTML-like fragments\n  cleaned = cleaned.replace(\n    /^\\s*(img src|href|class|id|style|alt|title|width|height|src)\\s*.*$/gm,\n    \"\"\n  );\n\n  // Remove standalone attribute-like strings\n  cleaned = cleaned.replace(\n    /\\b(src|href|alt|title|class|id|width|height|style)=[\"'][^\"']*[\"']/gi,\n    \"\"\n  );\n\n  // Remove multiple consecutive punctuation\n  cleaned = cleaned.replace(/[.]{3,}/g, \"...\");\n  cleaned = cleaned.replace(/[!]{2,}/g, \"!\");\n  cleaned = cleaned.replace(/[?]{2,}/g, \"?\");\n\n  // Aggressive whitespace normalization\n  cleaned = cleaned.replace(/\\s+/g, \" \");\n\n  // Remove control and non-printable characters\n  cleaned = cleaned.replace(\n    /[\\u0000-\\u001F\\u007F-\\u009F\\u2000-\\u200F\\uFEFF]/g,\n    \"\"\n  );\n\n  // Remove leading/trailing punctuation that might be artifacts\n  cleaned = cleaned.replace(/^[^\\w\\s]+|[^\\w\\s.!?]+$/g, \"\");\n\n  return cleaned.trim();\n}\n\nconsole.log(\n  `Successfully parsed ${items.length} articles from ${\n    isAtom ? \"Atom\" : \"RSS\"\n  } feed`\n);\n\nreturn items;\n"
+        "jsCode": "// Parses RSS and Atom feed XML into structured article objects\n// Handles both feed formats, extracts metadata, and cleans HTML content\nconst xml = $(\"Download RSS\").item.json.data || \"\";\nconst items = [];\n\nconsole.log(`Parsing feed data (${xml.length} characters)`);\n\n// Detect feed type\nconst isAtom =\n  xml.includes(\"<feed\") && xml.includes('xmlns=\"http://www.w3.org/2005/Atom\"');\nconst isRss = xml.includes(\"<rss\") || xml.includes(\"<item\");\n\nconsole.log(`Feed type: ${isAtom ? \"Atom\" : isRss ? \"RSS\" : \"Unknown\"}`);\n\nif (isAtom) {\n  // Parse Atom feed\n  const entryRegex = /<entry[^>]*>[\\s\\S]*?<\\/entry>/gi;\n  let match;\n\n  while ((match = entryRegex.exec(xml)) !== null) {\n    const entryXml = match[0];\n\n    // Extract Atom fields\n    const title = extractTag(entryXml, \"title\");\n    const linkMatch = entryXml.match(/<link[^>]*href=\"([^\"]*)\"[^>]*\\/?>/);\n    const link = linkMatch ? linkMatch[1] : \"\";\n    const content =\n      extractTag(entryXml, \"content\") || extractTag(entryXml, \"summary\") || \"\";\n    const updated = extractTag(entryXml, \"updated\");\n    const id = extractTag(entryXml, \"id\");\n\n    if (!title || !link) continue;\n\n    // Clean content and create description\n    const cleanContent = cleanText(content);\n    const description = cleanContent.slice(0, 800);\n\n    // Convert updated date to publishedAt\n    const publishedAt = updated\n      ? new Date(updated).toISOString()\n      : new Date().toISOString();\n\n    items.push({\n      json: {\n        // Feed metadata\n        sourceName: $(\"Loop Feeds\").item.json.sourceName,\n        sourceId: $(\"Loop Feeds\").item.json.id || \"unknown\",\n        feedUrl: $(\"Loop Feeds\").item.json.feedUrl,\n\n        // Article fields\n        title: cleanText(title),\n        link: link,\n        description: description,\n        guid: id || link,\n        author: extractTag(entryXml, \"name\") || \"Unknown\",\n        category: extractTag(entryXml, \"category\") || \"General\",\n        publishedAt: publishedAt,\n        scrapedAt: new Date().toISOString(),\n\n        // Quality signals\n        sourcePriorityMultiplier: $(\"Loop Feeds\").item.json.priorityMultiplier,\n        wordCount: cleanContent\n          ? cleanContent.split(/\\s+/).filter(Boolean).length\n          : 0,\n        feedType: \"atom\",\n      },\n    });\n  }\n} else if (isRss) {\n  // Parse RSS feed\n  const itemRegex = /<item[\\s\\S]*?<\\/item>/gi;\n  let match;\n\n  while ((match = itemRegex.exec(xml)) !== null) {\n    const block = match[0];\n\n    const title = extractTag(block, \"title\");\n    const link = extractTag(block, \"link\") || extractTag(block, \"guid\");\n    if (!title || !link) continue;\n\n    const body =\n      extractTag(block, \"content:encoded\") ||\n      extractTag(block, \"description\") ||\n      \"\";\n    const description = cleanText(body).slice(0, 800);\n\n    const pubDate =\n      extractTag(block, \"pubDate\") || extractTag(block, \"published\");\n    const publishedAt = pubDate\n      ? new Date(pubDate).toISOString()\n      : new Date().toISOString();\n\n    items.push({\n      json: {\n        // Feed metadata\n        sourceName: $(\"Loop Feeds\").item.json.sourceName,\n        sourceId: $(\"Loop Feeds\").item.json.id || \"unknown\",\n        feedUrl: $(\"Loop Feeds\").item.json.feedUrl,\n\n        // Article fields\n        title: cleanText(title),\n        link: link,\n        description: description,\n        guid: extractTag(block, \"guid\") || link,\n        author:\n          extractTag(block, \"dc:creator\") ||\n          extractTag(block, \"author\") ||\n          \"Unknown\",\n        category: extractTag(block, \"category\") || \"General\",\n        publishedAt: publishedAt,\n        scrapedAt: new Date().toISOString(),\n\n        // Quality signals\n        sourcePriorityMultiplier: $(\"Loop Feeds\").item.json.priorityMultiplier,\n        wordCount: body\n          ? cleanText(body).split(/\\s+/).filter(Boolean).length\n          : 0,\n        feedType: \"rss\",\n      },\n    });\n  }\n}\n\n// Helper function to extract tag content\nfunction extractTag(xml, tagName) {\n  const regex = new RegExp(`<${tagName}[^>]*>([\\\\s\\\\S]*?)<\\\\/${tagName}>`, \"i\");\n  const match = xml.match(regex);\n  return match ? match[1] : \"\";\n}\n\n// Enhanced function to completely remove HTML and clean text\nfunction cleanText(text) {\n  if (typeof text !== \"string\" || !text) return \"\";\n\n  let cleaned = text;\n\n  // Remove CDATA sections first\n  cleaned = cleaned.replace(/<!\\[CDATA\\[([\\s\\S]*?)\\]\\]>/g, \"$1\");\n\n  // Remove HTML comments\n  cleaned = cleaned.replace(/<!--[\\s\\S]*?-->/g, \"\");\n\n  // Remove script, style, and other unwanted tags completely\n  cleaned = cleaned.replace(\n    /<(script|style|noscript|iframe|object|embed|form|input|button)[^>]*>[\\s\\S]*?<\\/\\1>/gi,\n    \"\"\n  );\n\n  // Remove self-closing tags\n  cleaned = cleaned.replace(\n    /<(img|br|hr|input|meta|link|area|base|col|source|track|wbr)[^>]*\\/?>/gi,\n    \" \"\n  );\n\n  // Remove ALL HTML tags - be very aggressive\n  cleaned = cleaned.replace(/<\\/?[^>]*>/g, \" \");\n\n  // Remove any remaining < or > characters\n  cleaned = cleaned.replace(/[<>]/g, \"\");\n\n  // Decode HTML entities - comprehensive list\n  const entities = {\n    \"&amp;\": \"&\",\n    \"&lt;\": \"<\",\n    \"&gt;\": \">\",\n    \"&quot;\": '\"',\n    \"&#39;\": \"'\",\n    \"&apos;\": \"'\",\n    \"&nbsp;\": \" \",\n    \"&copy;\": \"©\",\n    \"&reg;\": \"®\",\n    \"&trade;\": \"™\",\n    \"&hellip;\": \"...\",\n    \"&mdash;\": \"—\",\n    \"&ndash;\": \"—\",\n    \"&lsquo;\": \"'\",\n    \"&rsquo;\": \"'\",\n    \"&ldquo;\": '\"',\n    \"&rdquo;\": '\"',\n    \"&bull;\": \"•\",\n    \"&middot;\": \"·\",\n    \"&sect;\": \"§\",\n    \"&para;\": \"¶\",\n    \"&dagger;\": \"†\",\n    \"&Dagger;\": \"‡\",\n    \"&permil;\": \"‰\",\n    \"&lsaquo;\": \"‹\",\n    \"&rsaquo;\": \"›\",\n    \"&euro;\": \"€\",\n    \"&pound;\": \"£\",\n    \"&yen;\": \"¥\",\n    \"&cent;\": \"¢\",\n  };\n\n  // Replace known entities\n  for (const [entity, replacement] of Object.entries(entities)) {\n    cleaned = cleaned.replace(new RegExp(entity, \"gi\"), replacement);\n  }\n\n  // Handle numeric entities (decimal)\n  cleaned = cleaned.replace(/&#(\\d+);/g, (match, num) => {\n    const code = parseInt(num, 10);\n    if (code >= 32 && code <= 126) return String.fromCharCode(code);\n    if (code === 8217) return \"'\"; // Right single quotation mark\n    if (code === 8216) return \"'\"; // Left single quotation mark\n    if (code === 8220) return '\"'; // Left double quotation mark\n    if (code === 8221) return '\"'; // Right double quotation mark\n    if (code === 8211) return \"—\"; // En dash\n    if (code === 8212) return \"—\"; // Em dash\n    if (code === 8230) return \"...\"; // Horizontal ellipsis\n    return \" \";\n  });\n\n  // Handle hexadecimal entities\n  cleaned = cleaned.replace(/&#x([0-9a-f]+);/gi, (match, hex) => {\n    const code = parseInt(hex, 16);\n    if (code >= 32 && code <= 126) return String.fromCharCode(code);\n    return \" \";\n  });\n\n  // Remove any remaining HTML entities\n  cleaned = cleaned.replace(/&[a-zA-Z][a-zA-Z0-9]{1,30};/g, \" \");\n\n  // Remove URLs that might be embedded\n  cleaned = cleaned.replace(/https?:\\/\\/[^\\s]+/g, \"\");\n  cleaned = cleaned.replace(/www\\.[^\\s]+/g, \"\");\n\n  // Remove email addresses\n  cleaned = cleaned.replace(\n    /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/g,\n    \"\"\n  );\n\n  // Remove common leftover HTML-like fragments\n  cleaned = cleaned.replace(\n    /^\\s*(img src|href|class|id|style|alt|title|width|height|src)\\s*.*$/gm,\n    \"\"\n  );\n\n  // Remove standalone attribute-like strings\n  cleaned = cleaned.replace(\n    /\\b(src|href|alt|title|class|id|width|height|style)=[\"'][^\"']*[\"']/gi,\n    \"\"\n  );\n\n  // Remove multiple consecutive punctuation\n  cleaned = cleaned.replace(/[.]{3,}/g, \"...\");\n  cleaned = cleaned.replace(/[!]{2,}/g, \"!\");\n  cleaned = cleaned.replace(/[?]{2,}/g, \"?\");\n\n  // Aggressive whitespace normalization\n  cleaned = cleaned.replace(/\\s+/g, \" \");\n\n  // Remove control and non-printable characters\n  cleaned = cleaned.replace(\n    /[\\u0000-\\u001F\\u007F-\\u009F\\u2000-\\u200F\\uFEFF]/g,\n    \"\"\n  );\n\n  // Remove leading/trailing punctuation that might be artifacts\n  cleaned = cleaned.replace(/^[^\\w\\s]+|[^\\w\\s.!?]+$/g, \"\");\n\n  return cleaned.trim();\n}\n\nconsole.log(\n  `Successfully parsed ${items.length} articles from ${\n    isAtom ? \"Atom\" : \"RSS\"\n  } feed`\n);\n\nreturn items;\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [720, 704],
+      "position": [
+        720,
+        704
+      ],
       "id": "baca3a91-0657-4616-8f46-2e0bdcd107cf",
       "name": "Parse RSS",
       "alwaysOutputData": true,
@@ -147,7 +168,10 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [944, 704],
+      "position": [
+        944,
+        704
+      ],
       "id": "ce4992e8-4f0e-47da-b67b-86b9e215cd86",
       "name": "Store Articles (Static)"
     },
@@ -157,7 +181,10 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [272, 432],
+      "position": [
+        272,
+        432
+      ],
       "id": "5d24f9a1-7df9-42d6-a9ec-db51886c362a",
       "name": "Accumulate All Articles"
     },
@@ -187,7 +214,10 @@
       },
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
-      "position": [496, 432],
+      "position": [
+        496,
+        432
+      ],
       "id": "4c375db6-c660-491d-89e5-256a4c75ed94",
       "name": "Get Recent Articles",
       "alwaysOutputData": true,
@@ -206,19 +236,38 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [720, 432],
+      "position": [
+        720,
+        432
+      ],
       "id": "4ece84e3-9c08-44f5-903d-06eed1a863a2",
       "name": "Remove Duplicates"
     },
     {
       "parameters": {
-        "jsCode": "// Filters articles based on quality signals, source priority, and recency\n// Uses source-specific age limits and scoring to reduce noise whilst preserving valuable content\n\nconst MIN_COMBINED_WORDS = 10;\nconst MIN_TITLE_LEN = 40;\n\n// Different age limits based on source quality\nconst SOURCE_AGE_LIMITS = {\n  // Premium sources - content stays relevant longer\n  \"Martin Fowler's Blog\": 90, // 3 months - his content is timeless\n  \"Stripe Engineering Blog\": 60,\n  \"Netflix Tech Blog\": 60,\n  \"Google Cloud Blog\": 45,\n  \"AWS Architecture Blog\": 45,\n  \"Thoughtworks Technology Radar\": 90,\n  \"First Round Review\": 60,\n  \"Lenny's Newsletter\": 30,\n  InfoQ: 45,\n  Stratechery: 30,\n\n  // Default for most sources\n  Default: 30, // Increased from 21 to 30 days\n};\n\n// Source priority multipliers based on content focus\nconst SOURCE_PRIORITY_MULTIPLIERS = {\n  // Funding-heavy sources (lower priority)\n  TechEU: 0.7,\n  \"TechCrunch Europe\": 0.8,\n  Sifted: 0.8,\n  SwissStartups: 0.7,\n  \"EU-Startups\": 0.7,\n\n  // High-value technical/strategic sources\n  \"Stripe Engineering Blog\": 1.5,\n  \"Netflix Tech Blog\": 1.5,\n  \"Google Cloud Blog\": 1.5,\n  \"AWS Architecture Blog\": 1.5,\n  \"Thoughtworks Technology Radar\": 1.5,\n  \"First Round Review\": 1.5,\n  \"Lenny's Newsletter\": 1.5,\n  \"Martin Fowler's Blog\": 1.5,\n  InfoQ: 1.5,\n  Stratechery: 1.3,\n  \"MIT Technology Review\": 1.2,\n  \"Harvard Business Review Management\": 1.3,\n  \"Andreessen Horowitz (a16z)\": 1.2,\n  \"Y Combinator Blog\": 1.2,\n  \"High Growth Engineering\": 1.2,\n\n  // Medium priority sources\n  \"The New Stack\": 1.0,\n  \"Ars Technica\": 1.0,\n\n  // Default for unknown sources\n  Default: 1.0,\n};\n\n// Keywords that indicate high-value content for tech leaders\nconst HIGH_VALUE_KEYWORDS = [\n  \"ai\",\n  \"artificial intelligence\",\n  \"agentic\",\n  \"model\",\n  \"models\",\n  \"compute\",\n  \"gpu\",\n  \"architecture\",\n  \"scaling\",\n  \"performance\",\n  \"optimisation\",\n  \"framework\",\n  \"pattern\",\n  \"leadership\",\n  \"management\",\n  \"strategy\",\n  \"culture\",\n  \"hiring\",\n  \"team\",\n  \"platform\",\n  \"compliance\",\n  \"security\",\n  \"cyber\",\n  \"cloud\",\n  \"open-source\",\n  \"startup\",\n  \"scale-up\",\n  \"supercomputer\",\n  \"sovereign\",\n  \"quantum\",\n  \"benchmark\",\n  \"llm\",\n];\n\n// Keywords that indicate low-value content (funding noise)\nconst LOW_VALUE_KEYWORDS = [\n  \"job opening\",\n  \"we are hiring\",\n  \"webinar\",\n  \"podcast\",\n  \"event\",\n  \"conference\",\n  \"newsletter\",\n  \"roundup\",\n  \"sponsored\",\n  \"advertorial\",\n  \"press release\",\n];\n\nfunction normalize(str) {\n  return (str || \"\").toString().replace(/\\s+/g, \" \").trim();\n}\n\nfunction lower(str) {\n  return normalize(str).toLowerCase();\n}\n\nfunction wordsCount(str) {\n  return normalize(str).split(/\\s+/).filter(Boolean).length;\n}\n\nfunction hasAny(text, list) {\n  const t = lower(text);\n  return list.some((k) => t.includes(k));\n}\n\nfunction daysSince(dateIso) {\n  const t = Date.parse(dateIso);\n  if (!Number.isFinite(t)) return Infinity;\n  return (Date.now() - t) / 86400000;\n}\n\nfunction calculateArticleScore(article, sourceName) {\n  // Get multiplier from article's source data (passed from Notion)\n  const priorityMultiplier = article.sourcePriorityMultiplier || 1.0;\n\n  let score = 0;\n\n  // Body richness (prefer content:encoded-derived wordCount)\n  const bodyWords = article.wordCount || 0;\n  if (bodyWords >= 400) score += 3;\n  else if (bodyWords >= 250) score += 2;\n  else if (bodyWords >= 120) score += 1;\n\n  // Headline/teaser substance\n  const combined = `${article.title} ${article.description}`;\n  const combinedWords = wordsCount(combined);\n  if (combinedWords >= MIN_COMBINED_WORDS) score += 1;\n\n  // Title strength\n  if (article.title && article.title.length >= MIN_TITLE_LEN) score += 1;\n\n  // High-value keyword signals (multiple hits add more weight)\n  const highValueHits = HIGH_VALUE_KEYWORDS.filter((kw) =>\n    lower(combined).includes(kw)\n  ).length;\n  if (highValueHits >= 3) score += 2;\n  else if (highValueHits >= 1) score += 1;\n\n  // Recency bonus (but don't penalize quality sources too much)\n  const age = article.publishedAt ? daysSince(article.publishedAt) : Infinity;\n  if (age <= 3) score += 2;\n  else if (age <= 7) score += 1;\n  else if (age <= 14 && priorityMultiplier >= 1.3) score += 1; // Bonus for high-priority sources even if older\n\n  // Apply source priority multiplier\n  score = Math.round(score * priorityMultiplier);\n\n  return score;\n}\n\nfunction getBodyText(article) {\n  // Prefer parser-provided clean body if available (from content:encoded)\n  const body = article.contentEncodedClean || article.body || \"\";\n  if (body) return body;\n\n  // Fallback to description (teaser)\n  return article.description || \"\";\n}\n\n// Lightweight in-flow de-duplication by guid/link/title\nconst seen = new Set();\n\nconst out = [];\nlet filteredByAge = 0;\nlet filteredByLowValue = 0;\nlet filteredByThreshold = 0;\n\nfor (const it of $input.all()) {\n  const j = it?.json || {};\n  const title = normalize(j.title);\n  const link = normalize(j.link);\n  if (!title || !link) continue;\n\n  // Local de-dupe key (within this node's run)\n  const key = `${lower(title)}|${lower(link)}`;\n  if (seen.has(key)) continue;\n  seen.add(key);\n\n  // Get age limit for this source\n  const ageLimit =\n    SOURCE_AGE_LIMITS[j.sourceName] || SOURCE_AGE_LIMITS[\"Default\"];\n\n  // Recency filter with source-specific limits\n  if (j.publishedAt) {\n    const age = daysSince(j.publishedAt);\n    if (age > ageLimit) {\n      filteredByAge++;\n      console.log(\n        `❌ Too old for ${\n          j.sourceName\n        } (${ageLimit}d limit): \"${title.substring(0, 40)}...\" (${age.toFixed(\n          1\n        )} days)`\n      );\n      continue;\n    }\n  }\n\n  const combined = `${title} ${normalize(j.description)}`;\n\n  // Fast negative filter on obvious low-signal content\n  if (hasAny(combined, LOW_VALUE_KEYWORDS)) {\n    filteredByLowValue++;\n    continue;\n  }\n\n  // Calculate score with source priority\n  const score = calculateArticleScore(j, j.sourceName);\n\n  // Dynamic threshold based on source priority\n  const baseThreshold = 2;\n  const sourceMultiplier =\n    SOURCE_PRIORITY_MULTIPLIERS[j.sourceName] ||\n    SOURCE_PRIORITY_MULTIPLIERS[\"Default\"];\n  const threshold =\n    sourceMultiplier < 1.0 ? Math.max(baseThreshold + 1, 3) : baseThreshold;\n\n  // Hard includes: strong signals even if body is short\n  const hardInclude =\n    /\\b(raises|raised|acquire|acquisition|series [abc]|seed|pre-seed)\\b/i.test(\n      combined\n    ) || /\\b(series\\s?[abc])\\b/i.test(combined);\n\n  if (hardInclude || score >= threshold) {\n    // Add source priority info for debugging\n    const enhancedArticle = {\n      ...j,\n      _sourcePriority: sourceMultiplier,\n      _articleScore: score,\n      _threshold: threshold,\n      _ageLimit: ageLimit,\n    };\n\n    out.push({ json: enhancedArticle });\n  } else {\n    filteredByThreshold++;\n  }\n}\n\nconsole.log(\n  `Pre-filtered ${out.length} articles from ${\n    $input.all().length\n  } input articles`\n);\nconsole.log(\n  `Filtered: Age=${filteredByAge}, LowValue=${filteredByLowValue}, BelowThreshold=${filteredByThreshold}`\n);\n\nreturn out;\n"
+        "jsCode": "// Filters articles based on quality signals, source priority, and recency\n// Uses source-specific age limits and scoring to reduce noise whilst preserving valuable content\n\nconst MIN_COMBINED_WORDS = 10;\nconst MIN_TITLE_LEN = 40;\n\n// Different age limits based on source quality\nconst SOURCE_AGE_LIMITS = {\n  // Premium sources - content stays relevant longer\n  \"Martin Fowler's Blog\": 90, // 3 months - his content is timeless\n  \"Stripe Engineering Blog\": 60,\n  \"Netflix Tech Blog\": 60,\n  \"Google Cloud Blog\": 45,\n  \"AWS Architecture Blog\": 45,\n  \"Thoughtworks Technology Radar\": 90,\n  \"First Round Review\": 60,\n  \"Lenny's Newsletter\": 30,\n  InfoQ: 45,\n  Stratechery: 30,\n\n  // Default for most sources\n  Default: 30, // Increased from 21 to 30 days\n};\n\n// NOTE: Source priority multipliers are now retrieved from Notion database\n// instead of being hardcoded here. This allows for dynamic configuration.\n\n// Keywords that indicate high-value content for tech leaders\nconst HIGH_VALUE_KEYWORDS = [\n  \"ai\",\n  \"artificial intelligence\",\n  \"agentic\",\n  \"model\",\n  \"models\",\n  \"compute\",\n  \"gpu\",\n  \"architecture\",\n  \"scaling\",\n  \"performance\",\n  \"optimisation\",\n  \"framework\",\n  \"pattern\",\n  \"leadership\",\n  \"management\",\n  \"strategy\",\n  \"culture\",\n  \"hiring\",\n  \"team\",\n  \"platform\",\n  \"compliance\",\n  \"security\",\n  \"cyber\",\n  \"cloud\",\n  \"open-source\",\n  \"startup\",\n  \"scale-up\",\n  \"supercomputer\",\n  \"sovereign\",\n  \"quantum\",\n  \"benchmark\",\n  \"llm\",\n];\n\n// Keywords that indicate low-value content (funding noise)\nconst LOW_VALUE_KEYWORDS = [\n  \"job opening\",\n  \"we are hiring\",\n  \"webinar\",\n  \"podcast\",\n  \"event\",\n  \"conference\",\n  \"newsletter\",\n  \"roundup\",\n  \"sponsored\",\n  \"advertorial\",\n  \"press release\",\n];\n\nfunction normalize(str) {\n  return (str || \"\").toString().replace(/\\s+/g, \" \").trim();\n}\n\nfunction lower(str) {\n  return normalize(str).toLowerCase();\n}\n\nfunction wordsCount(str) {\n  return normalize(str).split(/\\s+/).filter(Boolean).length;\n}\n\nfunction hasAny(text, list) {\n  const t = lower(text);\n  return list.some((k) => t.includes(k));\n}\n\nfunction daysSince(dateIso) {\n  const t = Date.parse(dateIso);\n  if (!Number.isFinite(t)) return Infinity;\n  return (Date.now() - t) / 86400000;\n}\n\nfunction calculateArticleScore(article, sourceName) {\n  // Get multiplier from article's source data (passed from Notion)\n  const priorityMultiplier = article.sourcePriorityMultiplier || 1.0;\n\n  let score = 0;\n\n  // Body richness (prefer content:encoded-derived wordCount)\n  const bodyWords = article.wordCount || 0;\n  if (bodyWords >= 400) score += 3;\n  else if (bodyWords >= 250) score += 2;\n  else if (bodyWords >= 120) score += 1;\n\n  // Headline/teaser substance\n  const combined = `${article.title} ${article.description}`;\n  const combinedWords = wordsCount(combined);\n  if (combinedWords >= MIN_COMBINED_WORDS) score += 1;\n\n  // Title strength\n  if (article.title && article.title.length >= MIN_TITLE_LEN) score += 1;\n\n  // High-value keyword signals (multiple hits add more weight)\n  const highValueHits = HIGH_VALUE_KEYWORDS.filter((kw) =>\n    lower(combined).includes(kw)\n  ).length;\n  if (highValueHits >= 3) score += 2;\n  else if (highValueHits >= 1) score += 1;\n\n  // Recency bonus (but don't penalize quality sources too much)\n  const age = article.publishedAt ? daysSince(article.publishedAt) : Infinity;\n  if (age <= 3) score += 2;\n  else if (age <= 7) score += 1;\n  else if (age <= 14 && priorityMultiplier >= 1.3) score += 1; // Bonus for high-priority sources even if older\n\n  // Apply source priority multiplier\n  score = Math.round(score * priorityMultiplier);\n\n  return score;\n}\n\nfunction getBodyText(article) {\n  // Prefer parser-provided clean body if available (from content:encoded)\n  const body = article.contentEncodedClean || article.body || \"\";\n  if (body) return body;\n\n  // Fallback to description (teaser)\n  return article.description || \"\";\n}\n\n// Lightweight in-flow de-duplication by guid/link/title\nconst seen = new Set();\n\nconst out = [];\nlet filteredByAge = 0;\nlet filteredByLowValue = 0;\nlet filteredByThreshold = 0;\n\nfor (const it of $input.all()) {\n  const j = it?.json || {};\n  const title = normalize(j.title);\n  const link = normalize(j.link);\n  if (!title || !link) continue;\n\n  // Local de-dupe key (within this node's run)\n  const key = `${lower(title)}|${lower(link)}`;\n  if (seen.has(key)) continue;\n  seen.add(key);\n\n  // Get age limit for this source\n  const ageLimit =\n    SOURCE_AGE_LIMITS[j.sourceName] || SOURCE_AGE_LIMITS[\"Default\"];\n\n  // Recency filter with source-specific limits\n  if (j.publishedAt) {\n    const age = daysSince(j.publishedAt);\n    if (age > ageLimit) {\n      filteredByAge++;\n      console.log(\n        `❌ Too old for ${\n          j.sourceName\n        } (${ageLimit}d limit): \"${title.substring(0, 40)}...\" (${age.toFixed(\n          1\n        )} days)`\n      );\n      continue;\n    }\n  }\n\n  const combined = `${title} ${normalize(j.description)}`;\n\n  // Fast negative filter on obvious low-signal content\n  if (hasAny(combined, LOW_VALUE_KEYWORDS)) {\n    filteredByLowValue++;\n    continue;\n  }\n\n  // Calculate score with source priority\n  const score = calculateArticleScore(j, j.sourceName);\n\n  // Dynamic threshold based on source priority and content quality\n  const baseThreshold = 2;\n  const sourceMultiplier = j.sourcePriorityMultiplier || 1.0; // Use the multiplier from Notion data\n  const sourceQuality = j.sourceContentQuality || \"Unknown\";\n\n  // Content quality-based thresholds (lower threshold = more permissive)\n  const qualityThresholds = {\n    \"Premium\": 3,\n    \"High\": 4,\n    \"Medium\": 5,\n    \"Low\": 7,\n    \"Unknown\": 5\n  };\n\n  const qualityThreshold = qualityThresholds[sourceQuality] || qualityThresholds[\"Unknown\"];\n  const priorityAdjustedThreshold = sourceMultiplier < 1.0 ? Math.max(baseThreshold + 1, 3) : baseThreshold;\n\n  // Use the more permissive (lower) of the two thresholds\n  const threshold = Math.min(priorityAdjustedThreshold, qualityThreshold);\n\n  // Hard includes: strong signals even if body is short\n  const hardInclude =\n    /\\b(raises|raised|acquire|acquisition|series [abc]|seed|pre-seed)\\b/i.test(\n      combined\n    ) || /\\b(series\\s?[abc])\\b/i.test(combined);\n\n  if (hardInclude || score >= threshold) {\n    // Add source priority info for debugging\n    const enhancedArticle = {\n      ...j,\n      _sourcePriority: sourceMultiplier,\n      _articleScore: score,\n      _threshold: threshold,\n      _ageLimit: ageLimit,\n    };\n\n    out.push({ json: enhancedArticle });\n  } else {\n    filteredByThreshold++;\n  }\n}\n\nconsole.log(\n  `Pre-filtered ${out.length} articles from ${\n    $input.all().length\n  } input articles`\n);\nconsole.log(\n  `Filtered: Age=${filteredByAge}, LowValue=${filteredByLowValue}, BelowThreshold=${filteredByThreshold}`\n);\n\n// Quality statistics tracking\nconst qualityStats = {};\nconst scoreStats = [];\nfor (const item of out) {\n  const quality = item.json.sourceContentQuality || \"Unknown\";\n  qualityStats[quality] = (qualityStats[quality] || 0) + 1;\n  if (item.json._articleScore) {\n    scoreStats.push(item.json._articleScore);\n  }\n}\n\nconst avgScore = scoreStats.length > 0 ? (scoreStats.reduce((a, b) => a + b, 0) / scoreStats.length).toFixed(1) : 0;\nconst minScore = scoreStats.length > 0 ? Math.min(...scoreStats) : 0;\nconst maxScore = scoreStats.length > 0 ? Math.max(...scoreStats) : 0;\n\nconsole.log(`Quality distribution: ${Object.entries(qualityStats).map(([q, c]) => `${q}:${c}`).join(\", \")}`);\nconsole.log(`Score stats - Avg: ${avgScore}, Min: ${minScore}, Max: ${maxScore}`);\n\nreturn out;\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [944, 432],
+      "position": [
+        944,
+        432
+      ],
       "id": "7a93849d-c0d3-4ad7-aa24-8140c5202762",
       "name": "Pre-filter"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Article Cap Node - Quality threshold + daily maximum\n// Only process articles above minimum score, up to daily max\n\nconst MIN_SCORE_THRESHOLD = 6; // Minimum quality score to process\nconst MAX_ARTICLES_PER_RUN = 20; // Maximum articles per run (cost control)\nconst STRICT_CAP = 15; // Strict cap for normal days\n\nconst articles = $input.all();\n\n// Sort by score (highest first)\nconst sorted = articles.sort((a, b) => \n  (b.json._articleScore || 0) - (a.json._articleScore || 0)\n);\n\n// Filter by quality threshold first\nconst aboveThreshold = sorted.filter(item => \n  (item.json._articleScore || 0) >= MIN_SCORE_THRESHOLD\n);\n\n// Apply cap based on quality distribution\nlet capped;\nif (aboveThreshold.length <= STRICT_CAP) {\n  // If we have 15 or fewer quality articles, take them all\n  capped = aboveThreshold;\n} else {\n  // If we have many quality articles, check if they're exceptional\n  const avgScore = aboveThreshold.slice(0, MAX_ARTICLES_PER_RUN)\n    .reduce((sum, item) => sum + (item.json._articleScore || 0), 0) / Math.min(aboveThreshold.length, MAX_ARTICLES_PER_RUN);\n  \n  if (avgScore >= 8) {\n    // Exceptional day - allow up to MAX (20)\n    capped = aboveThreshold.slice(0, MAX_ARTICLES_PER_RUN);\n    console.log(`🌟 Exceptional content day! Processing ${capped.length} high-quality articles`);\n  } else {\n    // Normal day - stick to STRICT_CAP (15)\n    capped = aboveThreshold.slice(0, STRICT_CAP);\n  }\n}\n\n// Logging\nconsole.log(`Article Cap Results:`);\nconsole.log(`  Input: ${articles.length} articles`);\nconsole.log(`  Above threshold (${MIN_SCORE_THRESHOLD}): ${aboveThreshold.length} articles`);\nconsole.log(`  Final selection: ${capped.length} articles`);\n\nif (articles.length > aboveThreshold.length) {\n  const rejected = articles.length - aboveThreshold.length;\n  console.log(`  ❌ Rejected ${rejected} articles below score ${MIN_SCORE_THRESHOLD}`);\n}\n\nif (capped.length > 0) {\n  const scores = capped.map(item => item.json._articleScore || 0);\n  const avgScore = scores.reduce((a, b) => a + b, 0) / scores.length;\n  const minScore = Math.min(...scores);\n  const maxScore = Math.max(...scores);\n  \n  console.log(`  Score range: ${minScore} - ${maxScore} (avg: ${avgScore.toFixed(1)})`);\n  \n  // Quality breakdown\n  const qualityBreakdown = {};\n  capped.forEach(item => {\n    const quality = item.json._contentQuality || \"Unknown\";\n    qualityBreakdown[quality] = (qualityBreakdown[quality] || 0) + 1;\n  });\n  \n  console.log(`  Quality distribution:`);\n  Object.entries(qualityBreakdown).forEach(([quality, count]) => {\n    console.log(`    ${quality}: ${count}`);\n  });\n} else {\n  console.log(`⚠️ No articles met the minimum quality threshold of ${MIN_SCORE_THRESHOLD}`);\n}\n\nreturn capped;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1056,
+        432
+      ],
+      "id": "9f8a1b2c-3d4e-5f6a-7b8c-9d0e1f2a3b4c",
+      "name": "Article Cap"
     },
     {
       "parameters": {
@@ -226,7 +275,10 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1168, 432],
+      "position": [
+        1168,
+        432
+      ],
       "id": "9c54a275-9411-4bbc-9e6d-386aaa493a11",
       "name": "Make AI Batches"
     },
@@ -251,7 +303,10 @@
       },
       "type": "@n8n/n8n-nodes-langchain.anthropic",
       "typeVersion": 1,
-      "position": [1392, 432],
+      "position": [
+        1392,
+        432
+      ],
       "id": "32135601-b274-4f55-8d32-7a26e6022fec",
       "name": "AI Content Analysis",
       "alwaysOutputData": true,
@@ -269,7 +324,10 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1744, 432],
+      "position": [
+        1744,
+        432
+      ],
       "id": "1919c17d-5a4a-4527-83c7-1a6d6eeb7985",
       "name": "Merge Batch Results"
     },
@@ -358,7 +416,10 @@
       },
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
-      "position": [1968, 432],
+      "position": [
+        1968,
+        432
+      ],
       "id": "0a84d266-d8bc-48f7-a84e-a6c821b96109",
       "name": "Create Pipeline Entry",
       "credentials": {
@@ -390,7 +451,10 @@
       },
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
-      "position": [-432, 640],
+      "position": [
+        -432,
+        640
+      ],
       "id": "6400f701-7c49-4de7-8423-50c55145e1b2",
       "name": "Update Last Scraped Date",
       "credentials": {
@@ -427,7 +491,10 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [1136, 1072],
+      "position": [
+        1136,
+        1072
+      ],
       "id": "73d039c0-fd71-486c-8524-37a617ab39c2",
       "name": "Need Notion Update?"
     },
@@ -477,7 +544,10 @@
       },
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
-      "position": [1376, 1056],
+      "position": [
+        1376,
+        1056
+      ],
       "id": "e5e261aa-f28e-4bd0-af12-e4e1a5525d56",
       "name": "Update Source Status",
       "credentials": {
@@ -489,11 +559,14 @@
     },
     {
       "parameters": {
-        "jsCode": "// Tracks pipeline execution metrics and generates performance summaries\n  // Monitors article flow, API costs, and source reliability for UK-based content pipeline\n\n  // Collect metrics from the pipeline run\n  const metrics = {\n    // Execution metadata\n    executionId: $execution.id,\n    timestamp: new Date().toISOString(),\n\n    // Source metrics\n    totalSourcesProcessed: $(\"Loop Feeds\").context[\"noItemsLeft\"]\n      ? $(\"Loop Feeds\").context[\"currentRunIndex\"]\n      : 0,\n\n    // Article metrics\n    articlesDownloaded: $(\"Parse RSS\").context?.[\"itemsCount\"] || 0,\n    articlesAfterPrefilter: $(\"Pre-filter\").context?.[\"itemsCount\"] || 0,\n    articlesAfterDedup: $(\"Remove Duplicates\").context?.[\"itemsCount\"] || 0,\n    articlesSentToAI: $(\"Make AI Batches\").context?.[\"itemsCount\"] || 0,\n    articlesStored: $(\"Create Pipeline Entry\").context?.[\"itemsCount\"] || 0,\n\n    // Quality metrics\n    filterRate: 0,\n    dedupRate: 0,\n\n    // API usage estimate (rough)\n    estimatedTokensUsed: 0,\n    estimatedApiCost: 0,\n\n    // Error tracking\n    failedSources: [],\n    errors: [],\n  };\n\n  // Calculate rates\n  if (metrics.articlesDownloaded > 0) {\n    metrics.filterRate = Math.round(\n      ((metrics.articlesDownloaded - metrics.articlesAfterPrefilter) /\n        metrics.articlesDownloaded) *\n        100\n    );\n  }\n\n  if (metrics.articlesAfterPrefilter > 0) {\n    metrics.dedupRate = Math.round(\n      ((metrics.articlesAfterPrefilter - metrics.articlesAfterDedup) /\n        metrics.articlesAfterPrefilter) *\n        100\n    );\n  }\n\n  // Estimate token usage (rough calculation)\n  // Assume ~500 tokens per article for Claude Haiku\n  if (metrics.articlesSentToAI > 0) {\n    metrics.estimatedTokensUsed = metrics.articlesSentToAI * 500;\n    // Claude Haiku pricing: $0.25 per million input tokens\n    metrics.estimatedApiCost = (metrics.estimatedTokensUsed / 1000000) * 0.25;\n  }\n\n  // Check for failed sources from error handling\n  try {\n    const errorData = $(\"RSS Error Handler\").all();\n    if (errorData && errorData.length > 0) {\n      metrics.failedSources = errorData.map((item) => ({\n        source: item.json.sourceName,\n        error: item.json.error,\n        timestamp: item.json.timestamp,\n      }));\n    }\n  } catch (e) {\n    // No errors to report\n  }\n\n  // Generate summary message\n  const summary = `\n  📊 **Pipeline Run Summary**\n  ⏰ ${new Date().toLocaleString('en-GB', { timeZone: 'Europe/London' })}\n\n  **Sources & Articles:**\n  • Sources processed: ${metrics.totalSourcesProcessed}\n  • Articles downloaded: ${metrics.articlesDownloaded}\n  • After pre-filter: ${metrics.articlesAfterPrefilter} (${\n    metrics.filterRate\n  }% filtered)\n  • After dedup: ${metrics.articlesAfterDedup} (${metrics.dedupRate}% duplicates)\n  • Sent to AI: ${metrics.articlesSentToAI}\n  • Stored in Notion: ${metrics.articlesStored}\n\n  **Estimated Costs:**\n  • Tokens used: ~${metrics.estimatedTokensUsed.toLocaleString()}\n  • API cost: ~$${metrics.estimatedApiCost.toFixed(4)}\n\n  ${\n    metrics.failedSources.length > 0\n      ? `**⚠️ Failed Sources:**\\n${metrics.failedSources\n          .map((s) => `• ${s.source}: ${s.error}`)\n          .join(\"\\n\")}`\n      : \"✅ All sources processed successfully\"\n  }\n  `;\n\n  console.log(summary);\n\n  // Store metrics for tracking over time\n  return {\n    json: {\n      metrics,\n      summary,\n      // Add performance indicators\n      performance: {\n        healthy: metrics.failedSources.length === 0 && metrics.articlesStored > 0,\n        efficiency: metrics.filterRate < 90 ? \"good\" : \"too_aggressive\",\n        costPerArticle:\n          metrics.articlesStored > 0\n            ? (metrics.estimatedApiCost / metrics.articlesStored).toFixed(4)\n            : 0,\n      },\n    },\n  };"
+        "jsCode": "// Gather pipeline execution metrics and store in Notion Pipeline Metrics DB\n// Track success rates, quality distribution, and source performance over time\n\nconst articles = $items(\"Create Pipeline Entry\", 0) || [];\nconst prefiltered = $items(\"Pre-filter\", 0) || [];\nconst deduped = $items(\"Remove Duplicates\", 0) || [];\nconst accumulated = $items(\"Accumulate All Articles\", 0) || [];\nconst capped = $items(\"Article Cap\", 0) || [];\nconst sourcesData = $items(\"Validate Sources\", 0) || [];\n\n// Calculate filtering effectiveness\nconst metrics = {\n  // Volume metrics\n  totalScraped: accumulated.length,\n  afterDedup: deduped.length,\n  afterPrefilter: prefiltered.length,\n  afterCap: capped.length,\n  finalStored: articles.length,\n\n  // Filtering rates\n  dedupRate: accumulated.length > 0 ?\n    Math.round(((accumulated.length - deduped.length) / accumulated.length) * 100) : 0,\n  filterRate: deduped.length > 0 ?\n    Math.round(((deduped.length - prefiltered.length) / deduped.length) * 100) : 0,\n  capRate: prefiltered.length > 0 ?\n    Math.round(((prefiltered.length - capped.length) / prefiltered.length) * 100) : 0,\n\n  // Quality distribution from stored articles\n  byPriority: { High: 0, Medium: 0, Low: 0 },\n  byPillar: {},\n  avgScores: { relevance: 0, actionability: 0, depth: 0 },\n\n  // Source performance\n  topSources: {},\n\n  // Cost estimate\n  estimatedTokens: articles.length * 500, // ~500 tokens per article for Haiku\n  estimatedCost: (articles.length * 500 / 1000000) * 0.25 // $0.25 per 1M tokens\n};\n\n// Analyze stored articles\narticles.forEach(item => {\n  const j = item.json;\n\n  // Priority distribution\n  const priority = j.property_priority || \"Medium\";\n  metrics.byPriority[priority]++;\n\n  // Pillar distribution\n  const pillar = j.property_content_pillar || \"Unknown\";\n  metrics.byPillar[pillar] = (metrics.byPillar[pillar] || 0) + 1;\n\n  // Average scores\n  metrics.avgScores.relevance += j.property_relevance_score || 0;\n  metrics.avgScores.actionability += j.property_actionability_score || 0;\n  metrics.avgScores.depth += j.property_depth_score || 0;\n\n  // Track sources\n  const source = j.property_source || \"Unknown\";\n  metrics.topSources[source] = (metrics.topSources[source] || 0) + 1;\n});\n\n// Calculate averages\nif (articles.length > 0) {\n  metrics.avgScores.relevance = parseFloat((metrics.avgScores.relevance / articles.length).toFixed(1));\n  metrics.avgScores.actionability = parseFloat((metrics.avgScores.actionability / articles.length).toFixed(1));\n  metrics.avgScores.depth = parseFloat((metrics.avgScores.depth / articles.length).toFixed(1));\n}\n\n// Sort sources by contribution\nmetrics.topSourcesList = Object.entries(metrics.topSources)\n  .sort((a, b) => b[1] - a[1])\n  .slice(0, 5)\n  .map(([source, count]) => `${source} (${count})`);\n\n// Calculate efficiency score (0-100)\nconst efficiency = articles.length > 0 && accumulated.length > 0 ?\n  Math.round((articles.length / accumulated.length) * 100) : 0;\n\n// Determine run quality\nlet runQuality = \"Poor\";\nif (efficiency >= 15 && metrics.avgScores.relevance >= 7) runQuality = \"Excellent\";\nelse if (efficiency >= 10 && metrics.avgScores.relevance >= 6) runQuality = \"Good\";\nelse if (efficiency >= 5 && metrics.avgScores.relevance >= 5) runQuality = \"Fair\";\n\n// Log summary\nconsole.log(`📊 Pipeline Metrics:`);\nconsole.log(`  Scraped: ${metrics.totalScraped} → Deduped: ${metrics.afterDedup} → Filtered: ${metrics.afterPrefilter} → Capped: ${metrics.afterCap} → Stored: ${metrics.finalStored}`);\nconsole.log(`  Efficiency: ${efficiency}% | Quality: ${runQuality}`);\nconsole.log(`  Avg Scores: R=${metrics.avgScores.relevance}, A=${metrics.avgScores.actionability}, D=${metrics.avgScores.depth}`);\nconsole.log(`  Est. Cost: $${metrics.estimatedCost.toFixed(4)}`);\n\n// Prepare data for Notion Pipeline Metrics DB\nreturn [{\n  json: {\n    // For Notion database storage\n    property_run_date: new Date().toISOString().split('T')[0], // YYYY-MM-DD format\n    property_total_scraped: metrics.totalScraped,\n    property_after_dedup: metrics.afterDedup,\n    property_after_filter: metrics.afterPrefilter,\n    property_after_cap: metrics.afterCap,\n    property_final_stored: metrics.finalStored,\n    property_dedup_rate: metrics.dedupRate,\n    property_filter_rate: metrics.filterRate,\n    property_cap_rate: metrics.capRate,\n    property_efficiency: efficiency,\n    property_run_quality: runQuality,\n    property_avg_relevance: metrics.avgScores.relevance,\n    property_avg_actionability: metrics.avgScores.actionability,\n    property_avg_depth: metrics.avgScores.depth,\n    property_high_priority: metrics.byPriority.High,\n    property_medium_priority: metrics.byPriority.Medium,\n    property_low_priority: metrics.byPriority.Low,\n    property_estimated_cost: parseFloat(metrics.estimatedCost.toFixed(4)),\n    property_top_sources: metrics.topSourcesList.join(\", \"),\n    property_content_pillars: Object.entries(metrics.byPillar)\n      .map(([pillar, count]) => `${pillar}: ${count}`)\n      .join(\", \"),\n    property_sources_processed: sourcesData.length,\n    property_summary: `Pipeline processed ${sourcesData.length} sources, scraped ${metrics.totalScraped} articles, applied quality filters (${metrics.filterRate}% filtered), and stored ${metrics.finalStored} final articles. Run quality: ${runQuality}. Top sources: ${metrics.topSourcesList.slice(0, 3).join(\", \")}.`,\n\n    // For email notification (pass through)\n    metrics,\n    articles: articles.map(a => a.json),\n    timestamp: new Date().toISOString()\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [2400, 432],
+      "position": [
+        2608,
+        432
+      ],
       "id": "80edc9d4-e984-478c-8e6b-2ff05bb3c782",
       "name": "Pipeline Metrics"
     },
@@ -502,20 +575,57 @@
         "resource": "databasePage",
         "databaseId": {
           "__rl": true,
-          "value": "https://www.notion.so/27390f46679580d9bd79c8407e4254d7?v=25390f46679580bcb9bc000cc4a3bf1e&source=copy_link",
+          "value": "https://www.notion.so/27390f46679580d9bd79c8407e4254d7?v=27390f46679580a381d0000cdbfc90fd",
           "mode": "url"
         },
-        "title": "scrape",
+        "title": "Pipeline Run {{ $now.format('DD/MM/YYYY HH:mm') }}",
         "propertiesUi": {
-          "propertyValues": [{}]
+          "propertyValues": [
+            {
+              "key": "Timestamp|date",
+              "date": "={{ $json.property_run_date }}",
+              "timezone": "Europe/London"
+            },
+            {
+              "key": "Sources Processed|number",
+              "numberValue": "={{ $json.property_sources_processed || 0 }}"
+            },
+            {
+              "key": "Articles Downloaded|number",
+              "numberValue": "={{ $json.property_total_scraped }}"
+            },
+            {
+              "key": "Articles Stored|number",
+              "numberValue": "={{ $json.property_final_stored }}"
+            },
+            {
+              "key": "Filter Rate|number",
+              "numberValue": "={{ $json.property_filter_rate }}"
+            },
+            {
+              "key": "API Cost|number",
+              "numberValue": "={{ $json.property_estimated_cost }}"
+            },
+            {
+              "key": "Status|select",
+              "selectValue": "={{ $json.property_run_quality }}"
+            },
+            {
+              "key": "Summary|rich_text",
+              "textContent": "={{ $json.property_summary }}"
+            }
+          ]
         },
         "options": {}
       },
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
-      "position": [2608, 432],
-      "id": "2bf701b9-cb86-4716-a18a-51ebe0b6cb48",
-      "name": "Create a database page",
+      "position": [
+        2816,
+        432
+      ],
+      "id": "f1e2d3c4-b5a6-7890-cdef-012345678901",
+      "name": "Store Pipeline Metrics",
       "credentials": {
         "notionApi": {
           "id": "lC4G957VFihVvFG2",
@@ -525,11 +635,53 @@
     },
     {
       "parameters": {
+        "jsCode": "// Prepare email notification with articles summary and pipeline metrics\nconst metricsData = $input.item.json;\nconst metrics = metricsData.metrics;\nconst articles = metricsData.articles || [];\nconst articlesCount = articles.length;\n\nif (articlesCount === 0) {\n  // No articles to report, skip email\n  return [];\n}\n\n// Group articles by priority for display\nconst byPriority = {\n  High: [],\n  Medium: [],\n  Low: []\n};\n\narticles.forEach(item => {\n  const priority = item.property_priority || \"Medium\";\n  const pillar = item.property_content_pillar || \"Unknown\";\n  const title = item.property_title || \"Untitled\";\n  \n  byPriority[priority].push({\n    title: title.substring(0, 80) + (title.length > 80 ? \"...\" : \"\"),\n    pillar: pillar\n  });\n});\n\n// Build email body\nlet emailBody = `<h2>🎯 New Content Added to Pipeline</h2>\\n`;\nemailBody += `<p><strong>${articlesCount}</strong> new articles have been added to your Content Hub for review.</p>\\n\\n`;\n\n// Pipeline performance summary\nemailBody += `<h3>📈 Pipeline Performance</h3>\\n`;\nemailBody += `<ul>\\n`;\nemailBody += `  <li>Scraped: ${metrics.totalScraped} articles</li>\\n`;\nemailBody += `  <li>After deduplication: ${metrics.afterDedup} (${metrics.dedupRate}% duplicates removed)</li>\\n`;\nemailBody += `  <li>After quality filter: ${metrics.afterPrefilter} (${metrics.filterRate}% filtered out)</li>\\n`;\nemailBody += `  <li>After daily cap: ${metrics.afterCap}</li>\\n`;\nemailBody += `  <li><strong>Final stored: ${metrics.finalStored}</strong></li>\\n`;\nemailBody += `</ul>\\n\\n`;\n\n// Articles by priority\nif (byPriority.High.length > 0) {\n  emailBody += `<h3>🔴 High Priority (${byPriority.High.length})</h3>\\n<ul>\\n`;\n  byPriority.High.forEach(a => {\n    emailBody += `  <li><strong>${a.title}</strong> - ${a.pillar}</li>\\n`;\n  });\n  emailBody += `</ul>\\n\\n`;\n}\n\nif (byPriority.Medium.length > 0) {\n  emailBody += `<h3>🟡 Medium Priority (${byPriority.Medium.length})</h3>\\n<ul>\\n`;\n  byPriority.Medium.forEach(a => {\n    emailBody += `  <li><strong>${a.title}</strong> - ${a.pillar}</li>\\n`;\n  });\n  emailBody += `</ul>\\n\\n`;\n}\n\nif (byPriority.Low.length > 0) {\n  emailBody += `<h3>🟢 Low Priority (${byPriority.Low.length})</h3>\\n<ul>\\n`;\n  byPriority.Low.forEach(a => {\n    emailBody += `  <li>${a.title} - ${a.pillar}</li>\\n`;\n  });\n  emailBody += `</ul>\\n\\n`;\n}\n\n// Content pillar distribution\nemailBody += `<h3>📊 Content Distribution</h3>\\n<ul>\\n`;\nObject.entries(metrics.byPillar).forEach(([pillar, count]) => {\n  emailBody += `  <li>${pillar}: ${count}</li>\\n`;\n});\nemailBody += `</ul>\\n\\n`;\n\n// Quality metrics\nemailBody += `<h3>⭐ Quality Metrics</h3>\\n<ul>\\n`;\nemailBody += `  <li>Avg Relevance: ${metrics.avgScores.relevance}/10</li>\\n`;\nemailBody += `  <li>Avg Actionability: ${metrics.avgScores.actionability}/10</li>\\n`;\nemailBody += `  <li>Avg Depth: ${metrics.avgScores.depth}/10</li>\\n`;\nemailBody += `</ul>\\n\\n`;\n\n// Top contributing sources\nif (metrics.topSourcesList && metrics.topSourcesList.length > 0) {\n  emailBody += `<h3>🏆 Top Sources</h3>\\n<ul>\\n`;\n  metrics.topSourcesList.forEach(source => {\n    emailBody += `  <li>${source}</li>\\n`;\n  });\n  emailBody += `</ul>\\n\\n`;\n}\n\n// Cost estimate\nemailBody += `<p><small>💰 Estimated AI cost: $${metrics.estimatedCost.toFixed(4)}</small></p>\\n\\n`;\n\n// Add CTA\nemailBody += `<hr>\\n`;\nemailBody += `<p><strong>👉 <a href=\"https://www.notion.so/Content-Hub-24f90f46679580dca35ac2354b6b915c\">Review in Content Hub</a></strong></p>\\n`;\nemailBody += `<p style=\"color: #666; font-size: 12px;\">Processed at ${new Date().toLocaleString('en-GB', { timeZone: 'Europe/London' })}</p>`;\n\nreturn [{\n  json: {\n    subject: `📚 ${articlesCount} New Articles Added (from ${metrics.totalScraped} scraped)`,\n    body: emailBody,\n    contentHubUrl: \"https://www.notion.so/Content-Hub-24f90f46679580dca35ac2354b6b915c\",\n    articlesCount: articlesCount,\n    metrics: metrics,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2192,
+        432
+      ],
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "name": "Prepare Email Notification"
+    },
+    {
+      "parameters": {
+        "fromEmail": "n8n@xavierfuentes.com",
+        "toEmail": "xavier@xavierfuentes.com",
+        "subject": "={{ $json.subject }}",
+        "emailType": "html",
+        "html": "={{ $json.body }}",
+        "options": {
+          "allowUnauthorizedCerts": false
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        2400,
+        432
+      ],
+      "id": "b2c3d4e5-f6a7-8901-bcde-f01234567891",
+      "name": "Send Email Notification",
+      "credentials": {
+        "smtp": {
+          "id": "SmtpCredentialsId",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
         "jsCode": "// Handles RSS feed download errors and tracks consecutive failures\n// Automatically marks sources for deactivation after 5 failures\n\nconst items = [];\n\ntry {\n  // Get current source info from the Loop\n  const currentSource = $(\"Loop Feeds\").item.json;\n  const sourceName =\n    currentSource.sourceName || currentSource.property_source_name || \"Unknown\";\n  const sourceId = currentSource.id;\n\n  console.log(`Processing failed source: ${sourceName} (ID: ${sourceId})`);\n\n  // Get CURRENT failure count from Notion (this is the key!)\n  const currentFailures = currentSource.property_consecutive_failures || 0;\n  const newFailureCount = currentFailures + 1;\n\n  console.log(\n    `Previous failures: ${currentFailures}, New count: ${newFailureCount}`\n  );\n\n  // Analyze the error type from HTTP response\n  const httpResponse = $(\"Download RSS\").item.json;\n  const errorAnalysis = analyzeError(httpResponse);\n\n  console.log(`Error type: ${errorAnalysis.type} - ${errorAnalysis.message}`);\n\n  // Determine if source should be deactivated\n  const shouldDeactivate = newFailureCount >= 5;\n  const needsApiKey = errorAnalysis.needsApiKey;\n\n  if (shouldDeactivate) {\n    console.log(\n      `⚠️ Source ${sourceName} should be DEACTIVATED (${newFailureCount} failures)`\n    );\n  }\n\n  // Create error result with NEW failure count\n  const errorResult = {\n    json: {\n      // Notion page identification\n      id: sourceId,\n      sourceName: sourceName,\n\n      // Updated failure tracking\n      consecutiveFailures: newFailureCount,\n      previousFailures: currentFailures,\n\n      // Error details\n      errorType: errorAnalysis.type,\n      statusCode: errorAnalysis.statusCode,\n      errorMessage: errorAnalysis.message,\n      needsApiKey: needsApiKey,\n\n      // Status decisions\n      shouldDeactivate: shouldDeactivate,\n\n      // For Notion update\n      updateActive: shouldDeactivate ? false : true,\n      updateApiKeyRequired: needsApiKey ? true : false,\n      updateConsecutiveFailures: newFailureCount,\n      updateNotes:\n        `Last failed: ${new Date().toLocaleString('en-GB', { timeZone: 'Europe/London' })}. ` +\n        `Consecutive failures: ${newFailureCount}. ` +\n        `Error type: ${errorAnalysis.type}. ` +\n        `Message: ${errorAnalysis.message}`,\n      updateLastErrorDate: new Date().toISOString(),\n\n      // Workflow control\n      failed: true,\n      continueLoop: true,\n      needsNotionUpdate: true,\n      failedAt: new Date().toISOString(),\n    },\n  };\n\n  items.push(errorResult);\n} catch (error) {\n  console.error(\"Error in Enhanced Error Handler:\", error);\n  items.push({\n    json: {\n      error: true,\n      errorMessage: error.message,\n      failed: true,\n      continueLoop: true,\n      needsNotionUpdate: false,\n    },\n  });\n}\n\n// Helper function to analyse different error types\nfunction analyzeError(httpResponse) {\n  const data = httpResponse?.data || \"\";\n  const statusCode = httpResponse?.statusCode;\n\n  if (statusCode === 401) {\n    return {\n      type: \"AUTHENTICATION_REQUIRED\",\n      statusCode: 401,\n      message: \"Authentication required - API key needed\",\n      needsApiKey: true,\n    };\n  }\n\n  if (statusCode === 403) {\n    return {\n      type: \"ACCESS_FORBIDDEN\",\n      statusCode: 403,\n      message: \"Access forbidden - may need API key\",\n      needsApiKey: true,\n    };\n  }\n\n  if (statusCode === 404) {\n    return {\n      type: \"FEED_NOT_FOUND\",\n      statusCode: 404,\n      message: \"RSS feed not found - URL may have changed\",\n      needsApiKey: false,\n    };\n  }\n\n  if (!data || data.trim() === \"\") {\n    return {\n      type: \"EMPTY_RESPONSE\",\n      statusCode: statusCode || 200,\n      message: \"Empty response received\",\n      needsApiKey: false,\n    };\n  }\n\n  return {\n    type: \"UNKNOWN_ERROR\",\n    statusCode: statusCode || 0,\n    message: \"Unknown error occurred\",\n    needsApiKey: false,\n  };\n}\n\nreturn items;\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [704, 1072],
+      "position": [
+        704,
+        1072
+      ],
       "id": "70ed09b9-d840-4ed5-8694-91a743964a02",
       "name": "RSS Error Handler"
     },
@@ -539,7 +691,10 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [944, 1072],
+      "position": [
+        944,
+        1072
+      ],
       "id": "7ed2ce7b-f825-48b3-a357-991a0fa71d82",
       "name": "Auto-Deactivate Source"
     }
@@ -685,6 +840,17 @@
       "main": [
         [
           {
+            "node": "Article Cap",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Article Cap": {
+      "main": [
+        [
+          {
             "node": "Make AI Batches",
             "type": "main",
             "index": 0
@@ -726,7 +892,53 @@
       ]
     },
     "Create Pipeline Entry": {
-      "main": [[]]
+      "main": [
+        [
+          {
+            "node": "Pipeline Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pipeline Metrics": {
+      "main": [
+        [
+          {
+            "node": "Store Pipeline Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Pipeline Metrics": {
+      "main": [
+        [
+          {
+            "node": "Prepare Email Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Email Notification": {
+      "main": [
+        [
+          {
+            "node": "Send Email Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email Notification": {
+      "main": [
+        []
+      ]
     },
     "Update Last Scraped Date": {
       "main": [
@@ -762,17 +974,6 @@
         [
           {
             "node": "Loop Feeds",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Pipeline Metrics": {
-      "main": [
-        [
-          {
-            "node": "Create a database page",
             "type": "main",
             "index": 0
           }
