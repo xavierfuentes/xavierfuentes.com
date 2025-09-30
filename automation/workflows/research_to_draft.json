@@ -7,16 +7,19 @@
           "interval": [
             {
               "field": "hours",
-              "hoursInterval": 1
+              "hoursInterval": 2
             }
           ]
         }
       },
-      "id": "8a9c6d3f-2b4e-4f5a-9c1d-3e4f5a6b7c8d",
+      "id": "ef606677-7460-48e7-813a-56706bfbff47",
       "name": "Schedule Trigger",
       "type": "n8n-nodes-base.scheduleTrigger",
-      "typeVersion": 1.1,
-      "position": [200, 300]
+      "typeVersion": 1.2,
+      "position": [
+        -2320,
+        1048
+      ]
     },
     {
       "parameters": {
@@ -24,51 +27,94 @@
         "operation": "getAll",
         "databaseId": {
           "__rl": true,
-          "value": "9744c9a8-0863-4287-bdb6-e119efe54398",
-          "mode": "id"
+          "value": "https://www.notion.so/9d899a561818444f8de1d7bd72ee1528?v=25390f46679580bcb9bc000cc4a3bf1e",
+          "mode": "url"
         },
+        "limit": 1,
         "filterType": "manual",
-        "conditions": {
-          "or": [
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
             {
-              "and": [
-                {
-                  "key": "Should Process|checkbox",
-                  "condition": "equals",
-                  "checkboxValue": true
-                }
-              ]
+              "key": "Should Process|checkbox",
+              "condition": "equals",
+              "checkboxValue": true
+            },
+            {
+              "key": "Status|select",
+              "condition": "equals",
+              "selectValue": "Research"
             }
           ]
         },
         "options": {
-          "limit": 5
+          "sort": {
+            "sortValue": [
+              {
+                "key": "Priority|select",
+                "direction": "descending"
+              },
+              {
+                "key": "Created Date|created_time",
+                "direction": "ascending"
+              }
+            ]
+          }
         }
       },
-      "id": "notion-query",
+      "id": "81640ada-eb55-4321-a3f2-3b09b6290e8c",
       "name": "Get Pipeline Items",
       "type": "n8n-nodes-base.notion",
-      "typeVersion": 2.1,
-      "position": [400, 300],
+      "typeVersion": 2.2,
+      "position": [
+        -2096,
+        1048
+      ],
       "credentials": {
         "notionApi": {
-          "id": "1",
-          "name": "Notion"
+          "id": "lC4G957VFihVvFG2",
+          "name": "Notion account"
         }
       }
     },
     {
       "parameters": {
-        "resource": "chat",
-        "model": {
+        "jsCode": "// Enhanced research analysis and prompt preparation\n// Leverages all available metadata for richer content generation\n\nconst items = $input.all();\nconst enhancedItems = [];\n\nfor (const item of items) {\n  const json = item.json;\n\n  // Extract and validate core properties from Notion data\n  const title = json.property_title || json.name || \"Untitled\";\n  const description = json.property_description || \"No description available\";\n  const contentPillar = json.property_content_pillar || \"Technology Strategy\";\n  const priority = json.property_priority || \"Medium\";\n  const targetAudience = json.property_target_audience || [\"Tech Leaders\"];\n  const seoKeywords = json.property_seo_keywords || \"\";\n  const source = json.property_source || \"Unknown\";\n  const articleLink = json.property_article_link || \"\";\n  const notes = json.property_notes || \"\";\n\n  // Quality scores from Notion\n  const relevanceScore = json.property_relevance_score || 5;\n  const actionabilityScore = json.property_actionability_score || 5;\n  const depthScore = json.property_depth_score || 5;\n  const wordCountTarget = json.property_word_count_target || 1500;\n\n  // Calculate content strategy alignment\n  const pillarWeights = {\n    \"Technology Strategy\": 0.3,\n    \"Leadership & Management\": 0.25,\n    \"Execution & Delivery\": 0.2,\n    \"Founder Lessons\": 0.15,\n    \"Market & Trends\": 0.1,\n  };\n\n  const strategicWeight = pillarWeights[contentPillar] || 0.1;\n  const qualityScore =\n    (relevanceScore * 3 + actionabilityScore * 2 + depthScore) / 6;\n\n  // Content type recommendation based on scores and audience\n  let contentType = \"analysis\";\n  if (actionabilityScore >= 7) contentType = \"practical guide\";\n  if (depthScore >= 8) contentType = \"deep dive\";\n  if (contentPillar === \"Founder Lessons\") contentType = \"case study\";\n\n  // Audience-specific angle suggestions\n  const audienceAngles = {\n    CTOs: \"strategic decision-making and technical leadership perspective\",\n    \"Engineering Managers\": \"team management and technical execution focus\",\n    \"Tech Leaders\": \"leadership and technical strategy balance\",\n    \"Product Managers\": \"product strategy and cross-functional collaboration\",\n    Founders: \"business strategy and scalability implications\",\n    \"VCs & Investors\": \"market opportunity and competitive advantage analysis\",\n  };\n\n  const primaryAudience = Array.isArray(targetAudience)\n    ? targetAudience[0]\n    : \"Tech Leaders\";\n  const audienceAngle =\n    audienceAngles[primaryAudience] || \"practical leadership insights\";\n\n  // SEO keyword enhancement\n  const enhancedKeywords = seoKeywords\n    ? seoKeywords\n        .split(\",\")\n        .map((k) => k.trim())\n        .filter((k) => k.length > 0)\n    : [\n        \"technology leadership\",\n        contentPillar.toLowerCase().replace(\" & \", \" \"),\n      ];\n\n  // Content structure recommendation\n  const structureMap = {\n    \"practical guide\":\n      \"Problem → Solution Framework → Step-by-Step Implementation → Common Pitfalls → Next Actions\",\n    \"deep dive\":\n      \"Context → Technical Analysis → Case Studies → Strategic Implications → Future Outlook\",\n    \"case study\":\n      \"Challenge → Decision Process → Implementation → Results → Lessons Learned\",\n    analysis:\n      \"Current State → Key Insights → Strategic Framework → Practical Applications → Recommendations\",\n  };\n\n  const recommendedStructure =\n    structureMap[contentType] || structureMap[\"analysis\"];\n\n  enhancedItems.push({\n    ...item,\n    json: {\n      ...json,\n      // Enhanced metadata using actual Notion data\n      enhanced_title: title,\n      enhanced_description: description,\n      content_pillar: contentPillar,\n      priority_level: priority,\n      target_audience: targetAudience,\n      primary_audience: primaryAudience,\n      audience_angle: audienceAngle,\n      seo_keywords: enhancedKeywords,\n      source_name: source,\n      article_url: articleLink,\n      research_notes: notes,\n\n      // Quality metrics from Notion\n      relevance_score: relevanceScore,\n      actionability_score: actionabilityScore,\n      depth_score: depthScore,\n      quality_score: qualityScore,\n      strategic_weight: strategicWeight,\n      word_count_target: wordCountTarget,\n\n      // Content strategy\n      content_type: contentType,\n      recommended_structure: recommendedStructure,\n\n      // Processing metadata\n      processing_timestamp: new Date().toISOString(),\n      content_id: json.id,\n      retry_count: 0,\n    },\n  });\n}\n\nconsole.log(\n  `Enhanced ${enhancedItems.length} research items for draft generation`\n);\nreturn enhancedItems;\n"
+      },
+      "id": "74469336-10d4-4069-a865-6b84ab357d2c",
+      "name": "Enhance Research Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1872,
+        1048
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1648,
+        1048
+      ],
+      "id": "b24e6cb5-0f4b-4c2d-ad67-12ba1f70e60c",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "modelId": {
           "__rl": true,
-          "value": "gpt-4-turbo-preview",
-          "mode": "list"
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
         },
         "messages": {
           "values": [
             {
-              "content": "=You are a professional content writer specialising in technology leadership and startup strategy. Write a high-quality article draft.\n\nSOURCE:\nTitle: {{ $json.properties.Title.title[0].plain_text }}\nDescription: {{ $json.properties.Description.rich_text[0].plain_text || 'No description' }}\nPillar: {{ $json.properties['Content Pillar'].select.name }}\nAudience: {{ $json.properties['Target Audience'].multi_select.map(a => a.name).join(', ') }}\n\nREQUIREMENTS:\n- UK English (colour, optimise, whilst)\n- 1500-2000 words\n- Professional but personal tone\n- Structure: Hook → Context → Framework → Case Study → Implementation → Next Steps\n- Include specific examples and numbers\n- Pass the \"so what?\" test\n\nWrite a complete article draft with practical insights the audience can implement immediately."
+              "content": "=You are a professional content writer specialising in technology leadership and startup strategy. You MUST write in UK English only.\n\n  {{ $json.reviewer_feedback ? 'REVISION REQUIRED - Retry Attempt ' + ($json.retry_count || 1) + ' of 3 - Previous Quality Score: ' + $json.previous_quality_score +\n  '/100 - Editor Feedback: ' + $json.reviewer_feedback + ' - IMPORTANT: Address ALL the feedback points above in your revised draft.\\n\\n' : '' }}\n\n## ⚠️ CRITICAL REQUIREMENTS - NON-NEGOTIABLE\n\n  1. **WORD COUNT**: EXACTLY {{ $json.word_count_target }} words (±10% maximum: {{ Math.round($json.word_count_target * 0.9) }}-{{ Math.round($json.word_count_target *\n  1.1) }} words)\n     - Count your words before submitting\n     - If you exceed the range, you MUST cut content\n     - If you're under the range, you MUST add more depth\n\n  2. **UK ENGLISH ONLY**: You MUST use British spellings throughout:\n     - optimise (NOT optimize)\n     - realise (NOT realize)\n     - colour (NOT color)\n     - whilst (NOT while in formal contexts)\n     - organisation (NOT organization)\n     - analyse (NOT analyze)\n     - Any American spellings will result in rejection\n\n  ## BRAND VOICE & STRATEGY\n  **Core Purpose:** Build thought leadership whilst generating leads for fractional CTO and coaching services\n  **Voice Guidelines:**\n  - More: Specific examples, personal failures, contrarian opinions, practical frameworks\n  - Less: Abstract theory, obvious advice, generic commentary, consulting speak\n  - Demonstrate expertise without giving away the shop (80% value, 20% positioning)\n\n  ## SOURCE ANALYSIS\n  **Title:** {{ $json.enhanced_title }}\n  **Source:** {{ $json.source_name }}\n  **Original Article:** {{ $json.article_url }}\n  **Content Pillar:** {{ $json.content_pillar }} ({{ Math.round($json.strategic_weight * 100) }}% of content strategy)\n  **Primary Audience:** {{ $json.primary_audience }}\n  **Target Audience:** {{ $json.target_audience.join(', ') }}\n  **Content Type:** {{ $json.content_type }}\n\n  ## RESEARCH FOUNDATION\n  **Description:** {{ $json.enhanced_description }}\n  **Research Notes:** {{ $json.research_notes || 'See original article for context' }}\n  **Quality Scores:** Relevance: {{ $json.relevance_score }}/10 | Actionability: {{ $json.actionability_score }}/10 | Depth: {{ $json.depth_score }}/10\n  **SEO Keywords:** {{ $json.seo_keywords.join(', ') }}\n\n  ## CONTENT STRUCTURE\n  **Required Structure:** {{ $json.recommended_structure }}\n  **Audience Angle:** Focus on {{ $json.audience_angle }}\n  **Tone:** Professional but personal - demonstrate expertise without consulting speak\n\n  ## STRATEGIC APPROACH\n  1. **Hook:** Start with a specific, relatable challenge your audience faces\n  2. **Authority:** Reference the source material whilst adding your own insights\n  3. **Framework:** Provide a clear, actionable framework readers can implement\n  4. **Examples:** Include specific numbers, real scenarios, and concrete examples\n  5. **Implementation:** Give step-by-step guidance with potential pitfalls\n  6. **Next Steps:** End with clear actions readers can take immediately\n\n  ## QUALITY STANDARDS\n  - Pass the 'so what?' test - every section must provide clear value\n  - Include specific examples and metrics where possible\n  - Avoid generic advice - focus on nuanced, experienced insights\n  - Balance strategic thinking with practical application\n  - Reference but don't copy the source material\n\n  ## SEO INTEGRATION\n  Naturally incorporate these keywords: {{ $json.seo_keywords.slice(0, 5).join(', ') }}\n  Focus keyword: {{ $json.seo_keywords[0] || $json.content_pillar.toLowerCase() }}\n\n  ## FINAL CHECKLIST BEFORE SUBMITTING:\n  - Word count is between {{ Math.round($json.word_count_target * 0.9) }}-{{ Math.round($json.word_count_target * 1.1) }} words\n  - All spellings are UK English (optimise, realise, colour, organisation, analyse)\n  - Structure follows: {{ $json.recommended_structure }}\n  - Includes specific examples with numbers\n  - Ends with clear next steps\n\n  Write the article now for {{ $json.primary_audience.toLowerCase() }} audience."
             }
           ]
         },
@@ -77,65 +123,81 @@
           "temperature": 0.7
         }
       },
-      "id": "openai-draft",
-      "name": "Generate Draft",
+      "id": "66b3684e-fcbb-4035-9b83-a3570a9ab047",
+      "name": "Generate Enhanced Draft",
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.3,
-      "position": [600, 300],
+      "position": [
+        -1424,
+        1072
+      ],
       "credentials": {
         "openAiApi": {
-          "id": "2",
-          "name": "OpenAI"
+          "id": "rkhOcSQmlsa0zqls",
+          "name": "OpenAi account"
         }
       }
     },
     {
       "parameters": {
+        "jsCode": "// Quality validation and content analysis\n// Validates generated content meets quality standards\n\nconst generatedContent = $input.item.json;\nconst researchData = $(\"Enhance Research Data\").item.json;\nconst contentText = generatedContent.message?.content || \"\";\n\n// Content quality checks\nconst wordCount = contentText\n  .split(/\\s+/)\n  .filter((word) => word.length > 0).length;\nconst targetWordCount = researchData.word_count_target || 1500;\nconst wordCountVariance =\n  Math.abs(wordCount - targetWordCount) / targetWordCount;\n\n// Structure validation\nconst hasHeadings = /#{1,3}\\s/.test(contentText);\nconst hasSections = contentText.split(\"\\n\\n\").length >= 5;\nconst hasConclusion = /(?:conclusion|next steps|summary|takeaway)/i.test(\n  contentText\n);\n\n// Content quality indicators\nconst hasSpecificExamples =\n  /\\d+[%$£€]|\\d+\\s*(?:users|customers|employees|teams)/i.test(contentText);\nconst hasActionableAdvice =\n  /(?:step|action|implement|process|method|framework)/i.test(contentText);\nconst hasUKSpelling = /(?:colour|optimise|realise|whilst)/i.test(contentText);\n\n// SEO keyword integration check\nconst seoKeywords = researchData.seo_keywords || [];\nconst keywordIntegration =\n  seoKeywords.filter((keyword) => new RegExp(keyword, \"i\").test(contentText))\n    .length / Math.max(seoKeywords.length, 1);\n\n// Calculate quality score\nlet qualityScore = 0;\nif (wordCountVariance < 0.2) qualityScore += 20; // Word count within 20%\nif (hasHeadings) qualityScore += 15;\nif (hasSections) qualityScore += 15;\nif (hasConclusion) qualityScore += 10;\nif (hasSpecificExamples) qualityScore += 15;\nif (hasActionableAdvice) qualityScore += 15;\nif (hasUKSpelling) qualityScore += 5;\nif (keywordIntegration >= 0.5) qualityScore += 5;\n\n// Quality assessment\nlet qualityLevel = \"Poor\";\nif (qualityScore >= 80) qualityLevel = \"Excellent\";\nelse if (qualityScore >= 65) qualityLevel = \"Good\";\nelse if (qualityScore >= 50) qualityLevel = \"Acceptable\";\n\n// Generate content title with AI prefix\nconst originalTitle = researchData.enhanced_title;\nconst contentPillar = researchData.content_pillar;\nconst aiDraftTitle = `AI Draft: ${originalTitle}`;\n\n// Create quality report\nconst qualityReport = {\n  overall_score: qualityScore,\n  quality_level: qualityLevel,\n  word_count: wordCount,\n  target_word_count: targetWordCount,\n  word_count_variance: Math.round(wordCountVariance * 100),\n  structure_score:\n    (hasHeadings ? 15 : 0) + (hasSections ? 15 : 0) + (hasConclusion ? 10 : 0),\n  content_score:\n    (hasSpecificExamples ? 15 : 0) + (hasActionableAdvice ? 15 : 0),\n  seo_integration: Math.round(keywordIntegration * 100),\n  uk_spelling_check: hasUKSpelling,\n  validation_timestamp: new Date().toISOString(),\n};\n\nconsole.log(`Content Quality Assessment:`);\nconsole.log(`  Overall Score: ${qualityScore}/100 (${qualityLevel})`);\nconsole.log(\n  `  Word Count: ${wordCount}/${targetWordCount} (${Math.round(\n    wordCountVariance * 100\n  )}% variance)`\n);\nconsole.log(`  SEO Integration: ${Math.round(keywordIntegration * 100)}%`);\nconsole.log(`  UK Spelling: ${hasUKSpelling ? \"Present\" : \"Missing\"}`);\n\nreturn {\n  json: {\n    // Original research data\n    ...researchData,\n\n    // Generated content\n    generated_content: contentText,\n    draft_title: aiDraftTitle,\n\n    // Quality validation\n    quality_report: qualityReport,\n\n    // Processing metadata\n    generation_timestamp: new Date().toISOString(),\n    needs_manual_review: qualityScore < 65,\n  },\n};\n"
+      },
+      "id": "aadf63d1-fba8-4084-b7cd-6e8bb3d1484b",
+      "name": "Validate Content Quality",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1072,
+        1072
+      ]
+    },
+    {
+      "parameters": {
         "resource": "databasePage",
-        "operation": "create",
         "databaseId": {
           "__rl": true,
-          "value": "0d7b48da-0a60-4c34-8fec-bb1617b8c8a6",
-          "mode": "id"
+          "value": "https://www.notion.so/08f0fbde307649f18e82810b2a345c88?v=25390f46679580bcb9bc000cc4a3bf1e&source=copy_link",
+          "mode": "url"
         },
-        "title": "={{ 'AI Draft: ' + $('Get Pipeline Items').item.json.properties.Title.title[0].plain_text }}",
-        "properties": {
-          "Content Type|select": "Blog Post",
-          "Platform|select": "Xavierfuentes.com",
-          "Status|select": "Draft",
-          "Parent Post|relation": [
-            "={{ $('Get Pipeline Items').item.json.id }}"
-          ],
-          "Word Count|number": "={{ $json.message.content.split(' ').length }}"
-        },
-        "content": {
-          "children": [
+        "title": "={{ $json.draft_title }}",
+        "propertiesUi": {
+          "propertyValues": [
             {
-              "object": "block",
-              "type": "paragraph",
-              "paragraph": {
-                "rich_text": [
-                  {
-                    "type": "text",
-                    "text": {
-                      "content": "={{ $json.message.content }}"
-                    }
-                  }
-                ]
-              }
+              "key": "Content Type|select",
+              "selectValue": "Blog Post"
+            },
+            {
+              "key": "Platform|select",
+              "selectValue": "Xavierfuentes.com"
+            },
+            {
+              "key": "Status|select",
+              "selectValue": "Draft"
+            },
+            {
+              "key": "Word Count|number",
+              "numberValue": "={{ $json.quality_report.word_count }}"
+            },
+            {
+              "key": "Notes|rich_text",
+              "textContent": "=Quality Score: {{ $json.quality_report.overall_score }}/100 ({{ $json.quality_report.quality_level }}). Needs Review: {{ $json.needs_manual_review ? \n  'Yes' : 'No' }}"
             }
           ]
-        }
+        },
+        "options": {}
       },
-      "id": "create-asset",
-      "name": "Create Asset",
+      "id": "786a98f8-a141-4a07-83a7-be4691445453",
+      "name": "Create Content Asset",
       "type": "n8n-nodes-base.notion",
-      "typeVersion": 2.1,
-      "position": [800, 300],
+      "typeVersion": 2.2,
+      "position": [
+        -48,
+        1240
+      ],
       "credentials": {
         "notionApi": {
-          "id": "1",
-          "name": "Notion"
+          "id": "lC4G957VFihVvFG2",
+          "name": "Notion account"
         }
       }
     },
@@ -145,28 +207,256 @@
         "operation": "update",
         "pageId": {
           "__rl": true,
-          "value": "={{ $('Get Pipeline Items').item.json.id }}",
+          "value": "={{ $('Enhance Research Data').item.json.content_id }}",
           "mode": "id"
         },
-        "properties": {
-          "Should Process|checkbox": false,
-          "Draft Ready|checkbox": true,
-          "Status|select": "Drafted"
-        }
+        "options": {}
       },
-      "id": "update-pipeline",
-      "name": "Update Pipeline",
+      "id": "c01d7ab5-45e8-45b5-8e1b-b99573c9793e",
+      "name": "Update Pipeline Status",
       "type": "n8n-nodes-base.notion",
-      "typeVersion": 2.1,
-      "position": [1000, 300],
+      "typeVersion": 2.2,
+      "position": [
+        176,
+        1240
+      ],
       "credentials": {
         "notionApi": {
-          "id": "1",
-          "name": "Notion"
+          "id": "lC4G957VFihVvFG2",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generate comprehensive email notification\n// Provides detailed summary of draft generation results\n\nconst contentData = $('Validate Content Quality').item.json;\nconst qualityReport = contentData.quality_report;\n\n// Build email content\nlet emailBody = `<h2>📝 AI Draft Generated - ${contentData.draft_title}</h2>\\n\\n`;\n\n// Quality summary with visual indicators\nlet qualityEmoji = '🔴';\nif (qualityReport.overall_score >= 80) qualityEmoji = '🟢';\nelse if (qualityReport.overall_score >= 65) qualityEmoji = '🟡';\n\nemailBody += `<h3>${qualityEmoji} Quality Assessment</h3>\\n`;\nemailBody += `<ul>\\n`;\nemailBody += `  <li><strong>Overall Score:</strong> ${qualityReport.overall_score}/100 (${qualityReport.quality_level})</li>\\n`;\nemailBody += `  <li><strong>Word Count:</strong> ${qualityReport.word_count}/${qualityReport.target_word_count} (${qualityReport.word_count_variance}% variance)</li>\\n`;\nemailBody += `  <li><strong>SEO Integration:</strong> ${qualityReport.seo_integration}% of keywords included</li>\\n`;\nemailBody += `  <li><strong>UK Spelling:</strong> ${qualityReport.uk_spelling_check ? '✅ Present' : '❌ Missing'}</li>\\n`;\nemailBody += `  <li><strong>Manual Review:</strong> ${contentData.needs_manual_review ? '⚠️ Recommended' : '✅ Optional'}</li>\\n`;\nemailBody += `</ul>\\n\\n`;\n\n// Content details\nemailBody += `<h3>📊 Content Details</h3>\\n`;\nemailBody += `<ul>\\n`;\nemailBody += `  <li><strong>Content Pillar:</strong> ${contentData.content_pillar}</li>\\n`;\nemailBody += `  <li><strong>Target Audience:</strong> ${contentData.target_audience.join(', ')}</li>\\n`;\nemailBody += `  <li><strong>Content Type:</strong> ${contentData.content_type}</li>\\n`;\nemailBody += `  <li><strong>Source:</strong> ${contentData.source_name}</li>\\n`;\nemailBody += `</ul>\\n\\n`;\n\n// Quality breakdown\nemailBody += `<h3>🔍 Quality Breakdown</h3>\\n`;\nemailBody += `<ul>\\n`;\nemailBody += `  <li><strong>Structure Score:</strong> ${qualityReport.structure_score}/40</li>\\n`;\nemailBody += `  <li><strong>Content Score:</strong> ${qualityReport.content_score}/30</li>\\n`;\nemailBody += `  <li><strong>Technical Score:</strong> ${qualityReport.overall_score - qualityReport.structure_score - qualityReport.content_score}/30</li>\\n`;\nemailBody += `</ul>\\n\\n`;\n\n// Next steps\nemailBody += `<h3>🚀 Next Steps</h3>\\n`;\nif (contentData.needs_manual_review) {\n  emailBody += `<p><strong>⚠️ Manual Review Required</strong></p>\\n`;\n  emailBody += `<ul>\\n`;\n  emailBody += `  <li>Review content for accuracy and brand voice</li>\\n`;\n  emailBody += `  <li>Check factual claims and examples</li>\\n`;\n  emailBody += `  <li>Enhance SEO keyword integration if needed</li>\\n`;\n  emailBody += `  <li>Verify UK English spelling throughout</li>\\n`;\n  emailBody += `</ul>\\n`;\n} else {\n  emailBody += `<p><strong>✅ Ready for Publication Review</strong></p>\\n`;\n  emailBody += `<ul>\\n`;\n  emailBody += `  <li>Content meets quality standards</li>\\n`;\n  emailBody += `  <li>Review for final editorial polish</li>\\n`;\n  emailBody += `  <li>Schedule for publication</li>\\n`;\n  emailBody += `</ul>\\n`;\n}\n\n// Links\nemailBody += `<h3>🔗 Quick Links</h3>\\n`;\nemailBody += `<ul>\\n`;\nemailBody += `  <li><a href=\"https://www.notion.so/${contentData.content_id.replace(/-/g, '')}\">Original Research Item</a></li>\\n`;\nemailBody += `  <li><a href=\"https://www.notion.so/0d7b48da0a604c348fecbb1617b8c8a6\">Content Assets Database</a></li>\\n`;\nemailBody += `  <li><a href=\"https://www.notion.so/9d899a561818444f8de1d7bd72ee1528\">Content Pipeline</a></li>\\n`;\nemailBody += `</ul>\\n\\n`;\n\n// Footer\nemailBody += `<hr>\\n`;\nemailBody += `<p><small>Generated at ${new Date().toLocaleString('en-GB', { timeZone: 'Europe/London' })}</small></p>`;\n\n// Determine subject line urgency\nlet subjectPrefix = '📝';\nif (contentData.needs_manual_review) subjectPrefix = '⚠️';\nelse if (qualityReport.overall_score >= 80) subjectPrefix = '🟢';\n\nreturn [{\n  json: {\n    subject: `${subjectPrefix} AI Draft Ready: ${contentData.enhanced_title}`,\n    body: emailBody,\n    quality_score: qualityReport.overall_score,\n    needs_review: contentData.needs_manual_review,\n    content_title: contentData.enhanced_title\n  }\n}];"
+      },
+      "id": "8093b754-c7fe-43f5-ad0f-698d9267a68e",
+      "name": "Prepare Notification Email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        1240
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "x@xavi.cc",
+        "toEmail": "x@xavi.cc",
+        "subject": "={{ $json.subject }}",
+        "html": "={{ $json.body }}",
+        "options": {
+          "allowUnauthorizedCerts": false
+        }
+      },
+      "id": "9740a819-c34a-4f63-94e8-f92a27133699",
+      "name": "Send Notification Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        624,
+        1312
+      ],
+      "webhookId": "9226971b-c7ef-4726-902c-fba68cec1b78",
+      "credentials": {
+        "smtp": {
+          "id": "mI3xQSjzFfN7X5DY",
+          "name": "Apple"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Aggregate all processing results into summary\n// Collects data from all processed items for final report\n\n// Note: This runs after the loop completes, so we need to look at all previous executions\nconst allItems = [];\nconst validationNodes = $('Validate Content Quality').all();\n\nlet successCount = 0;\nlet totalProcessed = 0;\nlet needsReviewCount = 0;\nconst processedItems = [];\n\nfor (const item of validationNodes) {\n  totalProcessed++;\n  const data = item.json;\n  \n  if (data.quality_report) {\n    successCount++;\n    \n    if (data.needs_manual_review) {\n      needsReviewCount++;\n    }\n    \n    processedItems.push({\n      title: data.draft_title,\n      quality_score: data.quality_report.overall_score,\n      quality_level: data.quality_report.quality_level,\n      word_count: data.quality_report.word_count,\n      needs_review: data.needs_manual_review,\n      content_id: data.content_id,\n      pillar: data.content_pillar\n    });\n  }\n}\n\nconst errorCount = totalProcessed - successCount;\n\n// Build summary email\nlet emailBody = `<h2>📊 Research to Draft Workflow Complete</h2>\\n\\n`;\n\nemailBody += `<h3>Summary</h3>\\n`;\nemailBody += `<ul>\\n`;\nemailBody += `  <li><strong>Total Items:</strong> ${totalProcessed}</li>\\n`;\nemailBody += `  <li><strong>✅ Successful:</strong> ${successCount}</li>\\n`;\nemailBody += `  <li><strong>❌ Failed:</strong> ${errorCount}</li>\\n`;\nemailBody += `  <li><strong>⚠️ Needs Review:</strong> ${needsReviewCount}</li>\\n`;\nemailBody += `</ul>\\n\\n`;\n\nif (processedItems.length > 0) {\n  emailBody += `<h3>📝 Generated Drafts</h3>\\n`;\n  emailBody += `<table style=\"border-collapse: collapse; width: 100%;\">\\n`;\n  emailBody += `  <tr style=\"background-color: #f0f0f0;\">\\n`;\n  emailBody += `    <th style=\"border: 1px solid #ddd; padding: 8px; text-align: left;\">Title</th>\\n`;\n  emailBody += `    <th style=\"border: 1px solid #ddd; padding: 8px; text-align: center;\">Quality</th>\\n`;\n  emailBody += `    <th style=\"border: 1px solid #ddd; padding: 8px; text-align: center;\">Words</th>\\n`;\n  emailBody += `    <th style=\"border: 1px solid #ddd; padding: 8px; text-align: center;\">Status</th>\\n`;\n  emailBody += `  </tr>\\n`;\n  \n  for (const item of processedItems) {\n    const reviewBadge = item.needs_review ? '⚠️ Review' : '✅ Ready';\n    const qualityColor = item.quality_score >= 80 ? '#4CAF50' : item.quality_score >= 65 ? '#FF9800' : '#F44336';\n    \n    emailBody += `  <tr>\\n`;\n    emailBody += `    <td style=\"border: 1px solid #ddd; padding: 8px;\">${item.title}</td>\\n`;\n    emailBody += `    <td style=\"border: 1px solid #ddd; padding: 8px; text-align: center; background-color: ${qualityColor}; color: white; font-weight: bold;\">${item.quality_score}</td>\\n`;\n    emailBody += `    <td style=\"border: 1px solid #ddd; padding: 8px; text-align: center;\">${item.word_count}</td>\\n`;\n    emailBody += `    <td style=\"border: 1px solid #ddd; padding: 8px; text-align: center;\">${reviewBadge}</td>\\n`;\n    emailBody += `  </tr>\\n`;\n  }\n  \n  emailBody += `</table>\\n\\n`;\n}\n\nemailBody += `<h3>🔗 Quick Links</h3>\\n`;\nemailBody += `<ul>\\n`;\nemailBody += `  <li><a href=\"https://www.notion.so/0d7b48da0a604c348fecbb1617b8c8a6\">Content Assets Database</a></li>\\n`;\nemailBody += `  <li><a href=\"https://www.notion.so/9d899a561818444f8de1d7bd72ee1528\">Content Pipeline</a></li>\\n`;\nemailBody += `</ul>\\n\\n`;\n\nemailBody += `<hr>\\n`;\nemailBody += `<p><small>Completed at ${new Date().toLocaleString('en-GB', { timeZone: 'Europe/London' })}</small></p>`;\n\nlet subjectPrefix = '✅';\nif (errorCount > 0) subjectPrefix = '⚠️';\nelse if (needsReviewCount > 0) subjectPrefix = '📝';\n\nreturn [{\n  json: {\n    subject: `${subjectPrefix} Draft Generation Complete: ${successCount}/${totalProcessed} successful`,\n    body: emailBody,\n    total_processed: totalProcessed,\n    success_count: successCount,\n    error_count: errorCount,\n    needs_review_count: needsReviewCount\n  }\n}];"
+      },
+      "id": "7d4f2e81-d3ec-418a-a141-aeb2cb3caa10",
+      "name": "Aggregate Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1360,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "x@xavi.cc",
+        "toEmail": "x@xavi.cc",
+        "subject": "={{ $json.subject }}",
+        "html": "={{ $json.body }}",
+        "options": {
+          "allowUnauthorizedCerts": false
+        }
+      },
+      "id": "d7c48c56-281e-4569-9b58-02177b7789ee",
+      "name": "Send Summary Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        -1072,
+        880
+      ],
+      "webhookId": "8a189fb2-54e9-4187-aea8-cb6b4bd21225",
+      "credentials": {
+        "smtp": {
+          "id": "mI3xQSjzFfN7X5DY",
+          "name": "Apple"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Increment retry counter to prevent infinite loops\n// Tracks how many times we've attempted to improve this draft\n\nconst currentData = $input.item.json;\nconst currentRetryCount = currentData.retry_count || 0;\nconst newRetryCount = currentRetryCount + 1;\n\nconsole.log(\n  `Retry attempt ${newRetryCount}/3 for: ${currentData.enhanced_title}`\n);\n\nreturn {\n  json: {\n    ...currentData,\n    retry_count: newRetryCount,\n    last_retry_timestamp: new Date().toISOString(),\n  },\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -48,
+        1048
+      ],
+      "id": "a45cc08d-ebab-4f3c-b812-3b1614d7882d",
+      "name": "Increment Retry Counter"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a senior content editor reviewing an AI-generated article draft. Your job is to provide specific, actionable feedback to improve the content quality.\n\n  ## ORIGINAL REQUIREMENTS\n  **Title:** {{ $json.enhanced_title }}\n  **Content Pillar:** {{ $json.content_pillar }}\n  **Target Audience:** {{ $json.primary_audience }}\n  **Word Count Target:** {{ $json.word_count_target }} words\n  **Required Structure:** {{ $json.recommended_structure }}\n\n  ## CURRENT DRAFT\n  {{ $json.generated_content }}\n\n  ## QUALITY ASSESSMENT\n  **Overall Score:** {{ $json.quality_report.overall_score }}/100 ({{ $json.quality_report.quality_level }})\n  **Issues Found:**\n  - Word Count: {{ $json.quality_report.word_count }} words (target: {{ $json.quality_report.target_word_count }}) - {{ $json.quality_report.word_count_variance }}% variance\n  - Structure Score: {{ $json.quality_report.structure_score }}/40\n  - Content Score: {{ $json.quality_report.content_score }}/30\n  - SEO Integration: {{ $json.quality_report.seo_integration }}%\n  - UK Spelling: {{ $json.quality_report.uk_spelling_check ? 'Present' : 'Missing' }}\n\n  ## YOUR TASK\n  Provide specific, actionable feedback to improve this draft. Focus on the weakest areas identified above. Format your response as:\n\n  **What needs fixing:**\n  [List 3-5 specific issues]\n\n  **How to fix it:**\n  [Provide concrete suggestions for each issue]\n\n  **Revised approach:**\n  [Suggest a better angle or structure if needed]\n\n  Be direct and specific. The AI will use your feedback to regenerate the content."
+            }
+          ]
+        },
+        "options": {
+          "maxTokens": 1000,
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -624,
+        976
+      ],
+      "id": "f755c5d4-4f54-4abd-8e55-eebaf3e2ddee",
+      "name": "AI Reviewer",
+      "credentials": {
+        "openAiApi": {
+          "id": "rkhOcSQmlsa0zqls",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Merge reviewer feedback into data for regeneration\n// Injects specific improvement instructions into the prompt data\n\nconst currentData = $input.item.json;\nconst reviewerFeedback =\n  currentData.message?.content || \"No specific feedback provided\";\n\nconsole.log(`Adding reviewer feedback for retry attempt`);\nconsole.log(`Feedback length: ${reviewerFeedback.length} characters`);\n\nreturn {\n  json: {\n    ...currentData,\n    // Add reviewer feedback to be used in regeneration prompt\n    reviewer_feedback: reviewerFeedback,\n\n    // Keep quality report from previous attempt for comparison\n    previous_quality_score: currentData.quality_report?.overall_score || 0,\n    previous_attempt_content: currentData.generated_content,\n\n    // Clear the old generated content so AI starts fresh\n    generated_content: null,\n\n    // Preserve all other metadata\n    feedback_timestamp: new Date().toISOString(),\n  },\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -272,
+        976
+      ],
+      "id": "6acf45d4-ee1b-4b99-bc95-aa2bd469318a",
+      "name": "Merge Feedback"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "23b5463b-d478-4101-9089-4fe2ad634db6",
+              "leftValue": "={{ $json.quality_report.overall_score }}",
+              "rightValue": 65,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            },
+            {
+              "id": "a5a2bb27-02cd-4518-a267-d3997c2b2a1f",
+              "leftValue": "={{ $json.retry_count || 0 }}",
+              "rightValue": 3,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -848,
+        1072
+      ],
+      "id": "41418d96-0a19-4e13-8372-9634fc19db0d",
+      "name": "Check Quality & Retry Limit"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        1168
+      ],
+      "id": "3e1b1489-5881-4818-942c-7974886f62ce",
+      "name": "Prepare GitHub File"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "owner": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "repository": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        -272,
+        1168
+      ],
+      "id": "c0adefcc-493f-42a3-b2b4-bf63e69ec8a6",
+      "name": "Create a file",
+      "webhookId": "358796c0-6c64-41d3-aa45-81864961b2e3",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "cN5XUzR6Vu9DDZCZ",
+          "name": "GitHub account"
         }
       }
     }
   ],
+  "pinData": {},
   "connections": {
     "Schedule Trigger": {
       "main": [
@@ -183,29 +473,186 @@
       "main": [
         [
           {
-            "node": "Generate Draft",
+            "node": "Enhance Research Data",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Generate Draft": {
+    "Enhance Research Data": {
       "main": [
         [
           {
-            "node": "Create Asset",
+            "node": "Loop Over Items",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Create Asset": {
+    "Loop Over Items": {
       "main": [
         [
           {
-            "node": "Update Pipeline",
+            "node": "Aggregate Results",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Generate Enhanced Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Enhanced Draft": {
+      "main": [
+        [
+          {
+            "node": "Validate Content Quality",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Content Quality": {
+      "main": [
+        [
+          {
+            "node": "Check Quality & Retry Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Content Asset": {
+      "main": [
+        [
+          {
+            "node": "Update Pipeline Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Pipeline Status": {
+      "main": [
+        [
+          {
+            "node": "Prepare Notification Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Notification Email": {
+      "main": [
+        [
+          {
+            "node": "Send Notification Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Notification Email": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Results": {
+      "main": [
+        [
+          {
+            "node": "Send Summary Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Increment Retry Counter": {
+      "main": [
+        [
+          {
+            "node": "Generate Enhanced Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Reviewer": {
+      "main": [
+        [
+          {
+            "node": "Merge Feedback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Feedback": {
+      "main": [
+        [
+          {
+            "node": "Increment Retry Counter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Quality & Retry Limit": {
+      "main": [
+        [
+          {
+            "node": "AI Reviewer",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare GitHub File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare GitHub File": {
+      "main": [
+        [
+          {
+            "node": "Create a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a file": {
+      "main": [
+        [
+          {
+            "node": "Create Content Asset",
             "type": "main",
             "index": 0
           }
@@ -217,10 +664,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "9b5e7f42-3c4d-4a8e-9f1b-2c3d4e5f6a7b",
-  "id": "xfTGH8K9zYvNpRLm",
+  "versionId": "491244f8-04f2-4134-99c9-c4a9c046865d",
   "meta": {
-    "instanceId": "8a8b0c5d9e0f1234567890abcdef1234567890ab"
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d052f68fee6cbc1f0a1b7b4daa7281384655d7a51d1cb62c7e57bbd86329486d"
   },
+  "id": "WZ2PTopzKuHpS25J",
   "tags": []
 }

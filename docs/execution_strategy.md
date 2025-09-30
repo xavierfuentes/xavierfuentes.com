@@ -9,11 +9,11 @@
 - Week 1: Framework or methodology piece (1,500-2,500 words)
 - Week 3: Tactical how-to or case study (1,000-1,500 words)
 
-**LinkedIn Content:** 3 posts per week
+**LinkedIn Content:** 3 posts per week (optimised for B2B engagement)
 
-- Monday: Framework share or template
-- Wednesday: Industry hot take or observation
-- Friday: Personal lesson or behind-the-scenes
+- Tuesday: Framework share or template (peak B2B engagement day)
+- Wednesday: Industry hot take or observation (continued high engagement)
+- Thursday: Personal lesson or behind-the-scenes (maintains mid-week momentum)
 
 **Newsletter:** Weekly, incorporating blog content teasers and additional commentary
 
@@ -42,7 +42,7 @@
 ### Time Investment
 
 - **Long-form writing:** 4-6 hours per article (research, writing, editing)
-- **LinkedIn content:** 30 minutes per post (3×/week = 1.5 hours/week)
+- **LinkedIn content:** 30 minutes per post (Tue/Wed/Thu = 1.5 hours/week)
 - **Newsletter writing:** 1 hour per week
 - **Content repurposing:** 2 hours per long-form article
 - **Total weekly:** 6-8 hours during publishing weeks, 3-4 hours during off weeks

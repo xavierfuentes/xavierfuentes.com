@@ -25,7 +25,7 @@ This strategy transforms XavierFuentes.com into a lead-generation engine for coa
 - Leadership failure case studies
 - Decision-making templates
 
-**LinkedIn Angle:** "3 mistakes every first-time CTO makes"
+**LinkedIn Angle:** "3 mistakes every first-time CTO makes" (Tuesday framework posts)
 **Newsletter Angle:** Weekly leadership tip with template
 
 ### 2. Technology Strategy (30%)
@@ -38,7 +38,7 @@ This strategy transforms XavierFuentes.com into a lead-generation engine for coa
 - Architecture decision records (anonymised)
 - Cost-benefit analyses for emerging tech
 
-**LinkedIn Angle:** "Why your startup doesn't need microservices (yet)"
+**LinkedIn Angle:** "Why your startup doesn't need microservices (yet)" (Wednesday industry takes)
 **Newsletter Angle:** Monthly tech trend analysis
 
 ### 3. Execution & Delivery (20%)
@@ -51,7 +51,7 @@ This strategy transforms XavierFuentes.com into a lead-generation engine for coa
 - Stakeholder communication scripts
 - Crisis management playbooks
 
-**LinkedIn Angle:** "How to explain technical delays without losing credibility"
+**LinkedIn Angle:** "How to explain technical delays without losing credibility" (Various days)
 **Newsletter Angle:** Execution tips and war stories
 
 ### 4. Founder Lessons (15%)
@@ -64,7 +64,7 @@ This strategy transforms XavierFuentes.com into a lead-generation engine for coa
 - Industry trend analysis
 - Behind-the-scenes startup stories
 
-**LinkedIn Angle:** "5 things I wish I'd known before my first CTO role"
+**LinkedIn Angle:** "5 things I wish I'd known before my first CTO role" (Thursday personal lessons)
 **Newsletter Angle:** Personal reflections and industry commentary
 
 ### 5. Market & AI Trends (10%)
@@ -77,7 +77,7 @@ This strategy transforms XavierFuentes.com into a lead-generation engine for coa
 - Opportunity assessments
 - Strategic recommendations
 
-**LinkedIn Angle:** "Why most AI implementations fail (and how to avoid it)"
+**LinkedIn Angle:** "Why most AI implementations fail (and how to avoid it)" (Various days)
 **Newsletter Angle:** Quarterly trend report
 
 ---
@@ -101,9 +101,9 @@ This strategy transforms XavierFuentes.com into a lead-generation engine for coa
 
 ### Weekly LinkedIn Content
 
-**Monday:** Framework or template share
+**Tuesday:** Framework or template share
 **Wednesday:** Industry observation or hot take
-**Friday:** Personal lesson or behind-the-scenes
+**Thursday:** Personal lesson or behind-the-scenes
 
 ### The Jungle Brief (Weekly Newsletter)
 
