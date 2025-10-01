@@ -161,7 +161,8 @@ class GhostContentManager {
       const readOnlyFields = [
         'uuid', 'comment_id', 'created_at', 'updated_at', 'published_at',
         'url', 'primary_author', 'primary_tag', 'email_recipient_filter',
-        'send_email_when_published', 'email_subject', 'email_only'
+        'send_email_when_published', 'email_subject', 'email_only',
+        'authors', 'tags' // Remove these on update - they cause validation errors
       ];
 
       readOnlyFields.forEach(field => delete updatePayload[field]);
