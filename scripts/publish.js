@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+require('dotenv').config();
+
 const GhostAdminAPI = require('@tryghost/admin-api');
 const fs = require('fs');
 const path = require('path');
