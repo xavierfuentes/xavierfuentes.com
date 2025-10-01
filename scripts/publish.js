@@ -35,7 +35,7 @@ class GhostContentManager {
   }
 
   async processContentFiles(pattern, type) {
-    const files = glob.sync(pattern, { ignore: '**/drafts/**' });
+    const files = glob.sync(pattern);
     const results = [];
 
     for (const filePath of files) {
