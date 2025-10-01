@@ -22,12 +22,13 @@ class GhostContentManager {
 
   async publishContent() {
     console.log('🚀 Starting Ghost content publishing...');
-    
+
     try {
       const posts = await this.processContentFiles('content/posts/**/*.md', 'post');
+      const drafts = await this.processContentFiles('content/drafts/**/*.md', 'post');
       const pages = await this.processContentFiles('content/pages/**/*.md', 'page');
-      
-      console.log(`✅ Successfully processed ${posts.length} posts and ${pages.length} pages`);
+
+      console.log(`✅ Successfully processed ${posts.length} posts, ${drafts.length} drafts, and ${pages.length} pages`);
     } catch (error) {
       console.error('❌ Error publishing content:', error.message);
       process.exit(1);
@@ -90,7 +91,7 @@ class GhostContentManager {
 
   buildGhostContent(frontmatter, markdownContent, type) {
     const html = marked(markdownContent);
-    
+
     const ghostContent = {
       title: frontmatter.title,
       slug: frontmatter.slug,
@@ -102,10 +103,7 @@ class GhostContentManager {
       feature_image: frontmatter.feature_image || null,
       featured: frontmatter.featured || false,
       excerpt: frontmatter.excerpt || null,
-      custom_excerpt: frontmatter.custom_excerpt || null,
-      created_at: frontmatter.created_at || null,
-      updated_at: frontmatter.updated_at || null,
-      published_at: frontmatter.published_at || null
+      custom_excerpt: frontmatter.custom_excerpt || null
     };
 
     if (frontmatter.tags && Array.isArray(frontmatter.tags)) {
@@ -156,10 +154,20 @@ class GhostContentManager {
 
   async updateContent(id, content, type) {
     try {
+      // Remove read-only fields that Ghost returns but doesn't accept on update
+      const updatePayload = { id, ...content };
+      const readOnlyFields = [
+        'uuid', 'comment_id', 'created_at', 'updated_at', 'published_at',
+        'url', 'primary_author', 'primary_tag', 'email_recipient_filter',
+        'send_email_when_published', 'email_subject', 'email_only'
+      ];
+
+      readOnlyFields.forEach(field => delete updatePayload[field]);
+
       if (type === 'post') {
-        return await this.api.posts.edit({ id, ...content });
+        return await this.api.posts.edit(updatePayload);
       } else {
-        return await this.api.pages.edit({ id, ...content });
+        return await this.api.pages.edit(updatePayload);
       }
     } catch (error) {
       console.error(`❌ Error updating ${type} (ID: ${id}):`, error.message);
