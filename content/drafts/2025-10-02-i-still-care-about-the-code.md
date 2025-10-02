@@ -1,5 +1,5 @@
 ---
-  title: I still care about the code
+title: I still care about the code
 slug: i-still-care-about-the-code
 status: draft
 visibility: public
@@ -7,18 +7,18 @@ featured: false
 meta_title: I still care about the code
 meta_description: <div class = 'img-link'><a href = ' src = ' width = ''></img></a></div> <p>Even with LLMs, <b class = 'author'>Birgitta B ckeler</b> still cares about the code: “LLMs are NOT compilers, interpreters, transpilers or assemblers of natural language, they are <b>inferrers</b>. </p> <p><a class = 'more' href =
 target_channel: undefined
-  tags:
-    - Technology Strategy
+tags:
+  - Technology Strategy
   - llms
   - code
   - inference
-  authors:
-    - xavier
-  ---
+authors:
+  - xavier
+---
 
-  Struggling to balance hands-on coding with your leadership role? You’re not alone.
+Struggling to balance hands-on coding with your leadership role? You’re not alone.
 
-In the era of large language models (LLMs), many CTOs wrestle with the shifting meaning of “code.” Martin Fowler’s recent reflections echo a vital truth: even as LLMs excel at *inference*, they don’t replace the craft of coding. They infer from patterns in data, not generate flawless, executable software.
+In the era of large language models (LLMs), many CTOs wrestle with the shifting meaning of “code.” Martin Fowler’s recent reflections echo a vital truth: even as LLMs excel at _inference_, they don’t replace the craft of coding. They infer from patterns in data, not generate flawless, executable software.
 
 **Current State**
 
@@ -51,6 +51,6 @@ Technology leadership is about harnessing innovation without losing sight of cor
 
 How are you balancing AI assistance with engineering rigour in your teams? Share your experiences or challenges below.
 
-  ---
+---
 
-  *AI-generated draft - Quality Score: 70/100*
+_AI-generated draft - Quality Score: 70/100_

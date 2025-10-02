@@ -1,0 +1,262 @@
+{
+  "name": "Newsletter Digest Compiler",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "cronExpression": "0 9 * * 1"
+            }
+          ]
+        }
+      },
+      "id": "weekly-trigger",
+      "name": "Monday 9 AM Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "https://www.notion.so/9d899a561818444f8de1d7bd72ee1528",
+          "mode": "url"
+        },
+        "filterType": "manual",
+        "filters": {
+          "conditions": [
+            {
+              "key": "Status|select",
+              "condition": "equals",
+              "selectValue": "Published"
+            }
+          ]
+        },
+        "options": {
+          "limit": 100
+        }
+      },
+      "id": "fetch-published-content",
+      "name": "Fetch Published Content",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [400, 300],
+      "credentials": {
+        "notionApi": {
+          "id": "lC4G957VFihVvFG2",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Filter content published in last 7 days and group by channel\nconst items = $input.all();\nconst now = new Date();\nconst sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));\n\nconst recentContent = {\n  blog: [],\n  linkedin: [],\n  other: []\n};\n\nfor (const item of items) {\n  const json = item.json;\n  const publishedDate = json.property_published_date ? new Date(json.property_published_date) : null;\n  \n  // Only include content from last 7 days\n  if (!publishedDate || publishedDate < sevenDaysAgo) {\n    continue;\n  }\n  \n  const channel = json.property_target_channel || 'other';\n  const contentItem = {\n    title: json.property_title || 'Untitled',\n    slug: json.property_slug || '',\n    excerpt: json.property_meta_description || json.property_custom_excerpt || '',\n    content_pillar: json.property_content_pillar || '',\n    published_date: json.property_published_date,\n    url: channel === 'blog' \n      ? `https://xavierfuentes.com/${json.property_slug || ''}`\n      : `https://linkedin.com/in/xavierfuentes`, // LinkedIn URL\n    channel: channel\n  };\n  \n  // Categorize by channel\n  if (channel === 'blog') {\n    recentContent.blog.push(contentItem);\n  } else if (channel === 'linkedin-original' || channel === 'linkedin-promotion') {\n    recentContent.linkedin.push(contentItem);\n  } else {\n    recentContent.other.push(contentItem);\n  }\n}\n\n// Sort by published date (newest first)\nrecentContent.blog.sort((a, b) => new Date(b.published_date) - new Date(a.published_date));\nrecentContent.linkedin.sort((a, b) => new Date(b.published_date) - new Date(a.published_date));\nrecentContent.other.sort((a, b) => new Date(b.published_date) - new Date(a.published_date));\n\nconsole.log(`📰 Newsletter Content Summary:`);\nconsole.log(`  Blog posts: ${recentContent.blog.length}`);\nconsole.log(`  LinkedIn posts: ${recentContent.linkedin.length}`);\nconsole.log(`  Other content: ${recentContent.other.length}`);\n\nreturn [{\n  json: {\n    week_start: sevenDaysAgo.toISOString().split('T')[0],\n    week_end: now.toISOString().split('T')[0],\n    content: recentContent,\n    total_items: recentContent.blog.length + recentContent.linkedin.length + recentContent.other.length\n  }\n}];"
+      },
+      "id": "filter-recent-content",
+      "name": "Filter Recent Content",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [600, 300]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4-turbo-preview",
+        "messages": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are a newsletter editor for a technical leadership blog. You MUST write in UK English only (optimise, realise, colour, whilst, organisation, analyse). Create engaging, personal newsletter content that feels like a conversation with readers."
+            },
+            {
+              "role": "user",
+              "content": "Create a weekly newsletter digest for the content published this week.\n\n## CRITICAL REQUIREMENTS\n\n1. **LENGTH**: 800-1200 words total\n2. **UK ENGLISH ONLY**: optimise, realise, colour, whilst, organisation, analyse\n3. **TONE**: Personal, conversational, from Xavier directly to subscribers\n4. **STRUCTURE**: Personal intro → Content highlights → Closing thought\n\n## THIS WEEK'S PUBLISHED CONTENT\n\n**Date Range:** {{ $json.week_start }} to {{ $json.week_end }}\n**Total Items:** {{ $json.total_items }}\n\n### Blog Posts ({{ $json.content.blog.length }})\n{{ $json.content.blog.map(post => `- **${post.title}**\\n  ${post.excerpt}\\n  ${post.url}`).join('\\n\\n') }}\n\n### LinkedIn Posts ({{ $json.content.linkedin.length }})\n{{ $json.content.linkedin.map(post => `- **${post.title}**\\n  ${post.excerpt}`).join('\\n\\n') }}\n\n## NEWSLETTER STRUCTURE\n\n### 1. Personal Opening (150-200 words)\n- Start with \"Hi from London\" or similar personal greeting\n- Share a brief personal reflection or observation from the week\n- Connect it to the theme of this week's content\n- Warm, conversational tone - like writing to a friend\n\n### 2. Featured Content (500-700 words)\n- Highlight the most important piece(s) from this week\n- Don't just list - provide context and why it matters\n- Share the story behind the content (what prompted you to write it)\n- Include 1-2 key takeaways or insights\n- Use quotes or specific examples from the articles\n- Group related pieces together if there's a theme\n\n### 3. Quick Links Section (100-150 words)\n- Brief mentions of other content published\n- One-line descriptions with clear value\n- \"Also this week...\" format\n\n### 4. Closing Thought (100-150 words)\n- Personal reflection or forward-looking comment\n- Question for readers (encourage replies)\n- Sign off with name and optional PS\n\n## STYLE GUIDELINES\n\n**Voice:**\n- First person (\"I\", \"my\")\n- Conversational but professional\n- Honest about challenges and learnings\n- Not salesy or promotional\n\n**Structure:**\n- Short paragraphs (2-4 sentences)\n- Use subheadings for scannability\n- Include white space\n- Bullet points for lists\n\n**Links:**\n- Hyperlink article titles naturally in the text\n- Use descriptive link text (not \"click here\")\n- Include full URLs for blog posts\n\n**Call to Action:**\n- Subtle invitation to engage\n- Ask for replies/comments\n- Mention consultation if naturally relevant\n- Never pushy or sales-focused\n\n## EXAMPLE OPENING\n\nHi from London,\n\nI spent Tuesday morning debugging a critical production issue with a client's engineering team. Three hours in, we realised the problem wasn't in the code at all - it was a communication breakdown between two teams who thought they were aligned.\n\nThat experience reinforced something I've been writing about this week: the technical challenges we face are often symptoms of organisational ones. Which brings me to what I've published...\n\n## OUTPUT FORMAT\n\nReturn the complete newsletter in markdown format. Include:\n- Subject line suggestion at the top\n- Full newsletter body\n- No meta-commentary or explanations"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.8,
+          "maxTokens": 2000
+        }
+      },
+      "id": "generate-newsletter",
+      "name": "Generate Newsletter Draft",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1.3,
+      "position": [800, 300],
+      "credentials": {
+        "openAiApi": {
+          "id": "OpenAiCredentialsId",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare newsletter file for GitHub\nconst item = $input.item.json;\n\n// Extract generated content from OpenAI response\nconst newsletterContent = item.message?.content || item.text || '';\n\n// Extract subject line if present (first line starting with \"Subject:\")\nconst subjectMatch = newsletterContent.match(/Subject:?\\s*(.+)/i);\nconst subject = subjectMatch ? subjectMatch[1].trim() : 'Weekly Digest';\n\n// Remove subject line from content\nconst content = newsletterContent.replace(/Subject:?\\s*.+\\n+/i, '').trim();\n\n// Generate slug from date\nconst now = new Date();\nconst weekNumber = getWeekNumber(now);\nconst year = now.getFullYear();\nconst slug = `weekly-digest-${year}-week-${weekNumber}`;\n\n// Generate frontmatter and content\nconst markdown = `---\ntitle: \"${subject}\"\nslug: ${slug}\nstatus: draft\ntarget_channel: newsletter\nweek_start: ${item.week_start}\nweek_end: ${item.week_end}\nitems_count: ${item.total_items}\nautogenerated: true\ngenerated_date: ${now.toISOString().split('T')[0]}\n---\n\n${content}\n\n---\n\n*Auto-generated weekly newsletter digest*\n*Period: ${item.week_start} to ${item.week_end}*`;\n\n// Generate filename with date prefix\nconst datePrefix = now.toISOString().split('T')[0];\nconst filename = `${datePrefix}-${slug}.md`;\n\nfunction getWeekNumber(date) {\n  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));\n  const dayNum = d.getUTCDay() || 7;\n  d.setUTCDate(d.getUTCDate() + 4 - dayNum);\n  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));\n  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);\n}\n\nreturn {\n  json: {\n    markdown_content: markdown,\n    filename: filename,\n    file_path: `content/newsletter/${filename}`,\n    commit_message: `feat: add weekly newsletter digest for week ${weekNumber}, ${year}`,\n    subject: subject,\n    week_start: item.week_start,\n    week_end: item.week_end,\n    items_count: item.total_items\n  }\n};"
+      },
+      "id": "prepare-newsletter-file",
+      "name": "Prepare Newsletter File",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1000, 300]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "https://api.github.com/repos/{{ $env.GITHUB_USERNAME }}/xavierfuentes.com/contents/{{ $json.file_path }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "={{ $json.commit_message }}"
+            },
+            {
+              "name": "content",
+              "value": "={{ $base64($json.markdown_content) }}"
+            },
+            {
+              "name": "branch",
+              "value": "main"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "commit-to-github",
+      "name": "Commit Newsletter to GitHub",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1200, 300],
+      "credentials": {
+        "githubApi": {
+          "id": "GithubApiCredentialsId",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generate notification email\nconst item = $input.item.json;\n\nlet emailBody = `<h2>📰 Weekly Newsletter Generated - ${new Date().toLocaleDateString('en-GB', { \n  weekday: 'long', \n  year: 'numeric', \n  month: 'long', \n  day: 'numeric',\n  timeZone: 'Europe/London'\n})}</h2>\\n\\n`;\n\nemailBody += `<p>Newsletter digest has been generated and committed to GitHub.</p>\\n\\n`;\n\nemailBody += `<h3>📊 Summary</h3>\\n<ul>\\n`;\nemailBody += `  <li><strong>Subject:</strong> ${item.subject}</li>\\n`;\nemailBody += `  <li><strong>Period:</strong> ${item.week_start} to ${item.week_end}</li>\\n`;\nemailBody += `  <li><strong>Content Items:</strong> ${item.items_count}</li>\\n`;\nemailBody += `  <li><strong>File:</strong> <code>${item.file_path}</code></li>\\n`;\nemailBody += `</ul>\\n\\n`;\n\nemailBody += `<h3>📅 Next Steps</h3>\\n<ul>\\n`;\nemailBody += `  <li>Review the newsletter draft in <code>content/newsletter/</code></li>\\n`;\nemailBody += `  <li>Edit personal anecdotes and add specific details</li>\\n`;\nemailBody += `  <li>Verify all links work correctly</li>\\n`;\nemailBody += `  <li>Schedule or send via email platform</li>\\n`;\nemailBody += `</ul>\\n`;\n\nemailBody += `<p><small>Generated at ${new Date().toLocaleString('en-GB', { timeZone: 'Europe/London' })}</small></p>`;\n\nreturn [{\n  json: {\n    subject: `📰 Weekly Newsletter Ready: \"${item.subject}\"`,\n    body: emailBody\n  }\n}];"
+      },
+      "id": "prepare-notification-email",
+      "name": "Prepare Notification Email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1400, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "n8n@xavierfuentes.com",
+        "toEmail": "xavier@xavierfuentes.com",
+        "subject": "={{ $json.subject }}",
+        "emailType": "html",
+        "html": "={{ $json.body }}",
+        "options": {
+          "allowUnauthorizedCerts": false
+        }
+      },
+      "id": "send-notification-email",
+      "name": "Send Notification Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1600, 300],
+      "credentials": {
+        "smtp": {
+          "id": "SmtpCredentialsId",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Monday 9 AM Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch Published Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Published Content": {
+      "main": [
+        [
+          {
+            "node": "Filter Recent Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Recent Content": {
+      "main": [
+        [
+          {
+            "node": "Generate Newsletter Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Newsletter Draft": {
+      "main": [
+        [
+          {
+            "node": "Prepare Newsletter File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Newsletter File": {
+      "main": [
+        [
+          {
+            "node": "Commit Newsletter to GitHub",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Commit Newsletter to GitHub": {
+      "main": [
+        [
+          {
+            "node": "Prepare Notification Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Notification Email": {
+      "main": [
+        [
+          {
+            "node": "Send Notification Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

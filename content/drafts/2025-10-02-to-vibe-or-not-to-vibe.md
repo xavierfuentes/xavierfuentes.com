@@ -1,5 +1,5 @@
 ---
-  title: To vibe or not to vibe
+title: To vibe or not to vibe
 slug: to-vibe-or-not-to-vibe
 status: draft
 visibility: public
@@ -7,16 +7,16 @@ featured: false
 meta_title: To vibe or not to vibe
 meta_description: <div class = 'img-link'><a href = ' src = ' width = ''></img></a></div> <p><b class = 'author'>Birgitta B ckeler</b> examines the risk assessment around when to use vibe coding, using three dimensions of risk: Probability, Impact, and Detectability</p> <p><a class = 'more' href =
 target_channel: undefined
-  tags:
-    - Technology Strategy
+tags:
+  - Technology Strategy
   - vibe coding
   - risk assessment
   - probability
-  authors:
-    - xavier
-  ---
+authors:
+  - xavier
+---
 
-  **To vibe or not to vibe: A practical guide to risk assessment for CTOs**
+**To vibe or not to vibe: A practical guide to risk assessment for CTOs**
 
 Ever faced the dilemma of whether to embrace vibe coding in your organisation? It’s an alluring concept—quick, creative bursts of programming that often feel like pure magic. But as CTOs, we need more than magic; we need a clear-eyed assessment of risks and rewards.
 
@@ -82,6 +82,6 @@ Vibe coding is neither a villain nor a silver bullet—it’s a tool. The questi
 
 How do you currently assess the risks of vibe coding in your teams? Let’s discuss practical tactics below.
 
-  ---
+---
 
-  *AI-generated draft - Quality Score: 75/100*
+_AI-generated draft - Quality Score: 75/100_

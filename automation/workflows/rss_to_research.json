@@ -1,5 +1,5 @@
 {
-  "name": "1. RSS to Research",
+  "name": "RSS to Research",
   "nodes": [
     {
       "parameters": {
@@ -15,10 +15,10 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
       "position": [
-        -880,
-        640
+        -1856,
+        -64
       ],
-      "id": "99d7a881-c8cf-42f6-9beb-3f17bfa55abb",
+      "id": "aeb44b68-6e10-409b-adfb-04e2a672927e",
       "name": "Schedule",
       "alwaysOutputData": true
     },
@@ -47,10 +47,10 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        -656,
-        640
+        -1632,
+        -64
       ],
-      "id": "fd3813f4-7e72-4aad-b732-ff4ee5aae0f8",
+      "id": "22106e0a-f173-4071-ad79-908b41410230",
       "name": "Fetch Active Sources",
       "alwaysOutputData": true,
       "credentials": {
@@ -68,10 +68,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -208,
-        640
+        -1184,
+        -64
       ],
-      "id": "21fba95c-7d88-4d86-b6cf-902e7cd93856",
+      "id": "72d22a59-02d1-467e-aa15-2b31d6ccd0c9",
       "name": "Validate Sources"
     },
     {
@@ -81,10 +81,10 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        16,
-        640
+        -960,
+        -64
       ],
-      "id": "fb7e7807-30ad-4dae-b098-027c9e27c4a2",
+      "id": "0b9e8d93-2beb-4a8e-b012-ce3fc467426d",
       "name": "Loop Feeds"
     },
     {
@@ -105,10 +105,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        256,
-        912
+        -736,
+        -256
       ],
-      "id": "08c663b7-23c4-4ebc-98b0-ea7ab2244de2",
+      "id": "fa8420ce-042a-4daf-92ad-2ec490e3763a",
       "name": "Download RSS",
       "alwaysOutputData": true,
       "onError": "continueRegularOutput"
@@ -141,10 +141,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        496,
-        912
+        -512,
+        -256
       ],
-      "id": "65eb6bcf-28fe-4fad-afdb-fdad3fdd7578",
+      "id": "06c0e60e-5a55-46fc-9a98-96399a39a4c6",
       "name": "Fetch OK?"
     },
     {
@@ -154,10 +154,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        720,
-        704
+        -288,
+        -272
       ],
-      "id": "baca3a91-0657-4616-8f46-2e0bdcd107cf",
+      "id": "e5675ccb-1afc-4630-a961-52292aca5cfb",
       "name": "Parse RSS",
       "alwaysOutputData": true,
       "onError": "continueRegularOutput"
@@ -169,10 +169,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        944,
-        704
+        -64,
+        -256
       ],
-      "id": "ce4992e8-4f0e-47da-b67b-86b9e215cd86",
+      "id": "448e54ed-c16f-4327-8658-0af4d1bc1680",
       "name": "Store Articles (Static)"
     },
     {
@@ -182,10 +182,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        272,
-        432
+        -736,
+        -464
       ],
-      "id": "5d24f9a1-7df9-42d6-a9ec-db51886c362a",
+      "id": "7cb07aca-1304-4414-ae9a-e867340ab2d2",
       "name": "Accumulate All Articles"
     },
     {
@@ -215,10 +215,10 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        496,
-        432
+        -512,
+        -464
       ],
-      "id": "4c375db6-c660-491d-89e5-256a4c75ed94",
+      "id": "80b39eb4-9de2-4aa7-9fc6-e4c5d505b567",
       "name": "Get Recent Articles",
       "alwaysOutputData": true,
       "executeOnce": true,
@@ -237,23 +237,23 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        720,
-        432
+        -288,
+        -464
       ],
-      "id": "4ece84e3-9c08-44f5-903d-06eed1a863a2",
+      "id": "3ab01ab6-cd7b-4003-99ce-5a2b83c75151",
       "name": "Remove Duplicates"
     },
     {
       "parameters": {
-        "jsCode": "// Filters articles based on quality signals, source priority, and recency\n// Uses source-specific age limits and scoring to reduce noise whilst preserving valuable content\n\nconst MIN_COMBINED_WORDS = 10;\nconst MIN_TITLE_LEN = 40;\n\n// Different age limits based on source quality\nconst SOURCE_AGE_LIMITS = {\n  // Premium sources - content stays relevant longer\n  \"Martin Fowler's Blog\": 90, // 3 months - his content is timeless\n  \"Stripe Engineering Blog\": 60,\n  \"Netflix Tech Blog\": 60,\n  \"Google Cloud Blog\": 45,\n  \"AWS Architecture Blog\": 45,\n  \"Thoughtworks Technology Radar\": 90,\n  \"First Round Review\": 60,\n  \"Lenny's Newsletter\": 30,\n  InfoQ: 45,\n  Stratechery: 30,\n\n  // Default for most sources\n  Default: 30, // Increased from 21 to 30 days\n};\n\n// NOTE: Source priority multipliers are now retrieved from Notion database\n// instead of being hardcoded here. This allows for dynamic configuration.\n\n// Keywords that indicate high-value content for tech leaders\nconst HIGH_VALUE_KEYWORDS = [\n  \"ai\",\n  \"artificial intelligence\",\n  \"agentic\",\n  \"model\",\n  \"models\",\n  \"compute\",\n  \"gpu\",\n  \"architecture\",\n  \"scaling\",\n  \"performance\",\n  \"optimisation\",\n  \"framework\",\n  \"pattern\",\n  \"leadership\",\n  \"management\",\n  \"strategy\",\n  \"culture\",\n  \"hiring\",\n  \"team\",\n  \"platform\",\n  \"compliance\",\n  \"security\",\n  \"cyber\",\n  \"cloud\",\n  \"open-source\",\n  \"startup\",\n  \"scale-up\",\n  \"supercomputer\",\n  \"sovereign\",\n  \"quantum\",\n  \"benchmark\",\n  \"llm\",\n];\n\n// Keywords that indicate low-value content (funding noise)\nconst LOW_VALUE_KEYWORDS = [\n  \"job opening\",\n  \"we are hiring\",\n  \"webinar\",\n  \"podcast\",\n  \"event\",\n  \"conference\",\n  \"newsletter\",\n  \"roundup\",\n  \"sponsored\",\n  \"advertorial\",\n  \"press release\",\n];\n\nfunction normalize(str) {\n  return (str || \"\").toString().replace(/\\s+/g, \" \").trim();\n}\n\nfunction lower(str) {\n  return normalize(str).toLowerCase();\n}\n\nfunction wordsCount(str) {\n  return normalize(str).split(/\\s+/).filter(Boolean).length;\n}\n\nfunction hasAny(text, list) {\n  const t = lower(text);\n  return list.some((k) => t.includes(k));\n}\n\nfunction daysSince(dateIso) {\n  const t = Date.parse(dateIso);\n  if (!Number.isFinite(t)) return Infinity;\n  return (Date.now() - t) / 86400000;\n}\n\nfunction calculateArticleScore(article, sourceName) {\n  // Get multiplier from article's source data (passed from Notion)\n  const priorityMultiplier = article.sourcePriorityMultiplier || 1.0;\n\n  let score = 0;\n\n  // Body richness (prefer content:encoded-derived wordCount)\n  const bodyWords = article.wordCount || 0;\n  if (bodyWords >= 400) score += 3;\n  else if (bodyWords >= 250) score += 2;\n  else if (bodyWords >= 120) score += 1;\n\n  // Headline/teaser substance\n  const combined = `${article.title} ${article.description}`;\n  const combinedWords = wordsCount(combined);\n  if (combinedWords >= MIN_COMBINED_WORDS) score += 1;\n\n  // Title strength\n  if (article.title && article.title.length >= MIN_TITLE_LEN) score += 1;\n\n  // High-value keyword signals (multiple hits add more weight)\n  const highValueHits = HIGH_VALUE_KEYWORDS.filter((kw) =>\n    lower(combined).includes(kw)\n  ).length;\n  if (highValueHits >= 3) score += 2;\n  else if (highValueHits >= 1) score += 1;\n\n  // Recency bonus (but don't penalize quality sources too much)\n  const age = article.publishedAt ? daysSince(article.publishedAt) : Infinity;\n  if (age <= 3) score += 2;\n  else if (age <= 7) score += 1;\n  else if (age <= 14 && priorityMultiplier >= 1.3) score += 1; // Bonus for high-priority sources even if older\n\n  // Apply source priority multiplier\n  score = Math.round(score * priorityMultiplier);\n\n  return score;\n}\n\nfunction getBodyText(article) {\n  // Prefer parser-provided clean body if available (from content:encoded)\n  const body = article.contentEncodedClean || article.body || \"\";\n  if (body) return body;\n\n  // Fallback to description (teaser)\n  return article.description || \"\";\n}\n\n// Lightweight in-flow de-duplication by guid/link/title\nconst seen = new Set();\n\nconst out = [];\nlet filteredByAge = 0;\nlet filteredByLowValue = 0;\nlet filteredByThreshold = 0;\n\nfor (const it of $input.all()) {\n  const j = it?.json || {};\n  const title = normalize(j.title);\n  const link = normalize(j.link);\n  if (!title || !link) continue;\n\n  // Local de-dupe key (within this node's run)\n  const key = `${lower(title)}|${lower(link)}`;\n  if (seen.has(key)) continue;\n  seen.add(key);\n\n  // Get age limit for this source\n  const ageLimit =\n    SOURCE_AGE_LIMITS[j.sourceName] || SOURCE_AGE_LIMITS[\"Default\"];\n\n  // Recency filter with source-specific limits\n  if (j.publishedAt) {\n    const age = daysSince(j.publishedAt);\n    if (age > ageLimit) {\n      filteredByAge++;\n      console.log(\n        `❌ Too old for ${\n          j.sourceName\n        } (${ageLimit}d limit): \"${title.substring(0, 40)}...\" (${age.toFixed(\n          1\n        )} days)`\n      );\n      continue;\n    }\n  }\n\n  const combined = `${title} ${normalize(j.description)}`;\n\n  // Fast negative filter on obvious low-signal content\n  if (hasAny(combined, LOW_VALUE_KEYWORDS)) {\n    filteredByLowValue++;\n    continue;\n  }\n\n  // Calculate score with source priority\n  const score = calculateArticleScore(j, j.sourceName);\n\n  // Dynamic threshold based on source priority and content quality\n  const baseThreshold = 2;\n  const sourceMultiplier = j.sourcePriorityMultiplier || 1.0; // Use the multiplier from Notion data\n  const sourceQuality = j.sourceContentQuality || \"Unknown\";\n\n  // Content quality-based thresholds (lower threshold = more permissive)\n  const qualityThresholds = {\n    \"Premium\": 3,\n    \"High\": 4,\n    \"Medium\": 5,\n    \"Low\": 7,\n    \"Unknown\": 5\n  };\n\n  const qualityThreshold = qualityThresholds[sourceQuality] || qualityThresholds[\"Unknown\"];\n  const priorityAdjustedThreshold = sourceMultiplier < 1.0 ? Math.max(baseThreshold + 1, 3) : baseThreshold;\n\n  // Use the more permissive (lower) of the two thresholds\n  const threshold = Math.min(priorityAdjustedThreshold, qualityThreshold);\n\n  // Hard includes: strong signals even if body is short\n  const hardInclude =\n    /\\b(raises|raised|acquire|acquisition|series [abc]|seed|pre-seed)\\b/i.test(\n      combined\n    ) || /\\b(series\\s?[abc])\\b/i.test(combined);\n\n  if (hardInclude || score >= threshold) {\n    // Add source priority info for debugging\n    const enhancedArticle = {\n      ...j,\n      _sourcePriority: sourceMultiplier,\n      _articleScore: score,\n      _threshold: threshold,\n      _ageLimit: ageLimit,\n    };\n\n    out.push({ json: enhancedArticle });\n  } else {\n    filteredByThreshold++;\n  }\n}\n\nconsole.log(\n  `Pre-filtered ${out.length} articles from ${\n    $input.all().length\n  } input articles`\n);\nconsole.log(\n  `Filtered: Age=${filteredByAge}, LowValue=${filteredByLowValue}, BelowThreshold=${filteredByThreshold}`\n);\n\n// Quality statistics tracking\nconst qualityStats = {};\nconst scoreStats = [];\nfor (const item of out) {\n  const quality = item.json.sourceContentQuality || \"Unknown\";\n  qualityStats[quality] = (qualityStats[quality] || 0) + 1;\n  if (item.json._articleScore) {\n    scoreStats.push(item.json._articleScore);\n  }\n}\n\nconst avgScore = scoreStats.length > 0 ? (scoreStats.reduce((a, b) => a + b, 0) / scoreStats.length).toFixed(1) : 0;\nconst minScore = scoreStats.length > 0 ? Math.min(...scoreStats) : 0;\nconst maxScore = scoreStats.length > 0 ? Math.max(...scoreStats) : 0;\n\nconsole.log(`Quality distribution: ${Object.entries(qualityStats).map(([q, c]) => `${q}:${c}`).join(\", \")}`);\nconsole.log(`Score stats - Avg: ${avgScore}, Min: ${minScore}, Max: ${maxScore}`);\n\nreturn out;\n"
+        "jsCode": "// Filters articles based on quality signals, source priority, and recency\n// Uses source-specific age limits and scoring to reduce noise whilst preserving valuable content\n\nconst MIN_COMBINED_WORDS = 10;\nconst MIN_TITLE_LEN = 40;\n\n// Different age limits based on source quality\nconst SOURCE_AGE_LIMITS = {\n  // Premium sources - content stays relevant longer\n  \"Martin Fowler's Blog\": 90, // 3 months - his content is timeless\n  \"Stripe Engineering Blog\": 60,\n  \"Netflix Tech Blog\": 60,\n  \"Google Cloud Blog\": 45,\n  \"AWS Architecture Blog\": 45,\n  \"Thoughtworks Technology Radar\": 90,\n  \"First Round Review\": 60,\n  \"Lenny's Newsletter\": 30,\n  InfoQ: 45,\n  Stratechery: 30,\n\n  // Default for most sources\n  Default: 30, // Increased from 21 to 30 days\n};\n\n// NOTE: Source priority multipliers are now retrieved from Notion database\n// instead of being hardcoded here. This allows for dynamic configuration.\n\n// Keywords that indicate high-value content for tech leaders\nconst HIGH_VALUE_KEYWORDS = [\n  \"ai\",\n  \"artificial intelligence\",\n  \"agentic\",\n  \"model\",\n  \"models\",\n  \"compute\",\n  \"gpu\",\n  \"architecture\",\n  \"scaling\",\n  \"performance\",\n  \"optimisation\",\n  \"framework\",\n  \"pattern\",\n  \"leadership\",\n  \"management\",\n  \"strategy\",\n  \"culture\",\n  \"hiring\",\n  \"team\",\n  \"platform\",\n  \"compliance\",\n  \"security\",\n  \"cyber\",\n  \"cloud\",\n  \"open-source\",\n  \"startup\",\n  \"scale-up\",\n  \"supercomputer\",\n  \"sovereign\",\n  \"quantum\",\n  \"benchmark\",\n  \"llm\",\n];\n\n// Keywords that indicate low-value content (funding noise)\nconst LOW_VALUE_KEYWORDS = [\n  \"job opening\",\n  \"we are hiring\",\n  \"webinar\",\n  \"podcast\",\n  \"event\",\n  \"conference\",\n  \"newsletter\",\n  \"roundup\",\n  \"sponsored\",\n  \"advertorial\",\n  \"press release\",\n];\n\nfunction normalize(str) {\n  return (str || \"\").toString().replace(/\\s+/g, \" \").trim();\n}\n\nfunction lower(str) {\n  return normalize(str).toLowerCase();\n}\n\nfunction wordsCount(str) {\n  return normalize(str).split(/\\s+/).filter(Boolean).length;\n}\n\nfunction hasAny(text, list) {\n  const t = lower(text);\n  return list.some((k) => t.includes(k));\n}\n\nfunction daysSince(dateIso) {\n  const t = Date.parse(dateIso);\n  if (!Number.isFinite(t)) return Infinity;\n  return (Date.now() - t) / 86400000;\n}\n\nfunction calculateArticleScore(article) {\n  // Get multiplier from article's source data (passed from Notion)\n  const priorityMultiplier = article.sourcePriorityMultiplier || 1.0;\n\n  let score = 0;\n\n  // Body richness (prefer content:encoded-derived wordCount)\n  const bodyWords = article.wordCount || 0;\n  if (bodyWords >= 400) score += 3;\n  else if (bodyWords >= 250) score += 2;\n  else if (bodyWords >= 120) score += 1;\n\n  // Headline/teaser substance\n  const combined = `${article.title} ${article.description}`;\n  const combinedWords = wordsCount(combined);\n  if (combinedWords >= MIN_COMBINED_WORDS) score += 1;\n\n  // Title strength\n  if (article.title && article.title.length >= MIN_TITLE_LEN) score += 1;\n\n  // High-value keyword signals (multiple hits add more weight)\n  const highValueHits = HIGH_VALUE_KEYWORDS.filter((kw) =>\n    lower(combined).includes(kw)\n  ).length;\n  if (highValueHits >= 3) score += 2;\n  else if (highValueHits >= 1) score += 1;\n\n  // Recency bonus (but don't penalize quality sources too much)\n  const age = article.publishedAt ? daysSince(article.publishedAt) : Infinity;\n  if (age <= 3) score += 2;\n  else if (age <= 7) score += 1;\n  else if (age <= 14 && priorityMultiplier >= 1.3) score += 1; // Bonus for high-priority sources even if older\n\n  // Apply source priority multiplier\n  score = Math.round(score * priorityMultiplier);\n\n  return score;\n}\n\n// Lightweight in-flow de-duplication by guid/link/title\nconst seen = new Set();\n\nconst out = [];\nlet filteredByAge = 0;\nlet filteredByLowValue = 0;\nlet filteredByThreshold = 0;\n\nfor (const it of $input.all()) {\n  const j = it?.json || {};\n  const title = normalize(j.title);\n  const link = normalize(j.link);\n  if (!title || !link) continue;\n\n  // Local de-dupe key (within this node's run)\n  const key = `${lower(title)}|${lower(link)}`;\n  if (seen.has(key)) continue;\n  seen.add(key);\n\n  // Get age limit for this source\n  const ageLimit =\n    SOURCE_AGE_LIMITS[j.sourceName] || SOURCE_AGE_LIMITS[\"Default\"];\n\n  // Recency filter with source-specific limits\n  if (j.publishedAt) {\n    const age = daysSince(j.publishedAt);\n    if (age > ageLimit) {\n      filteredByAge++;\n      console.log(\n        `❌ Too old for ${\n          j.sourceName\n        } (${ageLimit}d limit): \"${title.substring(0, 40)}...\" (${age.toFixed(\n          1\n        )} days)`\n      );\n      continue;\n    }\n  }\n\n  const combined = `${title} ${normalize(j.description)}`;\n\n  // Fast negative filter on obvious low-signal content\n  if (hasAny(combined, LOW_VALUE_KEYWORDS)) {\n    filteredByLowValue++;\n    continue;\n  }\n\n  // Calculate score with source priority\n  const score = calculateArticleScore(j);\n\n  // Dynamic threshold based on source priority\n  const baseThreshold = 2;\n  const sourceMultiplier = j.sourcePriorityMultiplier || 1.0;\n\n  // Since sourceContentQuality doesn't exist in the data, we'll use a simpler threshold logic\n  const priorityAdjustedThreshold = sourceMultiplier < 1.0 ? Math.max(baseThreshold + 1, 3) : baseThreshold;\n  const threshold = priorityAdjustedThreshold;\n\n  // Hard includes: strong signals even if body is short\n  const hardInclude =\n    /\\b(raises|raised|acquire|acquisition|series [abc]|seed|pre-seed)\\b/i.test(\n      combined\n    ) || /\\b(series\\s?[abc])\\b/i.test(combined);\n\n  if (hardInclude || score >= threshold) {\n    // Add source priority info for debugging\n    const enhancedArticle = {\n      ...j,\n      _sourcePriority: sourceMultiplier,\n      _articleScore: score,\n      _threshold: threshold,\n      _ageLimit: ageLimit,\n    };\n\n    out.push({ json: enhancedArticle });\n  } else {\n    filteredByThreshold++;\n  }\n}\n\nconsole.log(\n  `Pre-filtered ${out.length} articles from ${\n    $input.all().length\n  } input articles`\n);\nconsole.log(\n  `Filtered: Age=${filteredByAge}, LowValue=${filteredByLowValue}, BelowThreshold=${filteredByThreshold}`\n);\n\n// Quality statistics tracking\nconst scoreStats = [];\nfor (const item of out) {\n  if (item.json._articleScore) {\n    scoreStats.push(item.json._articleScore);\n  }\n}\n\nconst avgScore = scoreStats.length > 0 ? (scoreStats.reduce((a, b) => a + b, 0) / scoreStats.length).toFixed(1) : 0;\nconst minScore = scoreStats.length > 0 ? Math.min(...scoreStats) : 0;\nconst maxScore = scoreStats.length > 0 ? Math.max(...scoreStats) : 0;\n\nconsole.log(`Score stats - Avg: ${avgScore}, Min: ${minScore}, Max: ${maxScore}`);\n\nreturn out;\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        944,
-        432
+        -64,
+        -464
       ],
-      "id": "7a93849d-c0d3-4ad7-aa24-8140c5202762",
+      "id": "01d7b11c-7a0b-4497-a4a3-e6e736e2a337",
       "name": "Pre-filter"
     },
     {
@@ -263,10 +263,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1056,
-        432
+        160,
+        -464
       ],
-      "id": "9f8a1b2c-3d4e-5f6a-7b8c-9d0e1f2a3b4c",
+      "id": "5d17772c-af0d-4ee8-b61b-5ceb8988c2fe",
       "name": "Article Cap"
     },
     {
@@ -276,10 +276,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1168,
-        432
+        384,
+        -464
       ],
-      "id": "9c54a275-9411-4bbc-9e6d-386aaa493a11",
+      "id": "51be0597-a106-4b25-8e6c-39b5e2821bff",
       "name": "Make AI Batches"
     },
     {
@@ -304,15 +304,15 @@
       "type": "@n8n/n8n-nodes-langchain.anthropic",
       "typeVersion": 1,
       "position": [
-        1392,
-        432
+        608,
+        -464
       ],
-      "id": "32135601-b274-4f55-8d32-7a26e6022fec",
+      "id": "eebc373d-ece4-41a1-b489-8cc43379e8bf",
       "name": "AI Content Analysis",
       "alwaysOutputData": true,
       "credentials": {
         "anthropicApi": {
-          "id": "yRaXinQhqHkgqzEg",
+          "id": "tLx1lap9eXXXkj3m",
           "name": "Anthropic account"
         }
       },
@@ -325,10 +325,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1744,
-        432
+        960,
+        -464
       ],
-      "id": "1919c17d-5a4a-4527-83c7-1a6d6eeb7985",
+      "id": "e3fbc4da-7597-4ef3-a448-95f0ec078b4e",
       "name": "Merge Batch Results"
     },
     {
@@ -417,10 +417,10 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        1968,
-        432
+        1184,
+        -464
       ],
-      "id": "0a84d266-d8bc-48f7-a84e-a6c821b96109",
+      "id": "2a092bdb-08bd-4586-a76e-1ed2a99e222b",
       "name": "Create Pipeline Entry",
       "credentials": {
         "notionApi": {
@@ -452,10 +452,10 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        -432,
-        640
+        -1408,
+        -64
       ],
-      "id": "6400f701-7c49-4de7-8423-50c55145e1b2",
+      "id": "8e8d28ce-ac76-45eb-b1a3-8a8086030b83",
       "name": "Update Last Scraped Date",
       "credentials": {
         "notionApi": {
@@ -492,10 +492,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1136,
-        1072
+        160,
+        48
       ],
-      "id": "73d039c0-fd71-486c-8524-37a617ab39c2",
+      "id": "c83aa6bc-73d6-4c49-9449-08d76ed6548b",
       "name": "Need Notion Update?"
     },
     {
@@ -545,10 +545,10 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        1376,
-        1056
+        384,
+        112
       ],
-      "id": "e5e261aa-f28e-4bd0-af12-e4e1a5525d56",
+      "id": "19086ac0-4fc5-4e77-ae36-c6a86b9903cf",
       "name": "Update Source Status",
       "credentials": {
         "notionApi": {
@@ -564,10 +564,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2608,
-        432
+        1408,
+        -464
       ],
-      "id": "80edc9d4-e984-478c-8e6b-2ff05bb3c782",
+      "id": "2299c40e-01be-456a-9920-ac54e1eeb773",
       "name": "Pipeline Metrics"
     },
     {
@@ -578,7 +578,7 @@
           "value": "https://www.notion.so/27390f46679580d9bd79c8407e4254d7?v=27390f46679580a381d0000cdbfc90fd",
           "mode": "url"
         },
-        "title": "Pipeline Run {{ $now.format('DD/MM/YYYY HH:mm') }}",
+        "title": "={{ $json.property_summary || 'Pipeline Run ' + $now.format('DD/MM/YYYY   HH:mm') }}",
         "propertiesUi": {
           "propertyValues": [
             {
@@ -609,10 +609,6 @@
             {
               "key": "Status|select",
               "selectValue": "={{ $json.property_run_quality }}"
-            },
-            {
-              "key": "Summary|rich_text",
-              "textContent": "={{ $json.property_summary }}"
             }
           ]
         },
@@ -621,10 +617,10 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        2816,
-        432
+        1632,
+        -464
       ],
-      "id": "f1e2d3c4-b5a6-7890-cdef-012345678901",
+      "id": "ef7542e9-3048-4b67-abe5-4e874db7d62d",
       "name": "Store Pipeline Metrics",
       "credentials": {
         "notionApi": {
@@ -635,23 +631,22 @@
     },
     {
       "parameters": {
-        "jsCode": "// Prepare email notification with articles summary and pipeline metrics\nconst metricsData = $input.item.json;\nconst metrics = metricsData.metrics;\nconst articles = metricsData.articles || [];\nconst articlesCount = articles.length;\n\nif (articlesCount === 0) {\n  // No articles to report, skip email\n  return [];\n}\n\n// Group articles by priority for display\nconst byPriority = {\n  High: [],\n  Medium: [],\n  Low: []\n};\n\narticles.forEach(item => {\n  const priority = item.property_priority || \"Medium\";\n  const pillar = item.property_content_pillar || \"Unknown\";\n  const title = item.property_title || \"Untitled\";\n  \n  byPriority[priority].push({\n    title: title.substring(0, 80) + (title.length > 80 ? \"...\" : \"\"),\n    pillar: pillar\n  });\n});\n\n// Build email body\nlet emailBody = `<h2>🎯 New Content Added to Pipeline</h2>\\n`;\nemailBody += `<p><strong>${articlesCount}</strong> new articles have been added to your Content Hub for review.</p>\\n\\n`;\n\n// Pipeline performance summary\nemailBody += `<h3>📈 Pipeline Performance</h3>\\n`;\nemailBody += `<ul>\\n`;\nemailBody += `  <li>Scraped: ${metrics.totalScraped} articles</li>\\n`;\nemailBody += `  <li>After deduplication: ${metrics.afterDedup} (${metrics.dedupRate}% duplicates removed)</li>\\n`;\nemailBody += `  <li>After quality filter: ${metrics.afterPrefilter} (${metrics.filterRate}% filtered out)</li>\\n`;\nemailBody += `  <li>After daily cap: ${metrics.afterCap}</li>\\n`;\nemailBody += `  <li><strong>Final stored: ${metrics.finalStored}</strong></li>\\n`;\nemailBody += `</ul>\\n\\n`;\n\n// Articles by priority\nif (byPriority.High.length > 0) {\n  emailBody += `<h3>🔴 High Priority (${byPriority.High.length})</h3>\\n<ul>\\n`;\n  byPriority.High.forEach(a => {\n    emailBody += `  <li><strong>${a.title}</strong> - ${a.pillar}</li>\\n`;\n  });\n  emailBody += `</ul>\\n\\n`;\n}\n\nif (byPriority.Medium.length > 0) {\n  emailBody += `<h3>🟡 Medium Priority (${byPriority.Medium.length})</h3>\\n<ul>\\n`;\n  byPriority.Medium.forEach(a => {\n    emailBody += `  <li><strong>${a.title}</strong> - ${a.pillar}</li>\\n`;\n  });\n  emailBody += `</ul>\\n\\n`;\n}\n\nif (byPriority.Low.length > 0) {\n  emailBody += `<h3>🟢 Low Priority (${byPriority.Low.length})</h3>\\n<ul>\\n`;\n  byPriority.Low.forEach(a => {\n    emailBody += `  <li>${a.title} - ${a.pillar}</li>\\n`;\n  });\n  emailBody += `</ul>\\n\\n`;\n}\n\n// Content pillar distribution\nemailBody += `<h3>📊 Content Distribution</h3>\\n<ul>\\n`;\nObject.entries(metrics.byPillar).forEach(([pillar, count]) => {\n  emailBody += `  <li>${pillar}: ${count}</li>\\n`;\n});\nemailBody += `</ul>\\n\\n`;\n\n// Quality metrics\nemailBody += `<h3>⭐ Quality Metrics</h3>\\n<ul>\\n`;\nemailBody += `  <li>Avg Relevance: ${metrics.avgScores.relevance}/10</li>\\n`;\nemailBody += `  <li>Avg Actionability: ${metrics.avgScores.actionability}/10</li>\\n`;\nemailBody += `  <li>Avg Depth: ${metrics.avgScores.depth}/10</li>\\n`;\nemailBody += `</ul>\\n\\n`;\n\n// Top contributing sources\nif (metrics.topSourcesList && metrics.topSourcesList.length > 0) {\n  emailBody += `<h3>🏆 Top Sources</h3>\\n<ul>\\n`;\n  metrics.topSourcesList.forEach(source => {\n    emailBody += `  <li>${source}</li>\\n`;\n  });\n  emailBody += `</ul>\\n\\n`;\n}\n\n// Cost estimate\nemailBody += `<p><small>💰 Estimated AI cost: $${metrics.estimatedCost.toFixed(4)}</small></p>\\n\\n`;\n\n// Add CTA\nemailBody += `<hr>\\n`;\nemailBody += `<p><strong>👉 <a href=\"https://www.notion.so/Content-Hub-24f90f46679580dca35ac2354b6b915c\">Review in Content Hub</a></strong></p>\\n`;\nemailBody += `<p style=\"color: #666; font-size: 12px;\">Processed at ${new Date().toLocaleString('en-GB', { timeZone: 'Europe/London' })}</p>`;\n\nreturn [{\n  json: {\n    subject: `📚 ${articlesCount} New Articles Added (from ${metrics.totalScraped} scraped)`,\n    body: emailBody,\n    contentHubUrl: \"https://www.notion.so/Content-Hub-24f90f46679580dca35ac2354b6b915c\",\n    articlesCount: articlesCount,\n    metrics: metrics,\n    timestamp: new Date().toISOString()\n  }\n}];"
+        "jsCode": "// Prepare email notification with articles summary and pipeline metrics\n// Access data from the previous node (Pipeline Metrics, not Store Pipeline Metrics)\nconst pipelineData = $items(\"Pipeline Metrics\", 0)?.[0]?.json;\n\nif (!pipelineData) {\n  console.log(\"No pipeline data available, skipping email\");\n  return [];\n}\n\nconst metrics = pipelineData.metrics;\nconst articles = pipelineData.articles || [];\nconst articlesCount = articles.length;\n\nif (articlesCount === 0) {\n  console.log(\"No articles to report, skipping email\");\n  return [];\n}\n\n// Group articles by priority for display\nconst byPriority = {\n  High: [],\n  Medium: [],\n  Low: []\n};\n\narticles.forEach(item => {\n  const priority = item.property_priority || \"Medium\";\n  const pillar = item.property_content_pillar || \"Unknown\";\n  const title = item.property_title || \"Untitled\";\n\n  byPriority[priority].push({\n    title: title.substring(0, 80) + (title.length > 80 ? \"...\" : \"\"),\n    pillar: pillar\n  });\n});\n\n// Build email body\nlet emailBody = `<h2>🎯 New Content Added to Pipeline</h2>\\n`;\nemailBody += `<p><strong>${articlesCount}</strong> new articles have been added to your Content Hub for review.</p>\\n\\n`;\n\n// Pipeline performance summary\nemailBody += `<h3>📈 Pipeline Performance</h3>\\n`;\nemailBody += `<ul>\\n`;\nemailBody += `  <li>Scraped: ${metrics.totalScraped} articles</li>\\n`;\nemailBody += `  <li>After deduplication: ${metrics.afterDedup} (${metrics.dedupRate}% duplicates removed)</li>\\n`;\nemailBody += `  <li>After quality filter: ${metrics.afterPrefilter} (${metrics.filterRate}% filtered out)</li>\\n`;\nemailBody += `  <li>After daily cap: ${metrics.afterCap}</li>\\n`;\nemailBody += `  <li><strong>Final stored: ${metrics.finalStored}</strong></li>\\n`;\nemailBody += `</ul>\\n\\n`;\n\n// Articles by priority\nif (byPriority.High.length > 0) {\n  emailBody += `<h3>🔴 High Priority (${byPriority.High.length})</h3>\\n<ul>\\n`;\n  byPriority.High.forEach(a => {\n    emailBody += `  <li><strong>${a.title}</strong> - ${a.pillar}</li>\\n`;\n  });\n  emailBody += `</ul>\\n\\n`;\n}\n\nif (byPriority.Medium.length > 0) {\n  emailBody += `<h3>🟡 Medium Priority (${byPriority.Medium.length})</h3>\\n<ul>\\n`;\n  byPriority.Medium.forEach(a => {\n    emailBody += `  <li><strong>${a.title}</strong> - ${a.pillar}</li>\\n`;\n  });\n  emailBody += `</ul>\\n\\n`;\n}\n\nif (byPriority.Low.length > 0) {\n  emailBody += `<h3>🟢 Low Priority (${byPriority.Low.length})</h3>\\n<ul>\\n`;\n  byPriority.Low.forEach(a => {\n    emailBody += `  <li>${a.title} - ${a.pillar}</li>\\n`;\n  });\n  emailBody += `</ul>\\n\\n`;\n}\n\n// Content pillar distribution\nemailBody += `<h3>📊 Content Distribution</h3>\\n<ul>\\n`;\nObject.entries(metrics.byPillar).forEach(([pillar, count]) => {\n  emailBody += `  <li>${pillar}: ${count}</li>\\n`;\n});\nemailBody += `</ul>\\n\\n`;\n\n// Quality metrics\nemailBody += `<h3>⭐ Quality Metrics</h3>\\n<ul>\\n`;\nemailBody += `  <li>Avg Relevance: ${metrics.avgScores.relevance}/10</li>\\n`;\nemailBody += `  <li>Avg Actionability: ${metrics.avgScores.actionability}/10</li>\\n`;\nemailBody += `  <li>Avg Depth: ${metrics.avgScores.depth}/10</li>\\n`;\nemailBody += `</ul>\\n\\n`;\n\n// Top contributing sources\nif (metrics.topSourcesList && metrics.topSourcesList.length > 0) {\n  emailBody += `<h3>🏆 Top Sources</h3>\\n<ul>\\n`;\n  metrics.topSourcesList.forEach(source => {\n    emailBody += `  <li>${source}</li>\\n`;\n  });\n  emailBody += `</ul>\\n\\n`;\n}\n\n// Cost estimate\nemailBody += `<p><small>💰 Estimated AI cost: $${metrics.estimatedCost.toFixed(4)}</small></p>\\n\\n`;\n\n// Add CTA\nemailBody += `<hr>\\n`;\nemailBody += `<p><strong>👉 <a href=\"https://www.notion.so/Content-Hub-24f90f46679580dca35ac2354b6b915c\">Review in Content Hub</a></strong></p>\\n`;\nemailBody += `<p style=\"color: #666; font-size: 12px;\">Processed at ${new Date().toLocaleString('en-GB', { timeZone: 'Europe/London' })}</p>`;\n\nreturn [{\n  json: {\n    subject: `📚 ${articlesCount} New Articles Added (from ${metrics.totalScraped} scraped)`,\n    body: emailBody,\n    contentHubUrl: \"https://www.notion.so/Content-Hub-24f90f46679580dca35ac2354b6b915c\",\n    articlesCount: articlesCount,\n    metrics: metrics,\n    timestamp: new Date().toISOString()\n  }\n}];\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2192,
-        432
+        1856,
+        -464
       ],
-      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "id": "8a3b5ffc-dcfd-4f59-a180-0284ef31634c",
       "name": "Prepare Email Notification"
     },
     {
       "parameters": {
-        "fromEmail": "n8n@xavierfuentes.com",
-        "toEmail": "xavier@xavierfuentes.com",
+        "fromEmail": "x@xavi.cc",
+        "toEmail": "me@xavierfuentes.com",
         "subject": "={{ $json.subject }}",
-        "emailType": "html",
         "html": "={{ $json.body }}",
         "options": {
           "allowUnauthorizedCerts": false
@@ -660,15 +655,16 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        2400,
-        432
+        2080,
+        -464
       ],
-      "id": "b2c3d4e5-f6a7-8901-bcde-f01234567891",
+      "id": "72a1ebfd-663a-4a61-bd84-b3f65eae0cef",
       "name": "Send Email Notification",
+      "webhookId": "baa52cc0-17a0-4598-b401-d53bdd217721",
       "credentials": {
         "smtp": {
-          "id": "SmtpCredentialsId",
-          "name": "SMTP account"
+          "id": "mI3xQSjzFfN7X5DY",
+          "name": "Apple"
         }
       }
     },
@@ -679,10 +675,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        704,
-        1072
+        -288,
+        -80
       ],
-      "id": "70ed09b9-d840-4ed5-8694-91a743964a02",
+      "id": "e4a9c6fd-f140-4c3c-b5ac-10b2f32950f7",
       "name": "RSS Error Handler"
     },
     {
@@ -692,10 +688,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        944,
-        1072
+        -64,
+        -64
       ],
-      "id": "7ed2ce7b-f825-48b3-a357-991a0fa71d82",
+      "id": "4d74803f-6d65-4cde-a541-454c572b4a87",
       "name": "Auto-Deactivate Source"
     }
   ],
@@ -935,11 +931,6 @@
         ]
       ]
     },
-    "Send Email Notification": {
-      "main": [
-        []
-      ]
-    },
     "Update Last Scraped Date": {
       "main": [
         [
@@ -1003,11 +994,11 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "50d1caa8-8a65-469d-a443-3c7746cb0055",
+  "versionId": "56457a4f-2b54-402a-a5ec-d5166e605ae5",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "d052f68fee6cbc1f0a1b7b4daa7281384655d7a51d1cb62c7e57bbd86329486d"

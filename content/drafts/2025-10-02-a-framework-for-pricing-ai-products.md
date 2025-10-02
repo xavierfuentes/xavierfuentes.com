@@ -1,5 +1,5 @@
 ---
-  title: A framework for pricing AI products
+title: A framework for pricing AI products
 slug: a-framework-for-pricing-ai-products
 status: draft
 visibility: public
@@ -7,16 +7,16 @@ featured: false
 meta_title: A framework for pricing AI products
 meta_description: While businesses are rapidly building AI products, monetization remains a challenge. In this post, we share a framework for building a successful pricing strategy with key decision points on charge metrics, billing models, and guardrails.
 target_channel: undefined
-  tags:
-    - Technology Strategy
+tags:
+  - Technology Strategy
   - ai product pricing
   - monetisation strategies
   - billing models
-  authors:
-    - xavier
-  ---
+authors:
+  - xavier
+---
 
-  **Struggling to Price Your AI Product? Here’s a Framework That Works**
+**Struggling to Price Your AI Product? Here’s a Framework That Works**
 
 AI product pricing is one of the trickiest puzzles for CTOs and product leaders today. You’ve built a smart, data-hungry model that’s driving real value, but how do you translate that into a billing strategy that customers accept—and that scales with your costs? If you’ve been stuck between charging by API calls, a flat subscription, or something more exotic, you’re not alone.
 
@@ -42,8 +42,9 @@ Getting this wrong can lead to severely eroded margins or lost deals. For CTOs, 
 
 Stripe’s framework breaks down AI product pricing into three key decision points:
 
-1. **Charge Metrics**  
+1. **Charge Metrics**
    What do you bill for? Options include:
+
    - **Compute time** (e.g. GPU hours)
    - **API calls** or requests served
    - **Units of data processed** (e.g. images, documents)
@@ -51,13 +52,14 @@ Stripe’s framework breaks down AI product pricing into three key decision poin
 
    Each metric has pros and cons. Compute time directly reflects cost but can be opaque to customers. API calls are simple but may not correlate with resource consumption. Output tokens align better with value in generative AI but add complexity.
 
-2. **Billing Models**  
+2. **Billing Models**
    Common models include:
+
    - **Pay-as-you-go**: Customers pay for actual usage, ideal for variable workloads but harder to forecast revenue.
    - **Subscription tiers**: Bundled usage allowances with overage fees, offering predictability but risking over/underutilisation.
    - **Hybrid models**: Combining subscriptions with usage-based add-ons, balancing predictability and fairness.
 
-3. **Guardrails**  
+3. **Guardrails**
    Safeguards to prevent bill shock and abuse:
    - Usage caps or soft limits
    - Alerts and dashboards for visibility
@@ -69,13 +71,13 @@ The trick is to pick charge metrics and billing models that reflect your AI prod
 
 ### Case Studies: Real-World Examples
 
-**Example 1: OpenAI’s GPT-3 Pricing**  
+**Example 1: OpenAI’s GPT-3 Pricing**
 OpenAI charges per 1,000 tokens generated, clearly linking cost to output volume. This aligns pricing with customer value (more generated text means more value) and reflects underlying compute costs.
 
-**Example 2: Runway ML**  
+**Example 2: Runway ML**
 Runway, an AI video editing platform, uses a hybrid model: subscriptions grant a base number of compute hours, with pay-as-you-go overages. This model works because video AI is resource-intensive and variable, making pure subscription risky.
 
-**Example 3: A SaaS Startup I Consulted**  
+**Example 3: A SaaS Startup I Consulted**
 A client built an AI-powered document processing tool. Initially, they charged a flat monthly fee regardless of volume. They quickly realised this didn’t cover spikes in OCR and NLP compute costs. We pivoted to a hybrid model: a base subscription plus per-page processing fees. It increased revenue 30% within six months, while customers appreciated the fairness.
 
 ---
@@ -85,7 +87,7 @@ A client built an AI-powered document processing tool. Initially, they charged a
 Pricing AI products isn’t just about covering cloud bills. It’s a strategic lever that shapes your product roadmap, customer relationships, and competitive positioning.
 
 - **Technical leadership must own or actively collaborate on pricing decisions.** Your understanding of model costs and performance trade-offs is invaluable in selecting accurate charge metrics.
-  
+
 - **Invest in telemetry and usage tracking early.** Without detailed insights into how customers consume compute and data, pricing experiments will be guesswork.
 
 - **Use pricing to drive desirable customer behaviour.** For example, incentivise off-peak usage or batch processing to optimise infrastructure utilisation.
@@ -101,7 +103,7 @@ Pricing AI products isn’t just about covering cloud bills. It’s a strategic 
 As AI models grow more complex and diverse, pricing frameworks must evolve. Emerging trends include:
 
 - **Dynamic pricing based on model complexity or latency SLAs.** Charging more for faster or higher-quality responses.
-  
+
 - **Value-based pricing tied to business outcomes.** For instance, pricing per lead generated or conversion uplift rather than compute units.
 
 - **Bundling AI with other platform services** to create integrated but flexible offerings.
@@ -128,6 +130,6 @@ If you’re a CTO or product leader wrestling with AI product pricing, try apply
 
 What’s your biggest challenge with AI product pricing right now? Drop a comment or send me a message—let’s solve it together.
 
-  ---
+---
 
-  *AI-generated draft - Quality Score: 100/100*
+_AI-generated draft - Quality Score: 100/100_

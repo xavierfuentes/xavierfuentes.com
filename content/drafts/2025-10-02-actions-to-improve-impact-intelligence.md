@@ -1,5 +1,5 @@
 ---
-  title: Actions to improve impact intelligence
+title: Actions to improve impact intelligence
 slug: actions-to-improve-impact-intelligence
 status: draft
 visibility: public
@@ -7,16 +7,16 @@ featured: false
 meta_title: Actions to improve impact intelligence
 meta_description: <div class = 'img-link'><a href = ' src = ' width = '350px'></img></a></div> <p><b class = 'author'>Sriram Narayan</b> continues his article on impact intelligence by outlining <a href = ' actions</a> that can be done to improve impact intelligence: introduce robust demand management, pay down measurement debt introduce impact validation, offer your CFO/COO an alternative to ROI, equip your teams.</p> <p><a class = 'more' href =
 target_channel: undefined
-  tags:
-    - Execution & Delivery
+tags:
+  - Execution & Delivery
   - impact intelligence
   - measurement
   - demand management
-  authors:
-    - xavier
-  ---
+authors:
+  - xavier
+---
 
-  # Enhancing Impact Intelligence: Strategic Actions for CTOs
+# Enhancing Impact Intelligence: Strategic Actions for CTOs
 
 ## Context: Why Impact Intelligence Matters for CTOs
 
@@ -68,15 +68,16 @@ By taking these concrete actions, CTOs can elevate their organisation’s impact
 
 ---
 
-**Internal Linking Opportunities:**  
-- Explore our guide on [Building Data-Driven Tech Strategies](#)  
-- Learn about [AI Implementation Best Practices for CTOs](#)  
+**Internal Linking Opportunities:**
+
+- Explore our guide on [Building Data-Driven Tech Strategies](#)
+- Learn about [AI Implementation Best Practices for CTOs](#)
 - Discover how [Sustainability and Technology Intersect](#)
 
 ---
 
-*Word count: 623*
+_Word count: 623_
 
-  ---
+---
 
-  *AI-generated draft - Quality Score: 75/100*
+_AI-generated draft - Quality Score: 75/100_

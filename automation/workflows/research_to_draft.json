@@ -17,8 +17,8 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
       "position": [
-        -1648,
-        -152
+        -1744,
+        -160
       ]
     },
     {
@@ -67,8 +67,8 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        -1424,
-        -152
+        -1520,
+        -160
       ],
       "credentials": {
         "notionApi": {
@@ -86,8 +86,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1200,
-        -152
+        -1296,
+        -160
       ]
     },
     {
@@ -97,8 +97,8 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        -976,
-        -152
+        -848,
+        -160
       ],
       "id": "e16e7c1b-bf66-441c-917b-7dddd742ba3e",
       "name": "Loop Over Items"
@@ -114,7 +114,7 @@
         "messages": {
           "values": [
             {
-              "content": "=You are a professional content writer specialising in technology leadership and startup strategy. You MUST write in UK English only.\n\n  {{ $json.reviewer_feedback ? 'REVISION REQUIRED - Retry Attempt ' + ($json.retry_count || 1) + ' of 3 - Previous Quality Score: ' + $json.previous_quality_score +\n  '/100 - Editor Feedback: ' + $json.reviewer_feedback + ' - IMPORTANT: Address ALL the feedback points above in your revised draft.\\n\\n' : '' }}\n\n## ⚠️ CRITICAL REQUIREMENTS - NON-NEGOTIABLE\n\n  1. **WORD COUNT**: EXACTLY {{ $json.word_count_target }} words (±10% maximum: {{ Math.round($json.word_count_target * 0.9) }}-{{ Math.round($json.word_count_target *\n  1.1) }} words)\n     - Count your words before submitting\n     - If you exceed the range, you MUST cut content\n     - If you're under the range, you MUST add more depth\n\n  2. **UK ENGLISH ONLY**: You MUST use British spellings throughout:\n     - optimise (NOT optimize)\n     - realise (NOT realize)\n     - colour (NOT color)\n     - whilst (NOT while in formal contexts)\n     - organisation (NOT organization)\n     - analyse (NOT analyze)\n     - Any American spellings will result in rejection\n\n  ## BRAND VOICE & STRATEGY\n  **Core Purpose:** Build thought leadership whilst generating leads for fractional CTO and coaching services\n  **Voice Guidelines:**\n  - More: Specific examples, personal failures, contrarian opinions, practical frameworks\n  - Less: Abstract theory, obvious advice, generic commentary, consulting speak\n  - Demonstrate expertise without giving away the shop (80% value, 20% positioning)\n\n  ## SOURCE ANALYSIS\n  **Title:** {{ $json.enhanced_title }}\n  **Source:** {{ $json.source_name }}\n  **Original Article:** {{ $json.article_url }}\n  **Content Pillar:** {{ $json.content_pillar }} ({{ Math.round($json.strategic_weight * 100) }}% of content strategy)\n  **Primary Audience:** {{ $json.primary_audience }}\n  **Target Audience:** {{ $json.target_audience.join(', ') }}\n  **Content Type:** {{ $json.content_type }}\n\n  ## RESEARCH FOUNDATION\n  **Description:** {{ $json.enhanced_description }}\n  **Research Notes:** {{ $json.research_notes || 'See original article for context' }}\n  **Quality Scores:** Relevance: {{ $json.relevance_score }}/10 | Actionability: {{ $json.actionability_score }}/10 | Depth: {{ $json.depth_score }}/10\n  **SEO Keywords:** {{ $json.seo_keywords.join(', ') }}\n\n  ## CONTENT STRUCTURE\n  **Required Structure:** {{ $json.recommended_structure }}\n  **Audience Angle:** Focus on {{ $json.audience_angle }}\n  **Tone:** Professional but personal - demonstrate expertise without consulting speak\n\n  ## STRATEGIC APPROACH\n  1. **Hook:** Start with a specific, relatable challenge your audience faces\n  2. **Authority:** Reference the source material whilst adding your own insights\n  3. **Framework:** Provide a clear, actionable framework readers can implement\n  4. **Examples:** Include specific numbers, real scenarios, and concrete examples\n  5. **Implementation:** Give step-by-step guidance with potential pitfalls\n  6. **Next Steps:** End with clear actions readers can take immediately\n\n  ## QUALITY STANDARDS\n  - Pass the 'so what?' test - every section must provide clear value\n  - Include specific examples and metrics where possible\n  - Avoid generic advice - focus on nuanced, experienced insights\n  - Balance strategic thinking with practical application\n  - Reference but don't copy the source material\n\n  ## SEO INTEGRATION\n  Naturally incorporate these keywords: {{ $json.seo_keywords.slice(0, 5).join(', ') }}\n  Focus keyword: {{ $json.seo_keywords[0] || $json.content_pillar.toLowerCase() }}\n\n  ## FINAL CHECKLIST BEFORE SUBMITTING:\n  - Word count is between {{ Math.round($json.word_count_target * 0.9) }}-{{ Math.round($json.word_count_target * 1.1) }} words\n  - All spellings are UK English (optimise, realise, colour, organisation, analyse)\n  - Structure follows: {{ $json.recommended_structure }}\n  - Includes specific examples with numbers\n  - Ends with clear next steps\n\n  Write the article now for {{ $json.primary_audience.toLowerCase() }} audience."
+              "content": "=You are a professional content writer specialising in technology leadership and startup strategy. You MUST write in UK English only.\n\n{{ $json.reviewer_feedback ? 'REVISION REQUIRED - Retry Attempt ' + ($json.retry_count || 1) + ' of 3 - Previous Quality Score: ' + $json.previous_quality_score + '/100 - Editor Feedback: ' + $json.reviewer_feedback + ' - IMPORTANT: Address ALL the feedback points above in your revised draft.\\n\\n' : '' }}\n\n## ⚠️ CRITICAL REQUIREMENTS - NON-NEGOTIABLE\n\n1. **WORD COUNT**: EXACTLY {{ $json.word_count_target }} words (±10% maximum: {{ Math.round($json.word_count_target * 0.9) }}-{{ Math.round($json.word_count_target *\n   1.1) }} words)\n\n   - Count your words before submitting\n   - If you exceed the range, you MUST cut content\n   - If you're under the range, you MUST add more depth\n\n2. **UK ENGLISH ONLY**: You MUST use British spellings throughout:\n   - optimise (NOT optimize)\n   - realise (NOT realize)\n   - colour (NOT color)\n   - whilst (NOT while in formal contexts)\n   - organisation (NOT organization)\n   - analyse (NOT analyze)\n   - Any American spellings will result in rejection\n\n## BRAND VOICE & STRATEGY\n\n**Core Purpose:** Build thought leadership whilst generating leads for fractional CTO and coaching services\n**Voice Guidelines:**\n\n- More: Specific examples, personal failures, contrarian opinions, practical frameworks\n- Less: Abstract theory, obvious advice, generic commentary, consulting speak\n- Demonstrate expertise without giving away the shop (80% value, 20% positioning)\n\n## PLATFORM & FORMAT\n\n**Target Channel:** {{ $json.target_channel === 'linkedin-original' ? 'LinkedIn' : ($json.target_channel === 'newsletter' ? 'Newsletter' : 'Blog') }}\n**Content Format:** {{ $json.content_format }}\n**Tone Adjustment:** {{ $json.tone_adjustment }}\n{{ $json.target_channel === 'linkedin-original' ? '**Publishing Day:** ' + $json.linkedin_day.charAt(0).toUpperCase() + $json.linkedin_day.slice(1) : '' }}\n\n{{ $json.target_channel === 'linkedin-original' ? '## LINKEDIN-SPECIFIC REQUIREMENTS\\n- Start with a compelling hook in the first 2 lines\\n- Use short paragraphs (2-3 sentences max)\\n- Include white space for readability\\n- End with a clear question or call-to-action\\n- More conversational and direct than blog content\\n- Focus on ONE key insight or framework' : ($json.target_channel === 'newsletter' ? '## NEWSLETTER-SPECIFIC REQUIREMENTS\\n- Digest format with multiple linked insights\\n- Clear section breaks and scannable structure\\n- Balance depth with brevity\\n- Include links to full articles or resources\\n- Personal intro from Xavier\\n- Weekly theme or connecting thread' : '## BLOG-SPECIFIC REQUIREMENTS\\n- Comprehensive coverage of topic\\n-SEO-optimised structure with H2/H3 headings\\n- Internal linking opportunities\\n- Detailed examples and implementation steps\\n- Longer-form, in-depth analysis') }}\n\n## SOURCE ANALYSIS\n\n**Title:** {{ $json.enhanced_title }}\n**Source:** {{ $json.source_name }}\n**Original Article:** {{ $json.article_url }}\n**Content Pillar:** {{ $json.content_pillar }} ({{ Math.round($json.strategic_weight * 100) }}% of content strategy)\n**Primary Audience:** {{ $json.primary_audience }}\n**Target Audience:** {{ $json.target_audience.join(', ') }}\n**Content Type:** {{ $json.content_type }}\n\n## RESEARCH FOUNDATION\n\n**Description:** {{ $json.enhanced_description }}\n**Research Notes:** {{ $json.research_notes || 'See original article for context' }}\n**Quality Scores:** Relevance: {{ $json.relevance_score }}/10 | Actionability: {{ $json.actionability_score }}/10 | Depth: {{ $json.depth_score }}/10\n**SEO Keywords:** {{ $json.seo_keywords.join(', ') }}\n\n## CONTENT STRUCTURE\n\n**Required Structure:** {{ $json.recommended_structure }}\n**Audience Angle:** Focus on {{ $json.audience_angle }}\n**Tone:** Professional but personal - demonstrate expertise without consulting speak\n\n## STRATEGIC APPROACH\n\n1. **Hook:** Start with a specific, relatable challenge your audience faces\n2. **Authority:** Reference the source material whilst adding your own insights\n3. **Framework:** Provide a clear, actionable framework readers can implement\n4. **Examples:** Include specific numbers, real scenarios, and concrete examples\n5. **Implementation:** Give step-by-step guidance with potential pitfalls\n6. **Next Steps:** End with clear actions readers can take immediately\n\n## QUALITY STANDARDS\n\n- Pass the 'so what?' test - every section must provide clear value\n- Include specific examples and metrics where possible\n- Avoid generic advice - focus on nuanced, experienced insights\n- Balance strategic thinking with practical application\n- Reference but don't copy the source material\n\n## SEO INTEGRATION\n\nNaturally incorporate these keywords: {{ $json.seo_keywords.slice(0, 5).join(', ') }}\nFocus keyword: {{ $json.seo_keywords[0] || $json.content_pillar.toLowerCase() }}\n\n## FINAL CHECKLIST BEFORE SUBMITTING:\n\n- Word count is between {{ Math.round($json.word_count_target * 0.9) }}-{{ Math.round($json.word_count_target * 1.1) }} words\n- All spellings are UK English (optimise, realise, colour, organisation, analyse)\n- Structure follows: {{ $json.recommended_structure }}\n- Includes specific examples with numbers\n- Ends with clear next steps\n\nWrite the article now for {{ $json.primary_audience.toLowerCase() }} audience.\n"
             }
           ]
         },
@@ -128,7 +128,7 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.3,
       "position": [
-        -752,
+        -624,
         -128
       ],
       "credentials": {
@@ -147,7 +147,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -400,
+        -272,
         -128
       ]
     },
@@ -195,7 +195,7 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        1072,
+        1200,
         48
       ],
       "credentials": {
@@ -221,52 +221,13 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        1296,
-        40
+        1424,
+        48
       ],
       "credentials": {
         "notionApi": {
           "id": "lC4G957VFihVvFG2",
           "name": "Notion account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "// Generate comprehensive email notification\n// Provides detailed summary of draft generation results\n\nconst contentData = $('Validate Content Quality').item.json;\nconst qualityReport = contentData.quality_report;\n\n// Build email content\nlet emailBody = `<h2>📝 AI Draft Generated - ${contentData.draft_title}</h2>\\n\\n`;\n\n// Quality summary with visual indicators\nlet qualityEmoji = '🔴';\nif (qualityReport.overall_score >= 80) qualityEmoji = '🟢';\nelse if (qualityReport.overall_score >= 65) qualityEmoji = '🟡';\n\nemailBody += `<h3>${qualityEmoji} Quality Assessment</h3>\\n`;\nemailBody += `<ul>\\n`;\nemailBody += `  <li><strong>Overall Score:</strong> ${qualityReport.overall_score}/100 (${qualityReport.quality_level})</li>\\n`;\nemailBody += `  <li><strong>Word Count:</strong> ${qualityReport.word_count}/${qualityReport.target_word_count} (${qualityReport.word_count_variance}% variance)</li>\\n`;\nemailBody += `  <li><strong>SEO Integration:</strong> ${qualityReport.seo_integration}% of keywords included</li>\\n`;\nemailBody += `  <li><strong>UK Spelling:</strong> ${qualityReport.uk_spelling_check ? '✅ Present' : '❌ Missing'}</li>\\n`;\nemailBody += `  <li><strong>Manual Review:</strong> ${contentData.needs_manual_review ? '⚠️ Recommended' : '✅ Optional'}</li>\\n`;\nemailBody += `</ul>\\n\\n`;\n\n// Content details\nemailBody += `<h3>📊 Content Details</h3>\\n`;\nemailBody += `<ul>\\n`;\nemailBody += `  <li><strong>Content Pillar:</strong> ${contentData.content_pillar}</li>\\n`;\nemailBody += `  <li><strong>Target Audience:</strong> ${contentData.target_audience.join(', ')}</li>\\n`;\nemailBody += `  <li><strong>Content Type:</strong> ${contentData.content_type}</li>\\n`;\nemailBody += `  <li><strong>Source:</strong> ${contentData.source_name}</li>\\n`;\nemailBody += `</ul>\\n\\n`;\n\n// Quality breakdown\nemailBody += `<h3>🔍 Quality Breakdown</h3>\\n`;\nemailBody += `<ul>\\n`;\nemailBody += `  <li><strong>Structure Score:</strong> ${qualityReport.structure_score}/40</li>\\n`;\nemailBody += `  <li><strong>Content Score:</strong> ${qualityReport.content_score}/30</li>\\n`;\nemailBody += `  <li><strong>Technical Score:</strong> ${qualityReport.overall_score - qualityReport.structure_score - qualityReport.content_score}/30</li>\\n`;\nemailBody += `</ul>\\n\\n`;\n\n// Next steps\nemailBody += `<h3>🚀 Next Steps</h3>\\n`;\nif (contentData.needs_manual_review) {\n  emailBody += `<p><strong>⚠️ Manual Review Required</strong></p>\\n`;\n  emailBody += `<ul>\\n`;\n  emailBody += `  <li>Review content for accuracy and brand voice</li>\\n`;\n  emailBody += `  <li>Check factual claims and examples</li>\\n`;\n  emailBody += `  <li>Enhance SEO keyword integration if needed</li>\\n`;\n  emailBody += `  <li>Verify UK English spelling throughout</li>\\n`;\n  emailBody += `</ul>\\n`;\n} else {\n  emailBody += `<p><strong>✅ Ready for Publication Review</strong></p>\\n`;\n  emailBody += `<ul>\\n`;\n  emailBody += `  <li>Content meets quality standards</li>\\n`;\n  emailBody += `  <li>Review for final editorial polish</li>\\n`;\n  emailBody += `  <li>Schedule for publication</li>\\n`;\n  emailBody += `</ul>\\n`;\n}\n\n// Links\nemailBody += `<h3>🔗 Quick Links</h3>\\n`;\nemailBody += `<ul>\\n`;\nemailBody += `  <li><a href=\"https://www.notion.so/${contentData.content_id.replace(/-/g, '')}\">Original Research Item</a></li>\\n`;\nemailBody += `  <li><a href=\"https://www.notion.so/0d7b48da0a604c348fecbb1617b8c8a6\">Content Assets Database</a></li>\\n`;\nemailBody += `  <li><a href=\"https://www.notion.so/9d899a561818444f8de1d7bd72ee1528\">Content Pipeline</a></li>\\n`;\nemailBody += `</ul>\\n\\n`;\n\n// Footer\nemailBody += `<hr>\\n`;\nemailBody += `<p><small>Generated at ${new Date().toLocaleString('en-GB', { timeZone: 'Europe/London' })}</small></p>`;\n\n// Determine subject line urgency\nlet subjectPrefix = '📝';\nif (contentData.needs_manual_review) subjectPrefix = '⚠️';\nelse if (qualityReport.overall_score >= 80) subjectPrefix = '🟢';\n\nreturn [{\n  json: {\n    subject: `${subjectPrefix} AI Draft Ready: ${contentData.enhanced_title}`,\n    body: emailBody,\n    quality_score: qualityReport.overall_score,\n    needs_review: contentData.needs_manual_review,\n    content_title: contentData.enhanced_title\n  }\n}];"
-      },
-      "id": "3ed6ef9e-a50a-43d2-9a87-c85a4bcd0e60",
-      "name": "Prepare Notification Email",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        1520,
-        40
-      ]
-    },
-    {
-      "parameters": {
-        "fromEmail": "x@xavi.cc",
-        "toEmail": "x@xavi.cc",
-        "subject": "={{ $json.subject }}",
-        "html": "={{ $json.body }}",
-        "options": {
-          "allowUnauthorizedCerts": false
-        }
-      },
-      "id": "7adf102b-6886-4c6a-9ff3-1cce0dd377f2",
-      "name": "Send Notification Email",
-      "type": "n8n-nodes-base.emailSend",
-      "typeVersion": 2.1,
-      "position": [
-        1744,
-        112
-      ],
-      "webhookId": "9226971b-c7ef-4726-902c-fba68cec1b78",
-      "credentials": {
-        "smtp": {
-          "id": "mI3xQSjzFfN7X5DY",
-          "name": "Apple"
         }
       }
     },
@@ -279,7 +240,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -688,
+        -560,
         -320
       ]
     },
@@ -298,7 +259,7 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        -400,
+        -272,
         -320
       ],
       "webhookId": "8a189fb2-54e9-4187-aea8-cb6b4bd21225",
@@ -317,8 +278,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        624,
-        -152
+        752,
+        -160
       ],
       "id": "eed3b07d-48a2-44bc-a002-e848f1f7ec1e",
       "name": "Increment Retry Counter"
@@ -346,7 +307,7 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.8,
       "position": [
-        48,
+        176,
         -224
       ],
       "id": "7471c88f-da37-41a7-a19b-253d5e9e4bff",
@@ -366,7 +327,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        400,
+        528,
         -224
       ],
       "id": "a0f84256-00dd-4c6e-8143-c80fb07b8cb9",
@@ -409,7 +370,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -176,
+        -48,
         -128
       ],
       "id": "d72c0d68-0344-483b-8215-da63e2e9b537",
@@ -418,12 +379,12 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "// Generate markdown file for GitHub draft\nconst item = $input.item.json;\n\n// Create slug from title\nconst slug = item.enhanced_title\n  .toLowerCase()\n  .replace(/[^a-z0-9]+/g, '-')\n  .replace(/^-|-$/g, '');\n\n// Format tags from content pillar and SEO keywords\nconst tags = [\n  item.content_pillar,\n  ...(item.seo_keywords || []).slice(0, 3)\n].filter(Boolean);\n\n// Generate frontmatter and content\nconst markdown = `---\ntitle: ${item.enhanced_title}\nslug: ${slug}\nstatus: draft\nvisibility: public\nfeatured: false\nmeta_title: ${item.enhanced_title}\nmeta_description: ${item.enhanced_description || item.enhanced_title}\ntags:\n${tags.map(tag => `  - ${tag}`).join('\\n')}\nauthors:\n  - ghost\n---\n\n${item.generated_content}\n\n---\n\n*AI-generated draft - Quality Score: ${item.quality_report?.overall_score || 0}/100*`;\n\n// Generate filename with date prefix\nconst now = new Date();\nconst datePrefix = now.toISOString().split('T')[0]; // YYYY-MM-DD format\nconst filename = `${datePrefix}-${slug}.md`;\n\nreturn {\n  json: {\n    ...item,\n    markdown_content: markdown,\n    filename: filename,\n    file_path: `content/drafts/${filename}`\n  }\n};"
+        "jsCode": "// Generate markdown file for GitHub draft\nconst item = $input.item.json;\n\n// Create slug from title\nconst slug = item.enhanced_title\n  .toLowerCase()\n  .replace(/[^a-z0-9]+/g, \"-\")\n  .replace(/^-|-$/g, \"\");\n\n// Format tags from content pillar and SEO keywords\nconst tags = [\n  item.content_pillar,\n  ...(item.seo_keywords || []).slice(0, 3),\n].filter(Boolean);\n\n// Build frontmatter with channel-specific fields\nconst frontmatterFields = [\n  `title: ${item.enhanced_title}`,\n  `slug: ${slug}`,\n  `status: draft`,\n  `visibility: public`,\n  `featured: false`,\n  `meta_title: ${item.enhanced_title}`,\n  `meta_description: ${item.enhanced_description || item.enhanced_title}`,\n  `target_channel: ${item.target_channel}`,\n];\n\n// Add LinkedIn-specific fields\nif (item.target_channel === \"linkedin-original\") {\n  frontmatterFields.push(`linkedin_day: ${item.linkedin_day}`);\n}\n\n// Add blog-specific fields\nif (item.target_channel === \"blog\" && item.will_generate_linkedin_promo) {\n  frontmatterFields.push(`will_generate_linkedin_promo: true`);\n}\n\n// Generate frontmatter and content\nconst markdown = `---\n${frontmatterFields.join(\"\\n\")}\ntags:\n${tags.map((tag) => `  - ${tag}`).join(\"\\n\")}\nauthors:\n  - xavier\n---\n\n${item.generated_content}\n\n---\n\n*AI-generated draft - Quality Score: ${\n  item.quality_report?.overall_score || 0\n}/100*`;\n\n\n// Generate filename with date prefix\nconst now = new Date();\nconst datePrefix = now.toISOString().split(\"T\")[0]; // YYYY-MM-DD format\nconst filename = `${datePrefix}-${slug}.md`;\n\n// Route to appropriate directory based on channel\nlet directory;\nif (item.target_channel === \"linkedin-original\") {\n  directory = \"content/linkedin\";\n} else if (item.target_channel === \"newsletter\") {\n  directory = \"content/newsletter\";\n} else {\n  // blog channel\n  directory = \"content/drafts\";\n}\n\nreturn {\n  json: {\n    ...item,\n    markdown_content: markdown,\n    filename: filename,\n    file_path: `${directory}/${filename}`,\n  },\n};\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        112,
+        240,
         -32
       ],
       "id": "e11fb8cc-f6de-4cf7-83e3-1bba690c1e9b",
@@ -455,7 +416,7 @@
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
       "position": [
-        400,
+        528,
         -32
       ],
       "id": "f4ea8af0-cacd-4910-930c-2ab85269c57f",
@@ -497,8 +458,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        624,
-        40
+        752,
+        48
       ],
       "id": "89892381-f3db-4f32-925c-977e36cb88ee",
       "name": "File Exists?"
@@ -534,8 +495,8 @@
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
       "position": [
-        848,
-        -56
+        976,
+        -64
       ],
       "id": "284ac1f9-12da-4cf0-b372-b3f08cc2873a",
       "name": "Update Existing Draft",
@@ -577,8 +538,8 @@
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
       "position": [
-        848,
-        136
+        976,
+        144
       ],
       "id": "59ffb8d8-6472-4add-abe9-4e8ee61d459d",
       "name": "Create New Draft",
@@ -589,6 +550,58 @@
           "name": "GitHub account"
         }
       }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Determine optimal content channel based on research data\n// Routes content to appropriate format (blog, linkedin-original, newsletter)\n\nconst items = $input.all();\nconst enhancedItems = [];\n\nfor (const item of items) {\n  const json = item.json;\n\n  // Extract key metrics\n  const wordCountTarget = json.word_count_target || 1500;\n  const actionabilityScore = json.actionability_score || 5;\n  const depthScore = json.depth_score || 5;\n  const contentPillar = json.content_pillar || \"\";\n  const contentType = json.content_type || \"\";\n\n  // Channel determination logic\n  let targetChannel = \"blog\"; // default\n  let contentFormat = \"long-form\";\n  let toneAdjustment = \"comprehensive\";\n  let willGenerateLinkedinPromo = false;\n  let linkedinDay = \"various\";\n\n  // Newsletter criteria: Market trends or very long content\n  if (contentPillar === \"Market & AI Trends\" || wordCountTarget > 2500) {\n    targetChannel = \"newsletter\";\n    contentFormat = \"digest\";\n    toneAdjustment = \"informative\";\n  }\n  // LinkedIn Original criteria\n  else if (wordCountTarget < 1000) {\n    targetChannel = \"linkedin-original\";\n    contentFormat = \"social-post\";\n    toneAdjustment = \"conversational\";\n  }\n  // High actionability = LinkedIn\n  else if (actionabilityScore >= 7 && wordCountTarget <= 1200) {\n    targetChannel = \"linkedin-original\";\n    contentFormat = \"framework-share\";\n    toneAdjustment = \"actionable\";\n  }\n  // Framework/template content = LinkedIn\n  else if (contentType === \"practical guide\" && wordCountTarget < 1000) {\n    targetChannel = \"linkedin-original\";\n    contentFormat = \"template-share\";\n    toneAdjustment = \"practical\";\n  }\n  // Personal lessons = LinkedIn (Thursday posts)\n  else if (contentPillar === \"Founder Lessons\" && wordCountTarget < 800) {\n    targetChannel = \"linkedin-original\";\n    contentFormat = \"personal-story\";\n    toneAdjustment = \"personal\";\n  }\n  // Blog: Long-form content with depth\n  else if (\n    wordCountTarget >= 1000 &&\n    wordCountTarget <= 2500 &&\n    depthScore >= 7\n  ) {\n    targetChannel = \"blog\";\n    contentFormat = \"long-form\";\n    toneAdjustment = \"comprehensive\";\n    willGenerateLinkedinPromo = true; // Blog posts get LinkedIn promotions\n  }\n\n  // Determine LinkedIn post day based on content type (for linkedin-original only)\n  if (targetChannel === \"linkedin-original\") {\n    if (\n      contentFormat === \"framework-share\" ||\n      contentFormat === \"template-share\"\n    ) {\n      linkedinDay = \"tuesday\";\n    } else if (\n      contentPillar === \"Technology Strategy\" ||\n      contentType === \"analysis\"\n    ) {\n      linkedinDay = \"wednesday\";\n    } else if (contentFormat === \"personal-story\") {\n      linkedinDay = \"thursday\";\n    }\n  }\n\n  // Calculate adjusted word count for channel\n  let adjustedWordCount = wordCountTarget;\n  if (targetChannel === \"linkedin-original\") {\n    // LinkedIn posts are typically 200-800 words\n    adjustedWordCount = Math.min(wordCountTarget, 800);\n    adjustedWordCount = Math.max(adjustedWordCount, 250);\n  } else if (targetChannel === \"newsletter\") {\n    // Newsletter can be longer\n    adjustedWordCount = Math.max(wordCountTarget, 1000);\n  }\n\n  console.log(`Content: ${json.enhanced_title}`);\n  console.log(`  Channel: ${targetChannel} (${contentFormat})`);\n  console.log(`  Adjusted word count: ${adjustedWordCount}`);\n  console.log(`  LinkedIn day: ${linkedinDay}`);\n  console.log(`  Will generate LinkedIn promo: ${willGenerateLinkedinPromo}`);\n\n  enhancedItems.push({\n    ...item,\n    json: {\n      ...json,\n      // Channel routing\n      target_channel: targetChannel,\n      content_format: contentFormat,\n      tone_adjustment: toneAdjustment,\n      linkedin_day: linkedinDay,\n      adjusted_word_count: adjustedWordCount,\n      will_generate_linkedin_promo: willGenerateLinkedinPromo,\n\n      // Update word count target for generation\n      word_count_target: adjustedWordCount,\n    },\n  });\n}\n\nconsole.log(`Processed ${enhancedItems.length} items for channel routing`);\nreturn enhancedItems;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1072,
+        -160
+      ],
+      "id": "ed65df46-a3eb-4996-8ce5-fbd97419c179",
+      "name": "Determine Content Format"
+    },
+    {
+      "parameters": {
+        "fromEmail": "x@xavi.cc",
+        "toEmail": "me@xavierfuentes.com",
+        "subject": "={{ $json.subject }}",
+        "html": "={{ $json.body }}",
+        "options": {
+          "allowUnauthorizedCerts": false
+        }
+      },
+      "id": "7adf102b-6886-4c6a-9ff3-1cce0dd377f2",
+      "name": "Send Draft Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1872,
+        112
+      ],
+      "webhookId": "9226971b-c7ef-4726-902c-fba68cec1b78",
+      "credentials": {
+        "smtp": {
+          "id": "mI3xQSjzFfN7X5DY",
+          "name": "Apple"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generate comprehensive email notification with the actual draft content\nconst contentData = $(\"Validate Content Quality\").item.json;\nconst qualityReport = contentData.quality_report;\n\n// Build email content\nlet emailBody = `<h2>AI Draft Generated - \n  ${contentData.draft_title}</h2>\\n\\n`;\n\n// Quality summary (simplified)\nlet qualityEmoji = \"🔴\";\nif (qualityReport.overall_score >= 80) qualityEmoji = \"🟢\";\nelse if (qualityReport.overall_score >= 65) qualityEmoji = \"🟡\";\n\nemailBody += `<h3>${qualityEmoji} Quality: ${qualityReport.overall_score}/100 \n  (${qualityReport.quality_level})</h3>\\n`;\nemailBody += `<p>Word Count: \n  ${qualityReport.word_count}/${qualityReport.target_word_count} | SEO: \n  ${qualityReport.seo_integration}% | UK Spelling: \n  ${qualityReport.uk_spelling_check ? \"✅\" : \"❌\"}</p>\\n\\n`;\n\n// The actual draft content\nemailBody += `<hr>\\n`;\nemailBody += `<h3>📝 Draft Content</h3>\\n`;\nemailBody += `<div style=\"background-color: #f5f5f5; padding: 20px; \n  border-left: 4px solid #0066cc;\">\\n`;\nemailBody += contentData.generated_content.replace(/\\n/g, \"<br>\\n\");\nemailBody += `</div>\\n\\n`;\n\nemailBody += `<hr>\\n`;\nemailBody += `<p><small>Generated at ${new Date().toLocaleString(\"en-GB\", {\n  timeZone: \"Europe/London\",\n})}</small></p>`;\n\nreturn [\n  {\n    json: {\n      subject: `AI Draft Ready: ${contentData.enhanced_title}`,\n      body: emailBody,\n      quality_score: qualityReport.overall_score,\n      needs_review: contentData.needs_manual_review,\n      content_title: contentData.enhanced_title,\n    },\n  },\n];\n"
+      },
+      "id": "3ed6ef9e-a50a-43d2-9a87-c85a4bcd0e60",
+      "name": "Prepare Draft Email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1648,
+        48
+      ]
     }
   ],
   "pinData": {},
@@ -619,7 +632,7 @@
       "main": [
         [
           {
-            "node": "Loop Over Items",
+            "node": "Determine Content Format",
             "type": "main",
             "index": 0
           }
@@ -681,29 +694,7 @@
       "main": [
         [
           {
-            "node": "Prepare Notification Email",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Prepare Notification Email": {
-      "main": [
-        [
-          {
-            "node": "Send Notification Email",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Send Notification Email": {
-      "main": [
-        [
-          {
-            "node": "Loop Over Items",
+            "node": "Prepare Draft Email",
             "type": "main",
             "index": 0
           }
@@ -833,13 +824,46 @@
           }
         ]
       ]
+    },
+    "Determine Content Format": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Draft Email": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Draft Email": {
+      "main": [
+        [
+          {
+            "node": "Send Draft Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "091611a5-d8c5-47b8-9549-d20b587d0d30",
+  "versionId": "0d03c92e-7288-4565-92be-6e413e268107",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "d052f68fee6cbc1f0a1b7b4daa7281384655d7a51d1cb62c7e57bbd86329486d"
