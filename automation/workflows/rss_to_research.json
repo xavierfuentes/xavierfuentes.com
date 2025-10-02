@@ -16,7 +16,7 @@
       "typeVersion": 1.2,
       "position": [
         -1856,
-        -64
+        -56
       ],
       "id": "aeb44b68-6e10-409b-adfb-04e2a672927e",
       "name": "Schedule",
@@ -48,7 +48,7 @@
       "typeVersion": 2.2,
       "position": [
         -1632,
-        -64
+        -56
       ],
       "id": "22106e0a-f173-4071-ad79-908b41410230",
       "name": "Fetch Active Sources",
@@ -69,7 +69,7 @@
       "typeVersion": 2,
       "position": [
         -1184,
-        -64
+        -56
       ],
       "id": "72d22a59-02d1-467e-aa15-2b31d6ccd0c9",
       "name": "Validate Sources"
@@ -82,7 +82,7 @@
       "typeVersion": 3,
       "position": [
         -960,
-        -64
+        -56
       ],
       "id": "0b9e8d93-2beb-4a8e-b012-ce3fc467426d",
       "name": "Loop Feeds"
@@ -106,7 +106,7 @@
       "typeVersion": 4.2,
       "position": [
         -736,
-        -256
+        -248
       ],
       "id": "fa8420ce-042a-4daf-92ad-2ec490e3763a",
       "name": "Download RSS",
@@ -142,7 +142,7 @@
       "typeVersion": 2.2,
       "position": [
         -512,
-        -256
+        -248
       ],
       "id": "06c0e60e-5a55-46fc-9a98-96399a39a4c6",
       "name": "Fetch OK?"
@@ -170,7 +170,7 @@
       "typeVersion": 2,
       "position": [
         -64,
-        -256
+        -248
       ],
       "id": "448e54ed-c16f-4327-8658-0af4d1bc1680",
       "name": "Store Articles (Static)"
@@ -320,7 +320,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Merges AI classification results from batches into individual article items\n// Normalises AI outputs and prepares data for Notion database storage\n\nconst allAi = $input.all(); // e.g., 4 items (one per batch)\nconst batches = $items(\"Make AI Batches\", 0) || []; // original batches from batching node\n\nconst validPillars = [\n  \"Leadership & Management\",\n  \"Technology Strategy\",\n  \"Execution & Delivery\",\n  \"Founder Lessons\",\n  \"Market & Trends\",\n  \"Personal Angle\",\n];\nconst normPillar = (p) => {\n  if (typeof p === \"string\") {\n    const exact = validPillars.find((v) => v === p.trim());\n    if (exact) return exact;\n    const lower = p.toLowerCase();\n    const fuzzy = validPillars.find(\n      (v) => v.toLowerCase().includes(lower) || lower.includes(v.toLowerCase())\n    );\n    if (fuzzy) return fuzzy;\n  }\n  return \"Market & Trends\";\n};\nconst normPriority = (p) => {\n  const s = String(p || \"Medium\").toLowerCase();\n  return s === \"high\" ? \"High\" : s === \"low\" ? \"Low\" : \"Medium\";\n};\nconst clamp10 = (v, d = 5) => {\n  const n = Number(v);\n  const i = Number.isFinite(n) ? Math.round(n) : d;\n  return Math.max(1, Math.min(10, i));\n};\nconst normalizeKeywords = (k) =>\n  String(k || \"\")\n    .split(\",\")\n    .map((s) => s.trim())\n    .filter(Boolean)\n    .slice(0, 8)\n    .join(\", \")\n    .toLowerCase();\nconst allowedWordTargets = new Set([400, 600, 900]);\nconst normWordTarget = (n) =>\n  allowedWordTargets.has(Number(n)) ? Number(n) : 600;\nconst limitAudience = (a) =>\n  Array.isArray(a) && a.length ? a.slice(0, 3) : [\"Tech Leaders\"];\n\nfunction parseAiArray(text) {\n  try {\n    let cleaned = (text || \"\")\n      .replace(/```json/g, \"\")\n      .replace(/```/g, \"\")\n      .trim();\n    const s = cleaned.indexOf(\"[\"),\n      e = cleaned.lastIndexOf(\"]\");\n    if (s !== -1 && e !== -1) cleaned = cleaned.slice(s, e + 1);\n    const parsed = JSON.parse(cleaned);\n    return Array.isArray(parsed) ? parsed : [parsed];\n  } catch {\n    return null;\n  }\n}\n\nconst out = [];\nfor (let k = 0; k < allAi.length; k++) {\n  const ai = allAi[k]?.json || {};\n  const batch = batches[k]?.json;\n  if (!batch) continue;\n\n  const aiText = ai?.content?.[0]?.text || ai?.text || \"\";\n  let classifications = parseAiArray(aiText);\n\n  if (\n    !classifications ||\n    classifications.length !== batch.batchArticles.length\n  ) {\n    console.log(\n      `AI parsing failed for batch ${k}, generating intelligent fallbacks`\n    );\n\n    classifications = batch.batchArticles.map((a, idx) => {\n      // Use the actual article description, properly cleaned\n      const cleanDesc = (a.description || \"\")\n        .replace(/<[^>]*>/g, \" \")\n        .replace(/\\s+/g, \" \")\n        .trim();\n      const shortDesc =\n        cleanDesc.length > 120 ? cleanDesc.slice(0, 120) + \"...\" : cleanDesc;\n\n      // Smart content analysis for better fallbacks\n      const title = (a.title || \"\").toLowerCase();\n      const description = cleanDesc.toLowerCase();\n      const combined = `${title} ${description}`;\n      const sourceName = (a.sourceName || \"\").toLowerCase();\n\n      // Intelligent content pillar detection\n      let contentPillar = \"Market & Trends\"; // default\n      if (\n        combined.match(\n          /\\b(leadership|management|team|culture|hiring|organization)\\b/\n        )\n      ) {\n        contentPillar = \"Leadership & Management\";\n      } else if (\n        combined.match(\n          /\\b(architecture|performance|security|infrastructure|cloud|api|database|scaling)\\b/\n        )\n      ) {\n        contentPillar = \"Technology Strategy\";\n      } else if (\n        combined.match(\n          /\\b(agile|devops|testing|deployment|process|methodology|framework)\\b/\n        )\n      ) {\n        contentPillar = \"Execution & Delivery\";\n      } else if (\n        combined.match(\n          /\\b(founder|startup|entrepreneur|funding|venture|seed|series)\\b/\n        )\n      ) {\n        contentPillar = \"Founder Lessons\";\n      }\n\n      // Generate relevant keywords based on content\n      const potentialKeywords = [];\n      const keywordMap = {\n        \"ai|artificial intelligence|machine learning|ml\": \"ai\",\n        \"cloud|aws|azure|gcp\": \"cloud computing\",\n        \"security|cybersecurity|vulnerability\": \"security\",\n        \"performance|optimization|scalability\": \"performance\",\n        \"leadership|management\": \"leadership\",\n        \"startup|entrepreneur\": \"startups\",\n        \"development|programming|coding\": \"software development\",\n        \"api|microservices|architecture\": \"software architecture\",\n      };\n\n      for (const [pattern, keyword] of Object.entries(keywordMap)) {\n        if (new RegExp(pattern, \"i\").test(combined)) {\n          potentialKeywords.push(keyword);\n        }\n      }\n\n      // Fallback keywords if none found\n      if (potentialKeywords.length === 0) {\n        potentialKeywords.push(\"technology\", \"innovation\");\n      }\n\n      // Smart priority based on source quality and content\n      let priority = \"Medium\";\n      if (\n        sourceName.match(/martin fowler|stripe|netflix|google|aws|thoughtworks/)\n      ) {\n        priority = \"High\";\n      } else if (\n        combined.match(/\\b(funding|raised|investment|acquired|ipo)\\b/) &&\n        !combined.match(/\\b(strategy|technology|innovation)\\b/)\n      ) {\n        priority = \"Low\";\n      }\n\n      // Better audience targeting\n      const audience = [\"Tech Leaders\"];\n      if (combined.match(/\\b(cto|engineering manager|technical director)\\b/)) {\n        audience.push(\"CTOs\", \"Engineering Managers\");\n      } else if (combined.match(/\\b(founder|ceo|startup)\\b/)) {\n        audience.push(\"Founders\");\n      } else if (combined.match(/\\b(product|pm|product manager)\\b/)) {\n        audience.push(\"Product Managers\");\n      }\n\n      // Generate meaningful notes instead of \"Fallback\"\n      const notes = `Article covers ${contentPillar.toLowerCase()} topics. ${\n        sourceName ? `Source: ${sourceName}. ` : \"\"\n      }Content appears relevant for ${audience.join(\", \").toLowerCase()}.`;\n\n      return {\n        id: idx + 1,\n        title: a.title,\n        link: a.link,\n        content_pillar: contentPillar,\n        priority: priority,\n        target_audience: audience.slice(0, 3),\n        word_count_target: 600,\n        seo_keywords: potentialKeywords.slice(0, 4).join(\", \"),\n        description: shortDesc || \"Article summary not available\",\n        notes: notes,\n        relevance_score: 6,\n        actionability_score: 5,\n        depth_score: 5,\n      };\n    });\n  }\n\n  for (let i = 0; i < batch.batchArticles.length; i++) {\n    const a = batch.batchArticles[i] || {};\n    const c = classifications[i] || {};\n\n    out.push({\n      json: {\n        sourceName: a.sourceName,\n        sourceId: a.sourceId,\n        feedUrl: a.feedUrl,\n        title: a.title,\n        link: a.link,\n        description: a.description,\n        guid: a.guid || a.link,\n        author: a.author,\n        category: a.category,\n        publishedAt: a.publishedAt,\n        scrapedAt: a.scrapedAt,\n        wordCount: a.wordCount,\n\n        property_title: a.title,\n        property_description: a.description,\n        property_author: a.author,\n        property_source: a.sourceName,\n        property_article_link: a.link,\n        property_guid: a.guid || a.link,\n        property_content_pillar: normPillar(c.content_pillar),\n        property_priority: normPriority(c.priority),\n        property_target_audience: limitAudience(c.target_audience),\n        property_word_count_target: normWordTarget(c.word_count_target),\n        property_seo_keywords: normalizeKeywords(c.seo_keywords),\n        property_relevance_score: clamp10(c.relevance_score, 5),\n        property_actionability_score: clamp10(c.actionability_score, 5),\n        property_depth_score: clamp10(c.depth_score, 5),\n        property_status: \"Research\",\n        property_notes: (c.notes || \"\").toString().trim().slice(0, 1000),\n\n        processed_at: new Date().toISOString(),\n      },\n    });\n  }\n}\n\nreturn out;"
+        "jsCode": "// Merges AI classification results from batches into individual article items\n// Normalises AI outputs and prepares data for Notion database storage\n\n// Helper function to clean HTML from descriptions\nfunction cleanDescription(desc) {\n  return (desc || \"\")\n    .replace(/<[^>]*>/g, \" \")     // Remove all HTML tags\n    .replace(/&[^;]+;/g, \" \")      // Remove HTML entities\n    .replace(/\\s+/g, \" \")          // Normalize whitespace\n    .trim();\n}\n\nconst allAi = $input.all(); // e.g., 4 items (one per batch)\nconst batches = $(\"Make AI Batches\").all() || []; // original batches from batching node\n\nconst validPillars = [\n  \"Leadership & Management\",\n  \"Technology Strategy\",\n  \"Execution & Delivery\",\n  \"Founder Lessons\",\n  \"Market & Trends\",\n  \"Personal Angle\",\n];\nconst normPillar = (p) => {\n  if (typeof p === \"string\") {\n    const exact = validPillars.find((v) => v === p.trim());\n    if (exact) return exact;\n    const lower = p.toLowerCase();\n    const fuzzy = validPillars.find(\n      (v) => v.toLowerCase().includes(lower) || lower.includes(v.toLowerCase())\n    );\n    if (fuzzy) return fuzzy;\n  }\n  return \"Market & Trends\";\n};\nconst normPriority = (p) => {\n  const s = String(p || \"Medium\").toLowerCase();\n  return s === \"high\" ? \"High\" : s === \"low\" ? \"Low\" : \"Medium\";\n};\nconst clamp10 = (v, d = 5) => {\n  const n = Number(v);\n  const i = Number.isFinite(n) ? Math.round(n) : d;\n  return Math.max(1, Math.min(10, i));\n};\nconst normalizeKeywords = (k) =>\n  String(k || \"\")\n    .split(\",\")\n    .map((s) => s.trim())\n    .filter(Boolean)\n    .slice(0, 8)\n    .join(\", \")\n    .toLowerCase();\nconst allowedWordTargets = new Set([400, 600, 900]);\nconst normWordTarget = (n) =>\n  allowedWordTargets.has(Number(n)) ? Number(n) : 600;\nconst limitAudience = (a) =>\n  Array.isArray(a) && a.length ? a.slice(0, 3) : [\"Tech Leaders\"];\n\nfunction parseAiArray(text) {\n  try {\n    let cleaned = (text || \"\")\n      .replace(/```json/g, \"\")\n      .replace(/```/g, \"\")\n      .trim();\n    const s = cleaned.indexOf(\"[\"),\n      e = cleaned.lastIndexOf(\"]\");\n    if (s !== -1 && e !== -1) cleaned = cleaned.slice(s, e + 1);\n    const parsed = JSON.parse(cleaned);\n    return Array.isArray(parsed) ? parsed : [parsed];\n  } catch {\n    return null;\n  }\n}\n\nconst out = [];\nfor (let k = 0; k < allAi.length; k++) {\n  const ai = allAi[k]?.json || {};\n  const batch = batches[k]?.json;\n  if (!batch) continue;\n\n  const aiText = ai?.content?.[0]?.text || ai?.text || \"\";\n  let classifications = parseAiArray(aiText);\n\n  if (\n    !classifications ||\n    classifications.length !== batch.batchArticles.length\n  ) {\n    console.log(\n      `AI parsing failed for batch ${k}, generating intelligent fallbacks`\n    );\n\n    classifications = batch.batchArticles.map((a, idx) => {\n      // Use the actual article description, properly cleaned\n      const cleanDesc = (a.description || \"\")\n        .replace(/<[^>]*>/g, \" \")\n        .replace(/\\s+/g, \" \")\n        .trim();\n      const shortDesc =\n        cleanDesc.length > 120 ? cleanDesc.slice(0, 120) + \"...\" : cleanDesc;\n\n      // Smart content analysis for better fallbacks\n      const title = (a.title || \"\").toLowerCase();\n      const description = cleanDesc.toLowerCase();\n      const combined = `${title} ${description}`;\n      const sourceName = (a.sourceName || \"\").toLowerCase();\n\n      // Intelligent content pillar detection\n      let contentPillar = \"Market & Trends\"; // default\n      if (\n        combined.match(\n          /\\b(leadership|management|team|culture|hiring|organization)\\b/\n        )\n      ) {\n        contentPillar = \"Leadership & Management\";\n      } else if (\n        combined.match(\n          /\\b(architecture|performance|security|infrastructure|cloud|api|database|scaling)\\b/\n        )\n      ) {\n        contentPillar = \"Technology Strategy\";\n      } else if (\n        combined.match(\n          /\\b(agile|devops|testing|deployment|process|methodology|framework)\\b/\n        )\n      ) {\n        contentPillar = \"Execution & Delivery\";\n      } else if (\n        combined.match(\n          /\\b(founder|startup|entrepreneur|funding|venture|seed|series)\\b/\n        )\n      ) {\n        contentPillar = \"Founder Lessons\";\n      }\n\n      // Generate relevant keywords based on content\n      const potentialKeywords = [];\n      const keywordMap = {\n        \"ai|artificial intelligence|machine learning|ml\": \"ai\",\n        \"cloud|aws|azure|gcp\": \"cloud computing\",\n        \"security|cybersecurity|vulnerability\": \"security\",\n        \"performance|optimization|scalability\": \"performance\",\n        \"leadership|management\": \"leadership\",\n        \"startup|entrepreneur\": \"startups\",\n        \"development|programming|coding\": \"software development\",\n        \"api|microservices|architecture\": \"software architecture\",\n      };\n\n      for (const [pattern, keyword] of Object.entries(keywordMap)) {\n        if (new RegExp(pattern, \"i\").test(combined)) {\n          potentialKeywords.push(keyword);\n        }\n      }\n\n      // Fallback keywords if none found\n      if (potentialKeywords.length === 0) {\n        potentialKeywords.push(\"technology\", \"innovation\");\n      }\n\n      // Smart priority based on source quality and content\n      let priority = \"Medium\";\n      if (\n        sourceName.match(/martin fowler|stripe|netflix|google|aws|thoughtworks/)\n      ) {\n        priority = \"High\";\n      } else if (\n        combined.match(/\\b(funding|raised|investment|acquired|ipo)\\b/) &&\n        !combined.match(/\\b(strategy|technology|innovation)\\b/)\n      ) {\n        priority = \"Low\";\n      }\n\n      // Better audience targeting\n      const audience = [\"Tech Leaders\"];\n      if (combined.match(/\\b(cto|engineering manager|technical director)\\b/)) {\n        audience.push(\"CTOs\", \"Engineering Managers\");\n      } else if (combined.match(/\\b(founder|ceo|startup)\\b/)) {\n        audience.push(\"Founders\");\n      } else if (combined.match(/\\b(product|pm|product manager)\\b/)) {\n        audience.push(\"Product Managers\");\n      }\n\n      // Generate meaningful notes instead of \"Fallback\"\n      const notes = `Article covers ${contentPillar.toLowerCase()} topics. ${\n        sourceName ? `Source: ${sourceName}. ` : \"\"\n      }Content appears relevant for ${audience.join(\", \").toLowerCase()}.`;\n\n      return {\n        id: idx + 1,\n        title: a.title,\n        link: a.link,\n        content_pillar: contentPillar,\n        priority: priority,\n        target_audience: audience.slice(0, 3),\n        word_count_target: 600,\n        seo_keywords: potentialKeywords.slice(0, 4).join(\", \"),\n        description: shortDesc || \"Article summary not available\",\n        notes: notes,\n        relevance_score: 6,\n        actionability_score: 5,\n        depth_score: 5,\n      };\n    });\n  }\n\n  for (let i = 0; i < batch.batchArticles.length; i++) {\n    const a = batch.batchArticles[i] || {};\n    const c = classifications[i] || {};\n\n    out.push({\n      json: {\n        sourceName: a.sourceName,\n        sourceId: a.sourceId,\n        feedUrl: a.feedUrl,\n        title: a.title,\n        link: a.link,\n        description: a.description,\n        guid: a.guid || a.link,\n        author: a.author,\n        category: a.category,\n        publishedAt: a.publishedAt,\n        scrapedAt: a.scrapedAt,\n        wordCount: a.wordCount,\n\n        property_title: a.title,\n        property_description: cleanDescription(c.description || a.description),\n        property_author: a.author,\n        property_source: a.sourceName,\n        property_article_link: a.link,\n        property_guid: a.guid || a.link,\n        property_content_pillar: normPillar(c.content_pillar),\n        property_priority: normPriority(c.priority),\n        property_target_audience: limitAudience(c.target_audience),\n        property_word_count_target: normWordTarget(c.word_count_target),\n        property_seo_keywords: normalizeKeywords(c.seo_keywords),\n        property_relevance_score: clamp10(c.relevance_score, 5),\n        property_actionability_score: clamp10(c.actionability_score, 5),\n        property_depth_score: clamp10(c.depth_score, 5),\n        property_status: \"Research\",\n        property_notes: (c.notes || \"\").toString().trim().slice(0, 1000),\n\n        processed_at: new Date().toISOString(),\n      },\n    });\n  }\n}\n\nreturn out;"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -453,7 +453,7 @@
       "typeVersion": 2.2,
       "position": [
         -1408,
-        -64
+        -56
       ],
       "id": "8e8d28ce-ac76-45eb-b1a3-8a8086030b83",
       "name": "Update Last Scraped Date",
@@ -493,7 +493,7 @@
       "typeVersion": 2.2,
       "position": [
         160,
-        48
+        40
       ],
       "id": "c83aa6bc-73d6-4c49-9449-08d76ed6548b",
       "name": "Need Notion Update?"
@@ -689,7 +689,7 @@
       "typeVersion": 2,
       "position": [
         -64,
-        -64
+        -56
       ],
       "id": "4d74803f-6d65-4cde-a541-454c572b4a87",
       "name": "Auto-Deactivate Source"
@@ -998,7 +998,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "56457a4f-2b54-402a-a5ec-d5166e605ae5",
+  "versionId": "05664888-d365-47da-bb09-0129347b5a0f",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "d052f68fee6cbc1f0a1b7b4daa7281384655d7a51d1cb62c7e57bbd86329486d"
