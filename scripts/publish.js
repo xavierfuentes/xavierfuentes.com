@@ -213,7 +213,7 @@ class GhostContentManager {
         "email_subject",
         "email_only",
         "authors",
-        "tags", // Remove these on update - they cause validation errors
+        "tags",
       ];
 
       readOnlyFields.forEach((field) => delete updatePayload[field]);
