@@ -108,10 +108,6 @@ class GhostContentManager {
 
       if (existingContent) {
         console.log(`🔄 Updating existing ${type}: ${frontmatterData.slug}`);
-        console.log(
-          "🔍 Content being sent to Ghost:",
-          JSON.stringify(ghostContent, null, 2)
-        );
         const updatedContent = await this.updateContent(
           existingContent.id,
           ghostContent,
@@ -211,13 +207,20 @@ class GhostContentManager {
 
   async updateContent(id, content, type) {
     try {
+      // Get existing content to retrieve updated_at timestamp
+      const existing = await this.findExistingContent(content.slug, type);
+
       // Remove read-only fields that Ghost returns but doesn't accept on update
-      const updatePayload = { id, ...content };
+      const updatePayload = {
+        id,
+        ...content,
+        updated_at: existing.updated_at // Required for conflict prevention
+      };
+
       const readOnlyFields = [
         "uuid",
         "comment_id",
         "created_at",
-        "updated_at",
         "published_at",
         "url",
         "primary_author",
@@ -239,11 +242,8 @@ class GhostContentManager {
       }
     } catch (error) {
       console.error(`❌ Error updating ${type} (ID: ${id}):`, error.message);
-      if (error.response && error.response.data) {
-        console.error(
-          "Response data:",
-          JSON.stringify(error.response.data, null, 2)
-        );
+      if (error.details) {
+        console.error("Details:", JSON.stringify(error.details, null, 2));
       }
       throw error;
     }
