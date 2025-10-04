@@ -6,7 +6,6 @@ visibility: public
 featured: false
 meta_title: "High-growth companies stand out with flexible pricing"
 meta_description: "A survey of 2,000+ global business leaders reveals how the fastest-growing companies are approaching pricing differently to drive revenue."
-target_channel: undefined
 tags:
   - Market & Trends
   - pricing strategy
@@ -86,4 +85,4 @@ What’s one pricing experiment you can start this quarter to unlock more value 
 
 ---
 
-*AI-generated draft - Quality Score: 80/100*
+_AI-generated draft - Quality Score: 80/100_

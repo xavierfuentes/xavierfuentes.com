@@ -6,7 +6,6 @@ visibility: public
 featured: false
 meta_title: "Chatting with Unmesh about building language with LLMs"
 meta_description: "A conversation with Unmesh Joshi on how he grows a language of abstractions when working with large language models."
-target_channel: undefined
 tags:
   - Technology Strategy
   - large language models
@@ -38,16 +37,16 @@ Without a shared language of abstraction, your dev teams risk becoming reliant o
 
 Unmesh Joshi’s approach, highlighted by Fowler, is to treat LLMs as components in a layered architecture rather than magic black boxes.
 
-1. **Encapsulate Prompts as Domain-Specific Components**  
+1. **Encapsulate Prompts as Domain-Specific Components**
    Instead of scattering raw prompts in code, craft reusable prompt templates with clear input/output contracts. For example, if you have an LLM component that generates user onboarding emails, define a prompt schema like `{user_name, onboarding_step}` and expected output format. This stabilises interaction and facilitates testing.
 
-2. **Define Intermediate Representations**  
+2. **Define Intermediate Representations**
    Use structured data formats (JSON, XML) between your system and the LLM. This reduces ambiguity. For instance, rather than asking the model to “write a summary,” request a JSON object with fields like `summary_text` and `key_points`. This lets your downstream code parse results reliably.
 
-3. **Version and Test Your Prompt Abstractions**  
+3. **Version and Test Your Prompt Abstractions**
    Apply traditional engineering rigour. Version your prompt templates and create automated tests that validate expected outputs against sample inputs. This helps catch regressions when upgrading LLM APIs or changing prompt wording.
 
-4. **Compose LLM Components Like Microservices**  
+4. **Compose LLM Components Like Microservices**
    Treat each prompt abstraction as a service with defined boundaries. This lets you orchestrate complex workflows by chaining LLM calls, similar to microservices architectures. For example, one LLM component generates a draft, another refines tone, and a third checks for compliance.
 
 ---
@@ -58,8 +57,8 @@ At one fintech startup I worked with, the engineering team initially embedded ra
 
 By adopting Unmesh’s abstraction strategy, they:
 
-- Created a library of prompt templates with strict input/output contracts  
-- Introduced automated integration tests simulating report generation  
+- Created a library of prompt templates with strict input/output contracts
+- Introduced automated integration tests simulating report generation
 - Modularised the LLM calls into discrete steps—data extraction, narrative generation, compliance check
 
 This reduced bugs by 40% within three months and improved developer onboarding speed by 30%, as engineers no longer needed to guess prompt details.
@@ -70,16 +69,16 @@ In another case, a SaaS company working on customer support automation encapsula
 
 ### Strategic Implications: What CTOs Need to Know
 
-**1. Invest in Prompt Engineering as a First-Class Discipline**  
+**1. Invest in Prompt Engineering as a First-Class Discipline**
 Prompt engineering isn’t a one-off task. It requires ongoing refinement, version control, and collaboration between product, data science, and engineering teams. CTOs should champion this as a core capability, not a side project.
 
-**2. Treat LLMs as Part of Your Architecture, Not a Black Box**  
+**2. Treat LLMs as Part of Your Architecture, Not a Black Box**
 This means integrating LLM components with clear contracts, monitoring performance, and planning for model updates or fallback strategies. If your team treats LLMs like external APIs, you’ll navigate changes gracefully.
 
-**3. Balance Speed Against Reliability**  
+**3. Balance Speed Against Reliability**
 LLMs tempt teams to prototype rapidly with direct prompts. But scaling requires patience to build abstractions, test thoroughly, and document expectations. CTOs must manage this tension—fostering innovation while enforcing engineering discipline.
 
-**4. Prepare For Organisational Change**  
+**4. Prepare For Organisational Change**
 Embedding LLMs touches culture, workflows, and talent skills. Encourage cross-functional collaboration to grow a shared language of abstraction. Provide coaching for engineering managers to adapt sprint planning and code reviews for AI-assisted outputs.
 
 ---
@@ -90,8 +89,8 @@ As LLM technology evolves, abstraction layers will become more sophisticated. Th
 
 CTOs who proactively build these foundations will unlock competitive advantages:
 
-- Faster iteration cycles with AI-assisted programming  
-- More predictable software quality despite AI variability  
+- Faster iteration cycles with AI-assisted programming
+- More predictable software quality despite AI variability
 - Better alignment between AI capabilities and business needs
 
 However, this won’t be plug-and-play. It demands leadership commitment, investment in tooling, and evolving team practices.
@@ -100,10 +99,10 @@ However, this won’t be plug-and-play. It demands leadership commitment, invest
 
 ### Next Steps: What You Can Do Today
 
-1. **Audit your current use of LLMs:** Are prompts scattered or encapsulated? Is there version control?  
-2. **Pilot a prompt abstraction library:** Start with a single use case, define input/output contracts, and introduce automated testing.  
-3. **Train your teams on prompt engineering best practices:** Share frameworks for writing, versioning, and testing prompts.  
-4. **Establish monitoring around LLM performance:** Track output quality metrics and set alerts for regressions.  
+1. **Audit your current use of LLMs:** Are prompts scattered or encapsulated? Is there version control?
+2. **Pilot a prompt abstraction library:** Start with a single use case, define input/output contracts, and introduce automated testing.
+3. **Train your teams on prompt engineering best practices:** Share frameworks for writing, versioning, and testing prompts.
+4. **Establish monitoring around LLM performance:** Track output quality metrics and set alerts for regressions.
 5. **Include AI-assisted development in your architecture reviews:** Treat LLM components as critical system parts.
 
 ---
@@ -114,8 +113,8 @@ What’s your biggest challenge with integrating large language models in your t
 
 ---
 
-*Word count: 805*
+_Word count: 805_
 
 ---
 
-*AI-generated draft - Quality Score: 95/100*
+_AI-generated draft - Quality Score: 95/100_

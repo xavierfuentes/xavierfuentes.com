@@ -189,9 +189,9 @@ class GhostContentManager {
 
   async createContent(content, type) {
     if (type === "post") {
-      return await this.api.posts.add(content);
+      return await this.api.posts.add(content, { source: "html" });
     } else {
-      return await this.api.pages.add(content);
+      return await this.api.pages.add(content, { source: "html" });
     }
   }
 

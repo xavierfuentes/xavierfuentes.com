@@ -6,7 +6,6 @@ visibility: public
 featured: false
 meta_title: "Partner with the AI, throw away the code"
 meta_description: "Matteo Vaccari explains why the common metric of AI code acceptance has a big hole, and how an LLM can be valuable even if you throw away its code."
-target_channel: undefined
 tags:
   - Technology Strategy
   - ai code acceptance
@@ -20,7 +19,7 @@ authors:
 
 Most CTOs I speak to wrestle with the same challenge: how to integrate generative AI into their software development practices without turning into code review bottlenecks or losing control over quality. The typical metric—AI code acceptance rate—is misleading and often masks deeper issues. What if the real value of AI isn’t in accepting its code verbatim, but in how it partners with human developers to accelerate ideation, testing, and problem solving?
 
-Martin Fowler’s recent article, *“Partner with the AI, throw away the code”*, cuts through the noise and challenges the obsession with AI-generated code acceptance. Instead, he urges tech leaders to focus on AI as a collaborative tool that augments human creativity and judgement, rather than a replacement coder. Here’s why this shift matters and how you can operationalise it in your organisation.
+Martin Fowler’s recent article, _“Partner with the AI, throw away the code”_, cuts through the noise and challenges the obsession with AI-generated code acceptance. Instead, he urges tech leaders to focus on AI as a collaborative tool that augments human creativity and judgement, rather than a replacement coder. Here’s why this shift matters and how you can operationalise it in your organisation.
 
 ---
 
@@ -64,7 +63,7 @@ Another example comes from a SaaS scale-up focusing on developer experience. The
 If you’re still using AI code acceptance as your primary success metric, it’s time to rethink.
 
 1. **Expand success criteria:** Include measures like developer time saved, feature prototyping speed, or number of test cases generated.
-   
+
 2. **Train developers in AI literacy:** Help engineers understand how to prompt LLMs effectively and interpret outputs as collaborative suggestions.
 
 3. **Embed AI into workflows:** Integrate generative AI into early design discussions, code reviews, and testing—not just code writing.
@@ -96,10 +95,10 @@ Generative AI isn’t about throwing code over the fence and hoping it sticks. I
 
 ---
 
-How are you currently measuring AI’s impact in your software development lifecycle? Have you experienced benefits beyond code acceptance rates? Let’s discuss.  
+How are you currently measuring AI’s impact in your software development lifecycle? Have you experienced benefits beyond code acceptance rates? Let’s discuss.
 
 #AIcodeacceptance #GenerativeAI #CTO #SoftwareDevelopment #TechLeadership
 
 ---
 
-*AI-generated draft - Quality Score: 85/100*
+_AI-generated draft - Quality Score: 85/100_
