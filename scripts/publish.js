@@ -24,22 +24,36 @@ class GhostContentManager {
     }
   }
 
-  async publishContent() {
+  async publishContent(files = null) {
     console.log("🚀 Starting Ghost content publishing...");
 
     try {
-      const posts = await this.processContentFiles(
-        "content/posts/**/*.md",
-        "post"
-      );
-      const drafts = await this.processContentFiles(
-        "content/drafts/**/*.md",
-        "post"
-      );
-      const pages = await this.processContentFiles(
-        "content/pages/**/*.md",
-        "page"
-      );
+      let posts = [];
+      let drafts = [];
+      let pages = [];
+
+      if (files && files.length > 0) {
+        // Process only specified files
+        console.log(`📋 Processing ${files.length} specified file(s)...`);
+        for (const file of files) {
+          if (file.startsWith("content/posts/") && file.endsWith(".md")) {
+            const result = await this.processFile(file, "post");
+            posts.push(result);
+          } else if (file.startsWith("content/drafts/") && file.endsWith(".md")) {
+            const result = await this.processFile(file, "post");
+            drafts.push(result);
+          } else if (file.startsWith("content/pages/") && file.endsWith(".md")) {
+            const result = await this.processFile(file, "page");
+            pages.push(result);
+          }
+        }
+      } else {
+        // Process all files (default behavior)
+        console.log("📋 Processing all content files...");
+        posts = await this.processContentFiles("content/posts/**/*.md", "post");
+        drafts = await this.processContentFiles("content/drafts/**/*.md", "post");
+        pages = await this.processContentFiles("content/pages/**/*.md", "page");
+      }
 
       console.log(
         `✅ Successfully processed ${posts.length} posts, ${drafts.length} drafts, and ${pages.length} pages`
@@ -219,9 +233,9 @@ class GhostContentManager {
       readOnlyFields.forEach((field) => delete updatePayload[field]);
 
       if (type === "post") {
-        return await this.api.posts.edit(updatePayload);
+        return await this.api.posts.edit(updatePayload, { source: "html" });
       } else {
-        return await this.api.pages.edit(updatePayload);
+        return await this.api.pages.edit(updatePayload, { source: "html" });
       }
     } catch (error) {
       console.error(`❌ Error updating ${type} (ID: ${id}):`, error.message);
@@ -238,7 +252,9 @@ class GhostContentManager {
 
 if (require.main === module) {
   const manager = new GhostContentManager();
-  manager.publishContent().catch((error) => {
+  // Get file paths from command line arguments (e.g., node publish.js file1.md file2.md)
+  const files = process.argv.slice(2);
+  manager.publishContent(files.length > 0 ? files : null).catch((error) => {
     console.error("Fatal error:", error);
     process.exit(1);
   });
