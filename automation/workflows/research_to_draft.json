@@ -18,7 +18,7 @@
       "typeVersion": 1.2,
       "position": [
         -1744,
-        -160
+        80
       ]
     },
     {
@@ -68,7 +68,7 @@
       "typeVersion": 2.2,
       "position": [
         -1520,
-        -160
+        80
       ],
       "credentials": {
         "notionApi": {
@@ -87,7 +87,7 @@
       "typeVersion": 2,
       "position": [
         -1296,
-        -160
+        80
       ]
     },
     {
@@ -98,7 +98,7 @@
       "typeVersion": 3,
       "position": [
         -848,
-        -160
+        80
       ],
       "id": "e16e7c1b-bf66-441c-917b-7dddd742ba3e",
       "name": "Loop Over Items"
@@ -129,7 +129,7 @@
       "typeVersion": 1.3,
       "position": [
         -624,
-        -128
+        96
       ],
       "credentials": {
         "openAiApi": {
@@ -148,7 +148,7 @@
       "typeVersion": 2,
       "position": [
         -272,
-        -128
+        96
       ]
     },
     {
@@ -184,7 +184,7 @@
             },
             {
               "key": "Draft URL|url",
-              "urlValue": "={{ $('Prepare GitHub File').item.json.file_path ? 'https://github.com/xavierfuentes/xavierfuentes.com/blob/main/' + $('Prepare GitHub File').item.json.file_path : '' }}"
+              "urlValue": "=https://raw.githubusercontent.com/xavierfuentes/xavierfuentes.com/main/{{ $('Prepare GitHub File').item.json.file_path }}"
             }
           ]
         },
@@ -195,8 +195,8 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        1200,
-        48
+        1648,
+        368
       ],
       "credentials": {
         "notionApi": {
@@ -214,6 +214,11 @@
           "value": "={{ $('Enhance Research Data').item.json.content_id }}",
           "mode": "id"
         },
+        "propertiesUi": {
+          "propertyValues": [
+            {}
+          ]
+        },
         "options": {}
       },
       "id": "25324dba-515c-4eab-9b69-bd82dd216342",
@@ -221,8 +226,8 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        1424,
-        48
+        1872,
+        272
       ],
       "credentials": {
         "notionApi": {
@@ -241,7 +246,7 @@
       "typeVersion": 2,
       "position": [
         -560,
-        -320
+        -96
       ]
     },
     {
@@ -260,7 +265,7 @@
       "typeVersion": 2.1,
       "position": [
         -272,
-        -320
+        -96
       ],
       "webhookId": "8a189fb2-54e9-4187-aea8-cb6b4bd21225",
       "credentials": {
@@ -279,7 +284,7 @@
       "typeVersion": 2,
       "position": [
         752,
-        -160
+        80
       ],
       "id": "eed3b07d-48a2-44bc-a002-e848f1f7ec1e",
       "name": "Increment Retry Counter"
@@ -308,7 +313,7 @@
       "typeVersion": 1.8,
       "position": [
         176,
-        -224
+        0
       ],
       "id": "7471c88f-da37-41a7-a19b-253d5e9e4bff",
       "name": "AI Reviewer",
@@ -328,7 +333,7 @@
       "typeVersion": 2,
       "position": [
         528,
-        -224
+        0
       ],
       "id": "a0f84256-00dd-4c6e-8143-c80fb07b8cb9",
       "name": "Merge Feedback"
@@ -371,7 +376,7 @@
       "typeVersion": 2.2,
       "position": [
         -48,
-        -128
+        96
       ],
       "id": "d72c0d68-0344-483b-8215-da63e2e9b537",
       "name": "Check Quality & Retry Limit"
@@ -379,13 +384,13 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "// Generate markdown file for GitHub draft\nconst item = $input.item.json;\n\n// Create slug from title\nconst slug = item.enhanced_title\n  .toLowerCase()\n  .replace(/[^a-z0-9]+/g, \"-\")\n  .replace(/^-|-$/g, \"\");\n\n// Format tags from content pillar and SEO keywords\nconst tags = [\n  item.content_pillar,\n  ...(item.seo_keywords || []).slice(0, 3),\n].filter(Boolean);\n\n// Clean and prepare fields that may contain special YAML characters\nconst cleanForYaml = (str) => {\n  return (str || \"\")\n    .replace(/<[^>]*>/g, \" \") // Remove HTML tags\n    .replace(/&[^;]+;/g, \" \") // Remove HTML entities\n    .replace(/\\s+/g, \" \") // Normalize whitespace\n    .replace(/\"/g, '\\\\\"') // Escape quotes\n    .trim()\n    .substring(0, 160); // Limit length for meta description;\n};\n\nconst frontmatterFields = [\n  `title: \"${cleanForYaml(item.enhanced_title)}\"`,\n  `slug: ${slug}`,\n  `status: draft`,\n  `visibility: public`,\n  `featured: false`,\n  `meta_title: \"${cleanForYaml(item.enhanced_title)}\"`,\n  `meta_description: \"${cleanForYaml(\n    item.enhanced_description || item.enhanced_title\n  )}\"`,\n  `target_channel: ${item.target_channel}`,\n];\n\n\n// Add LinkedIn-specific fields\nif (item.target_channel === \"linkedin-original\") {\n  frontmatterFields.push(`linkedin_day: ${item.linkedin_day}`);\n}\n\n// Add blog-specific fields\nif (item.target_channel === \"blog\" && item.will_generate_linkedin_promo) {\n  frontmatterFields.push(`will_generate_linkedin_promo: true`);\n}\n\n// Generate frontmatter and content\nconst markdown = `---\n${frontmatterFields.join(\"\\n\")}\ntags:\n${tags.map((tag) => `  - ${tag}`).join(\"\\n\")}\nauthors:\n  - xavier\n---\n\n${item.generated_content}\n\n---\n\n*AI-generated draft - Quality Score: ${\n  item.quality_report?.overall_score || 0\n}/100*`;\n\n\n// Generate filename with date prefix\nconst now = new Date();\nconst datePrefix = now.toISOString().split(\"T\")[0]; // YYYY-MM-DD format\nconst filename = `${datePrefix}-${slug}.md`;\n\n// Route to appropriate directory based on channel\nlet directory;\nif (item.target_channel === \"linkedin-original\") {\n  directory = \"content/linkedin\";\n} else if (item.target_channel === \"newsletter\") {\n  directory = \"content/newsletter\";\n} else {\n  // blog channel\n  directory = \"content/drafts\";\n}\n\nreturn {\n  json: {\n    ...item,\n    markdown_content: markdown,\n    filename: filename,\n    file_path: `${directory}/${filename}`,\n  },\n};\n"
+        "jsCode": "// Generate markdown file for GitHub draft\nconst item = $input.item.json;\n\n// Create slug from title\nconst slug = item.enhanced_title\n  .toLowerCase()\n  .replace(/[^a-z0-9]+/g, \"-\")\n  .replace(/^-|-$/g, \"\");\n\n// Format tags from content pillar and SEO keywords\nconst tags = [\n  item.content_pillar,\n  ...(item.seo_keywords || []).slice(0, 3),\n].filter(Boolean);\n\n// Clean and prepare fields that may contain special YAML characters\nconst cleanForYaml = (str) => {\n  return (str || \"\")\n    .replace(/<[^>]*>/g, \" \") // Remove HTML tags\n    .replace(/&[^;]+;/g, \" \") // Remove HTML entities\n    .replace(/\\s+/g, \" \") // Normalize whitespace\n    .replace(/\"/g, '\\\\\"') // Escape quotes\n    .trim()\n    .substring(0, 160); // Limit length for meta description;\n};\n\nconst frontmatterFields = [\n  `title: \"${cleanForYaml(item.enhanced_title)}\"`,\n  `slug: ${slug}`,\n  `status: draft`,\n  `visibility: public`,\n  `featured: false`,\n  `content_pillar: ${item.content_pillar}`,\n  `meta_title: \"${cleanForYaml(item.enhanced_title)}\"`,\n  `meta_description: \"${cleanForYaml(\n    item.enhanced_description || item.enhanced_title\n  )}\"`,\n];\n\n\n// Add LinkedIn-specific fields\nif (item.target_channel === \"linkedin-original\") {\n  frontmatterFields.push(`linkedin_day: ${item.linkedin_day}`);\n}\n\n// Add blog-specific fields\nif (item.target_channel === \"blog\" && item.will_generate_linkedin_promo) {\n  frontmatterFields.push(`will_generate_linkedin_promo: true`);\n}\n\n// Generate frontmatter and content\nconst markdown = `---\n${frontmatterFields.join(\"\\n\")}\ntags:\n${tags.map((tag) => `  - ${tag}`).join(\"\\n\")}\nauthors:\n  - xavier\n---\n\n${item.generated_content}\n\n---\n\n*AI-generated draft - Quality Score: ${\n  item.quality_report?.overall_score || 0\n}/100*`;\n\n\n// Generate filename\nconst filename = `${slug}.md`;\n\n// Route to appropriate directory based on channel\nlet directory;\nif (item.target_channel === \"linkedin-original\") {\n  directory = \"content/linkedin\";\n} else if (item.target_channel === \"newsletter\") {\n  directory = \"content/newsletter\";\n} else {\n  // blog channel\n  directory = \"content/drafts\";\n}\n\nreturn {\n  json: {\n    ...item,\n    markdown_content: markdown,\n    filename: filename,\n    file_path: `${directory}/${filename}`,\n  },\n};\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
         240,
-        -32
+        192
       ],
       "id": "e11fb8cc-f6de-4cf7-83e3-1bba690c1e9b",
       "name": "Prepare GitHub File"
@@ -417,7 +422,7 @@
       "typeVersion": 1.1,
       "position": [
         528,
-        -32
+        192
       ],
       "id": "f4ea8af0-cacd-4910-930c-2ab85269c57f",
       "name": "Check if File Exists",
@@ -459,7 +464,7 @@
       "typeVersion": 2.2,
       "position": [
         752,
-        48
+        272
       ],
       "id": "89892381-f3db-4f32-925c-977e36cb88ee",
       "name": "File Exists?"
@@ -496,7 +501,7 @@
       "typeVersion": 1.1,
       "position": [
         976,
-        -64
+        176
       ],
       "id": "284ac1f9-12da-4cf0-b372-b3f08cc2873a",
       "name": "Update Existing Draft",
@@ -539,7 +544,7 @@
       "typeVersion": 1.1,
       "position": [
         976,
-        144
+        368
       ],
       "id": "59ffb8d8-6472-4add-abe9-4e8ee61d459d",
       "name": "Create New Draft",
@@ -559,7 +564,7 @@
       "typeVersion": 2,
       "position": [
         -1072,
-        -160
+        80
       ],
       "id": "ed65df46-a3eb-4996-8ce5-fbd97419c179",
       "name": "Determine Content Format"
@@ -579,8 +584,8 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        1872,
-        112
+        2320,
+        336
       ],
       "webhookId": "9226971b-c7ef-4726-902c-fba68cec1b78",
       "credentials": {
@@ -599,9 +604,119 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1648,
-        48
+        2096,
+        272
       ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f72b2dc3-aaa6-4408-86cc-316b9f710cea",
+              "leftValue": "={{ $json.data?.length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1424,
+        272
+      ],
+      "id": "3a8667ac-7700-44f5-a5b2-f92ba3d62474",
+      "name": "Asset Exists?"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "08f0fbde-3076-49f1-8e82-810b2a345c88",
+          "mode": "list",
+          "cachedResultName": "Content Assets",
+          "cachedResultUrl": "https://www.notion.so/08f0fbde307649f18e82810b2a345c88"
+        },
+        "limit": 1,
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "key": "Slug|rich_text",
+              "condition": "equals",
+              "richTextValue": "={{ $('Prepare GitHub File').item.json.slug }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        1200,
+        272
+      ],
+      "id": "6e6eb8c8-e8d8-477c-9898-443f217c728d",
+      "name": "Search Existing Asset",
+      "credentials": {
+        "notionApi": {
+          "id": "lC4G957VFihVvFG2",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $('Search Existing Asset').item.json.id }}",
+          "mode": "id"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        1648,
+        176
+      ],
+      "id": "ef6adfff-6ea9-4314-8794-f9ea8099eb6e",
+      "name": "Update Content Asset",
+      "credentials": {
+        "notionApi": {
+          "id": "lC4G957VFihVvFG2",
+          "name": "Notion account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -807,7 +922,7 @@
       "main": [
         [
           {
-            "node": "Create Content Asset",
+            "node": "Search Existing Asset",
             "type": "main",
             "index": 0
           }
@@ -818,7 +933,7 @@
       "main": [
         [
           {
-            "node": "Create Content Asset",
+            "node": "Search Existing Asset",
             "type": "main",
             "index": 0
           }
@@ -857,13 +972,53 @@
           }
         ]
       ]
+    },
+    "Asset Exists?": {
+      "main": [
+        [
+          {
+            "node": "Update Content Asset",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Content Asset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Existing Asset": {
+      "main": [
+        [
+          {
+            "node": "Asset Exists?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Content Asset": {
+      "main": [
+        [
+          {
+            "node": "Update Pipeline Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "24e1f003-8b4f-4a7a-8949-67c39ead4ffa",
+  "versionId": "98cb966b-b01e-44db-8177-c93174a8d9de",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "d052f68fee6cbc1f0a1b7b4daa7281384655d7a51d1cb62c7e57bbd86329486d"

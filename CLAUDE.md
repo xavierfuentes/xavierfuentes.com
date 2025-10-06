@@ -27,3 +27,4 @@ STRUCTURE: Hook → Context → Framework → Case Study → Implementation → 
 NOTION SCHEMA: Title, Content Pillar, Priority (High/Medium/Low), Target Audience, Status (Research/Drafted/Review/Published), Relevance/Actionability/Depth Scores, SEO Keywords, Publish Date
 
 ALWAYS: Include CTAs, demonstrate expertise without consulting speak, pass "so what?" test
+- don't edit @automation/workflows/ files unless I ask you to, always give me the changes so I implement them in N8N UI
