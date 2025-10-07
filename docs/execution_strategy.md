@@ -51,9 +51,10 @@
 
 **Essential:**
 
-- Content management system (WordPress/Ghost)
-- Email marketing platform (ConvertKit/Substack)
-- Social scheduling (Buffer/Hootsuite)
+- Content management system (Ghost CMS)
+- n8n workflow automation (Pro Plan with Data Tables)
+- GitHub (content version control)
+- AI APIs (OpenAI GPT-4o, Anthropic Claude 3.5 Sonnet)
 - Analytics (Google Analytics, LinkedIn Analytics)
 - SEO tools (SEMrush/Ahrefs for keyword research)
 
@@ -63,6 +64,30 @@
 - Video editing (Loom for quick explainers)
 - Email automation sequences
 - Lead magnet delivery system
+
+### Automation Architecture
+
+**n8n Data Tables:**
+- RSS sources configuration (active feeds, priorities, content pillars)
+- Content pipeline queue (research → selected → generated → published)
+- 100x faster than previous Notion setup (8ms vs 800ms queries)
+
+**Automated Workflows:**
+- `rss_to_pipeline.json` - Hourly RSS fetch and article scoring
+- `weekly_selection.json` - Sunday curation and auto-selection
+- `content_generation.json` - AI draft generation and GitHub commits
+
+**Manual Steps:**
+- Content route selection (blog/LinkedIn/newsletter)
+- Draft review and editing
+- Publishing to Ghost CMS
+- LinkedIn scheduling
+
+**Performance:**
+- Query speed: 8ms (Data Tables)
+- Content generation: 3-5 minutes per piece
+- Editing time reduction: 60-70%
+- Monthly cost: £38-68 (vs £100+ with Notion)
 
 ---
 
@@ -195,10 +220,11 @@
 ### Essential Costs (Monthly)
 
 - Website hosting and domain: £20-50
-- Email marketing platform: £30-100
+- n8n workflow automation (Pro Plan): £30-60
+- AI API costs (OpenAI/Anthropic): £8-15
 - SEO/analytics tools: £50-200
 - Design tools: £10-30
-- **Total:** £110-380/month
+- **Total:** £118-355/month
 
 ### Growth Investments
 

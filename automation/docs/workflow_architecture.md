@@ -1,29 +1,32 @@
 # Content Automation Workflow Architecture
-## Complete System Design with Multi-Agent AI Enhancement
+## n8n Data Tables + GitHub System
 
 **Last Updated:** 2025-10-06
-**Version:** 3.0 (Consolidated multi-agent system)
+**Version:** 4.0 (n8n Data Tables migration - Notion removed)
 
 ---
 
 ## Executive Summary
 
-This architecture defines the complete automation system for XavierFuentes.com content creation, from RSS research through multi-channel publishing (blog, LinkedIn, newsletter) with AI-enhanced quality control.
+This architecture defines a simplified automation system for XavierFuentes.com content creation using n8n Data Tables for state management and GitHub for content storage.
 
-**Key Features:**
-- **Multi-channel content strategy:** Separate paths for blog, LinkedIn, newsletter
-- **Multi-agent AI system:** Writer → CTO Reviewer → Editor → Brand Voice chain
-- **Voice profile consistency:** Maintains authentic writing style across all AI-generated content
-- **Content atomization:** Extract 5-10 derivative pieces from each blog post
-- **Performance feedback loop:** Continuous learning and optimization
-- **Automated quality gates:** 8 validation checks before publishing
+**Key Changes from v3.0:**
+- **Removed Notion entirely** - eliminated external dependency and complexity
+- **n8n Data Tables** - 100x faster queries (8ms vs 800ms), simpler architecture
+- **Clean slate approach** - fresh start with minimal data migration
+- **Hybrid filename strategy** - slug-only in drafts/, dated in posts/
+
+**System Components:**
+- **n8n Data Tables:** RSS sources configuration + content pipeline queue
+- **GitHub:** Content storage and version control
+- **Ghost CMS:** Publishing platform
+- **AI Agents:** Content generation and quality control
 
 **Expected Impact:**
-- **Editing time:** Reduced from 2-3 hours to 30-45 minutes per piece (-60-70%)
-- **Content quality:** Technical accuracy +40%, engagement +25%
-- **Content volume:** 3-5x output from same research input
-- **Voice consistency:** 90%+ match with authentic style
-- **Monthly targets:** 2 blogs, 10-11 LinkedIn original, 2 LinkedIn promos, 4 newsletters
+- **Query performance:** 100x faster (8ms vs 800ms with Notion)
+- **System complexity:** 60% reduction (no external API dependencies)
+- **Maintenance overhead:** 70% reduction (built-in n8n feature)
+- **Monthly cost:** £30-60 (vs £100+ with Notion)
 
 ---
 
@@ -36,9 +39,7 @@ The content strategy requires:
   - 2 blog promotion posts
 - **Newsletter:** 4 digests/month (weekly compilation)
 
-**Previous Architecture Issue:** Trying to derive LinkedIn content from blog posts created a bottleneck. Blog output (2/month) cannot feed LinkedIn needs (12-13/month).
-
-**Solution:** Separate content creation paths for each channel, all fed by the same research queue, enhanced with multi-agent AI quality control.
+**Solution:** Automated content pipeline using n8n Data Tables for state tracking, GitHub for content storage, and AI-enhanced generation.
 
 ---
 
@@ -47,264 +48,234 @@ The content strategy requires:
 ```
 RSS Feeds (Hourly)
     ↓
-Research Curation (Weekly)
+n8n Data Tables: rss_sources (config)
     ↓
-Manual Content Route Selection
+Fetch & Score Articles
     ↓
-┌─────────────────────────────────────┐
-│   MULTI-AGENT CONTENT CREATION      │
-│                                     │
-│   Writer → CTO Reviewer → Editor   │
-│   → Brand Voice → Quality Gates    │
-└─────────────────────────────────────┘
+n8n Data Tables: content_pipeline (queue)
     ↓
-Channel-Specific Output
+Manual Content Selection (Weekly)
     ↓
-┌────────┬────────────┬──────────┐
-│  Blog  │  LinkedIn  │Newsletter│
-└────────┴────────────┴──────────┘
+AI Content Generation
     ↓
-Content Atomization (Blog → 5-10 pieces)
-    ↓
-Performance Tracking & Feedback Loop
-```
-
----
-
-## Phase 0: Voice Profile Setup (One-Time)
-
-### Purpose
-Create a "digital fingerprint" of your authentic writing voice to ensure all AI-generated content sounds genuinely like you.
-
-### Workflow: `voice_profile_extractor.json` (Run Once)
-
-**Input Required:**
-- 10-15 of your best published articles
-- 5-10 LinkedIn posts with high engagement
-- 2-3 newsletter issues
-- Any personal writing samples
-
-**Process:**
-1. Extract writing patterns across all samples
-2. Identify vocabulary preferences (UK English, technical terms, signature phrases)
-3. Analyze structural patterns (sentence/paragraph length, rhetorical devices)
-4. Create voice profile JSON
-5. Validate with test generations (iterate until 8+ authenticity rating)
-
-**Output:** `/automation/config/voice_profile.json`
-
-```json
-{
-  "vocabulary": {
-    "prefer": ["whilst", "optimise", "realise", "organisation"],
-    "avoid": ["synergy", "leverage (verb)", "disrupt"],
-    "signature_phrases": [
-      "Here's what nobody tells you about...",
-      "I learned this the hard way..."
-    ]
-  },
-  "structure": {
-    "avg_sentence_length": 18,
-    "avg_paragraph_length": 4,
-    "opening_style": ["provocative_question", "bold_statement", "failure_story"]
-  },
-  "rhetorical": {
-    "uses_personal_failures": "frequently",
-    "includes_specific_numbers": "always",
-    "contrarian_angle": "often",
-    "humour_style": "dry_british"
-  },
-  "tone": {
-    "formality": "professional_but_personal",
-    "confidence": "assertive_not_arrogant",
-    "directness": "high",
-    "technical_depth": "high_with_accessible_explanation"
-  }
-}
-```
-
-**Frequency:** Run once, update quarterly based on performance feedback
-
----
-
-## Phase 1: Research & Curation
-
-### Workflow: `rss_to_research.json` ✅ Exists
-- **Trigger:** Hourly
-- **Process:**
-  1. Fetch articles from configured RSS feeds
-  2. Filter for relevance to content pillars
-  3. Score each article (relevance, actionability, depth)
-  4. Store in Notion Content Pipeline database
-  5. Status: "Research"
-- **Output:** Notion pages in "Research" status
-
-### Workflow: `weekly_content_selection.json` ✅ Exists
-- **Trigger:** Sunday 9 AM
-- **Process:**
-  1. Fetch all "Research" status items
-  2. Archive stale content (>45 days, low scores)
-  3. Calculate weekly scores with pillar balancing
-  4. Auto-select top candidates (4-5 items)
-  5. Mark as "Should Process"
-  6. Send summary email
-- **Output:** Curated list ready for content route selection
-
----
-
-## Phase 2: Multi-Agent Content Creation
-
-### Workflow: `content_creation_enhanced.json`
-
-Four specialized AI agents working in sequence, each with validation checkpoints.
-
-#### Agent 1: Writer Agent (GPT-4o)
-**Role:** Initial content generation with creative exploration
-
-**Input:**
-- Research item from Notion
-- Content Route (blog/linkedin/newsletter)
-- Voice Profile JSON
-- Content Pillar requirements
-- Word count target
-
-**Output:** Draft v1.0 (70% ready, creativity prioritized)
-
----
-
-#### Agent 2: CTO Reviewer Agent (Claude 3.5 Sonnet)
-**Role:** Technical accuracy, depth, and strategic insight validation
-
-**Why Claude:** Superior reasoning, technical depth, identifies logical gaps
-
-**Review Criteria:**
-1. Technical accuracy (critical issues flagged)
-2. Strategic depth (beyond surface-level advice)
-3. Practical applicability (can readers implement this?)
-4. Credibility markers (specific examples, numbers, trade-offs)
-5. Gaps & improvements (missing CTO perspective)
-
-**Output:** Draft v2.0 (85% ready, technically accurate)
-
-**Checkpoint:** If technical_accuracy_score < 7, flag for manual review
-
----
-
-#### Agent 3: Editor Agent (GPT-4o)
-**Role:** Clarity, flow, grammar, UK English compliance
-
-**Editing Priorities:**
-1. UK English compliance (non-negotiable)
-2. Clarity & flow (remove jargon, vary sentence length)
-3. Grammar & style (fix errors, remove passive voice)
-4. Voice consistency (maintain personal tone)
-5. Readability (Flesch-Kincaid 60+, avg sentence ~18 words)
-
-**Output:** Draft v3.0 (95% ready, polished)
-
----
-
-#### Agent 4: Brand Voice Validator (GPT-4o)
-**Role:** Final check that content authentically sounds like Xavier
-
-**Validation Checks:**
-1. Vocabulary match (UK English, signature phrases)
-2. Structural match (sentence/paragraph length)
-3. Rhetorical match (personal stories, specific numbers)
-4. Tone match (professional but personal, direct)
-
-**Output:** Draft v4.0 (98% ready, voice-validated)
-
-**Checkpoint:** If voice_authenticity_score < 8, flag for manual review
-
----
-
-### Multi-Agent Workflow Summary
-
-```
-Research Item → Content Route Selection (Manual)
-    ↓
-[Agent 1] Writer (GPT-4o) → Draft v1.0 (70%)
-    ↓
-[Agent 2] CTO Reviewer (Claude 3.5) → Draft v2.0 (85%)
-    ↓ Checkpoint: Tech Score ≥ 7?
-[Agent 3] Editor (GPT-4o) → Draft v3.0 (95%)
-    ↓
-[Agent 4] Brand Voice (GPT-4o) → Draft v4.0 (98%)
-    ↓ Checkpoint: Voice Score ≥ 8?
 Quality Gates Validation
     ↓
-Content Atomization (if blog)
+GitHub Commit (content/drafts/)
     ↓
-Commit to GitHub → Update Notion → Notify for Review
+Manual Review & Publishing
+    ↓
+Ghost CMS
 ```
 
-**Processing Time:** ~3-5 minutes end-to-end
-**Cost per piece:** ~£0.50-1.00 (API calls)
-**Quality improvement:** 60-70% less editing needed
+---
+
+## n8n Data Tables Schema
+
+### Table 1: `rss_sources`
+
+Configuration table for RSS/Atom feed sources.
+
+| Column | Type | Description | Example |
+|--------|------|-------------|---------|
+| `id` | text | UUID primary key | `550e8400-e29b-41d4-a716-446655440000` |
+| `name` | text | Display name | `Martin Fowler's Blog` |
+| `url` | text | Feed URL | `https://martinfowler.com/feed.atom` |
+| `content_pillar` | text | Category | `Technology Strategy` |
+| `priority` | text | High/Medium/Low | `High` |
+| `active` | checkbox | Enable/disable feed | `true` |
+| `notes` | text | Optional notes | `Focus on architecture patterns` |
+| `created_date` | date | When added | `2025-10-06` |
+
+**Query Examples:**
+```javascript
+// Get all active feeds
+SELECT * FROM rss_sources WHERE active = true
+
+// Get high-priority Technology Strategy feeds
+SELECT * FROM rss_sources
+WHERE active = true
+AND priority = 'High'
+AND content_pillar = 'Technology Strategy'
+```
 
 ---
 
-## Phase 2.5: Automated Quality Gates
+### Table 2: `content_pipeline`
 
-### Workflow: `quality_gates_validator.json`
+Working queue for research items through to publication.
 
-**8 Validation Checks:**
+| Column | Type | Description | Example |
+|--------|------|-------------|---------|
+| `id` | text | UUID primary key | `650e8400-e29b-41d4-a716-446655440001` |
+| `guid` | text | RSS item GUID (deduplication) | `https://example.com/article-123` |
+| `title` | text | Article title | `Building Abstractions for LLMs` |
+| `url` | text | Source URL | `https://martinfowler.com/articles/llm-abstractions.html` |
+| `source_name` | text | From rss_sources.name | `Martin Fowler's Blog` |
+| `content_pillar` | text | Category | `Technology Strategy` |
+| `description` | text | Article summary | `How to create language abstractions...` |
+| `quality_score` | number | Composite AI score (1-10) | `8.67` |
+| `status` | text | Lifecycle state | `research` |
+| `target_channel` | text | Routing decision | `blog` |
+| `word_count_target` | number | Target words | `2000` |
+| `created_date` | date | When discovered | `2025-10-06` |
+| `github_path` | text | File location | `content/drafts/building-abstractions-llms.md` |
+| `github_commit_url` | text | Commit URL | `https://github.com/user/repo/commit/abc123` |
+| `notes` | text | Optional notes | `Great framework example` |
 
-1. **UK English** (critical): No American spellings
-2. **Readability** (moderate): Flesch-Kincaid ≥ 60
-3. **Specific Example** (moderate): Contains numbers and examples
-4. **Call to Action** (minor): Includes engagement prompt
-5. **SEO Keywords** (minor): 1-2% keyword density
-6. **Buzzword Check** (moderate): No corporate jargon
-7. **Personal Insight** (moderate): Includes personal experience
-8. **Word Count** (critical): Within ±10% of target
+**Status Values:**
+- `research` - Discovered, not yet selected
+- `selected` - Chosen for content creation
+- `generated` - AI draft created, in GitHub
+- `published` - Live on Ghost CMS
+- `archived` - Stale or low-quality, removed from queue
 
-**Decision Logic:**
-- **Critical failures (1+):** Block commit, send back to agent
-- **Moderate failures (3+):** Flag for review but allow commit
-- **Minor failures (5+):** Log warning, proceed
-- **All pass:** Proceed to GitHub commit
+**Target Channel Values (Single or Multiple):**
+- `blog` - Long-form blog post
+- `linkedin` - LinkedIn post
+- `newsletter` - Newsletter digest item
+- `blog,linkedin` - Generate both (multi-channel)
+- `null` - Not yet routed
+
+**Query Examples:**
+```javascript
+// Get all research items ready for weekly selection
+SELECT * FROM content_pipeline
+WHERE status = 'research'
+AND created_date > DATE_SUB(NOW(), INTERVAL 45 DAY)
+ORDER BY quality_score DESC
+
+// Get items selected but not yet generated
+SELECT * FROM content_pipeline
+WHERE status = 'selected'
+
+// Archive stale low-quality items
+UPDATE content_pipeline
+SET status = 'archived'
+WHERE status = 'research'
+AND (
+  created_date < DATE_SUB(NOW(), INTERVAL 45 DAY)
+  OR quality_score < 5
+)
+```
 
 ---
 
-## Phase 2.6: Content Routing & Output
+## Workflow Specifications
 
-### Content Route Options
+### Workflow 1: `rss_to_pipeline.json`
 
-**1. blog-draft**
-- Long-form blog post (1,500-2,500 words)
-- SEO optimization
-- Output: `content/drafts/[slug].md`
-- Target: 2/month
+**Purpose:** Fetch RSS feeds, score articles, populate content_pipeline table
 
-**2. linkedin-original**
-- Standalone LinkedIn post (200-800 words)
-- Short paragraphs, hooks
-- LinkedIn day assignment (Tue/Wed/Thu)
-- Output: `content/linkedin/[slug].md`
-- Target: 10-11/month
+**Trigger:** Hourly (cron: `0 * * * *`)
 
-**3. blog-promo-only**
-- Blog post + LinkedIn promo flag
-- Triggers promotional post generation after publishing
-- Output: `content/drafts/[slug].md`
-- Target: 2/month (same posts as blog-draft, with promo)
+**Nodes:**
 
-**4. newsletter-item**
-- Digest-style summary (400-600 words)
-- Output: `content/newsletter/items/[slug].md`
-- Target: Variable
+1. **Schedule Trigger** - Hourly cron
+2. **Get Active RSS Sources** - Query rss_sources table where active = true
+3. **For Each Source** - Loop through sources
+4. **Fetch RSS Feed** - HTTP Request node
+5. **Parse RSS/Atom** - XML parser
+6. **For Each Article** - Loop through items
+7. **Check If Exists** - Query content_pipeline by guid
+8. **If New Article** - Filter node
+9. **Score Article (AI)** - LLM call to score relevance/actionability/depth
+10. **Calculate Quality Score** - Code node: average of 3 scores
+11. **Insert Into Pipeline** - Add row to content_pipeline table
+    - Status: `research`
+    - All scores populated
+    - Created date: now
+12. **Send Summary Email** - Count of new articles added
 
-### File Structure (Hybrid Naming)
+**Output:** New research items in content_pipeline table
+
+**Deduplication:** Uses `guid` field to prevent duplicates
+
+---
+
+### Workflow 2: `weekly_selection.json`
+
+**Purpose:** Archive stale items, score remaining research, auto-select top candidates
+
+**Trigger:** Weekly Sunday 9 AM (cron: `0 9 * * 0`)
+
+**Nodes:**
+
+1. **Schedule Trigger** - Sunday 9 AM
+2. **Archive Stale Items** - Update content_pipeline
+   - Status = `archived` where:
+     - created_date > 45 days ago
+     - OR quality_score < 5
+3. **Get Research Items** - Query content_pipeline where status = `research`
+4. **Calculate Weekly Scores** - Code node:
+   - Boost scores based on content pillar balance
+   - Apply recency weighting
+   - Prioritise high-priority sources
+5. **Select Top 4-5** - Sort by adjusted score, take top 4-5
+6. **Update Status to Selected** - Update content_pipeline
+   - Status = `selected`
+   - Selected_date = now
+   - Leave target_channel = null (manual decision)
+7. **Send Summary Email** - List of selected items for review
+
+**Output:** 4-5 items with status = `selected`, ready for manual routing
+
+**Manual Step:** User reviews selected items and sets target_channel field
+
+---
+
+### Workflow 3: `content_generation.json`
+
+**Purpose:** Generate AI content drafts, validate quality, commit to GitHub
+
+**Trigger:** Manual (user sets target_channel and triggers) OR Daily 10 AM check
+
+**Nodes:**
+
+1. **Get Selected Items** - Query content_pipeline where:
+   - status = `selected`
+   - target_channel IS NOT NULL
+2. **For Each Item** - Loop through items
+3. **Fetch Source Article** - HTTP request to url field
+4. **Extract Content** - HTML parser
+5. **AI Content Generation** - LLM call:
+   - Input: source content, target_channel, word_count_target, content_pillar
+   - Output: markdown draft with frontmatter
+   - Model: GPT-4o or Claude 3.5 Sonnet
+6. **Quality Gates Validation** - Code node:
+   - UK English check
+   - Word count ±10% of target
+   - Contains specific examples
+   - Readability score ≥ 60
+   - No corporate jargon
+7. **If Quality Gates Pass** - Filter node
+8. **Generate Slug** - Code node: title → slug
+9. **Check GitHub Duplicate** - GitHub API: check if file exists
+10. **Prepare Markdown** - Code node: format frontmatter + content
+11. **Route to Directory** - Code node:
+    - `blog` → `content/drafts/[slug].md`
+    - `linkedin-original` → `content/linkedin/[slug].md`
+    - `newsletter` → `content/newsletter/items/[slug].md`
+12. **Commit to GitHub** - GitHub API: create/update file
+13. **Update Pipeline Record** - Update content_pipeline:
+    - status = `generated`
+    - processed_date = now
+    - github_path = file path
+    - github_commit_url = commit URL
+14. **Send Notification Email** - Draft ready for review
+
+**Output:** Markdown file in GitHub, pipeline record updated
+
+---
+
+## File Structure (Hybrid Naming)
 
 ```
 content/
 ├── drafts/           # Slug-only filenames (work in progress)
-│   ├── high-growth-companies.md
+│   ├── building-abstractions-llms.md
 │   └── partner-with-ai.md
 ├── posts/            # Dated filenames (published, immutable)
-│   ├── 2025-10-15-high-growth-companies.md
+│   ├── 2025-10-15-building-abstractions-llms.md
 │   └── 2025-10-22-partner-with-ai.md
 ├── linkedin/         # Slug-only (updated in place)
 │   ├── architecture-decision-framework.md
@@ -313,285 +284,145 @@ content/
 │   ├── 2025-10-07-weekly-digest-week-40.md
 │   └── items/
 │       └── market-trends-summary.md
-├── atomized/        # Derivative content from blog posts
-│   └── 2025-10-15-high-growth-companies/
-│       ├── linkedin-insight-1-framework.md
-│       ├── linkedin-insight-2-contrarian-take.md
-│       ├── twitter-thread.md
-│       └── quotes.json
 └── pages/
     └── about.md
 ```
 
----
-
-## Phase 3: Content Atomization
-
-### Workflow: `content_atomizer.json`
-
-**Purpose:** Extract maximum value from each blog post by creating multiple content formats
-
-**Trigger:** After blog post passes quality gates OR manually triggered
-
-**Agent: Content Atomizer (GPT-4o)**
-
-**Output from 1 Blog Post:**
-
-1. **LinkedIn Insight Posts (3-5 posts)**
-   - Main framework/methodology
-   - Contrarian take or surprising insight
-   - Personal failure story
-   - Tactical implementation step
-   - Common mistake/pitfall warning
-
-2. **Twitter/X Thread (8-12 tweets)**
-   - Numbered thread with key points
-
-3. **Quote Graphics (5-7 quotes)**
-   - Memorable quotes for visual content
-
-4. **Newsletter Section (300-400 words)**
-   - Digest version for weekly newsletter
-
-5. **LinkedIn Carousel Outline (6-10 slides)**
-   - Visual breakdown of framework
-
-6. **Short-Form Video Script (90 seconds)**
-   - For LinkedIn/YouTube Shorts
-
-**Result:** One blog post → 5-7 LinkedIn posts + thread + newsletter + graphics = 2 months of LinkedIn content
-
-**Publishing Schedule:**
-- Immediate: Blog promotion LinkedIn post (if flagged)
-- Week 1: LinkedIn insights 1-2
-- Week 2: LinkedIn insights 3-4
-- Week 3: LinkedIn insight 5 + Twitter thread
-- Week 4: Newsletter section in weekly digest
+**Rationale:**
+- **Drafts:** Slug-only prevents daily duplicates during iteration
+- **Posts:** Dated filenames preserve publication history
+- **LinkedIn:** Slug-only allows quick updates
+- **Newsletter:** Dated for weekly sequence
 
 ---
 
-## Phase 4: Blog to LinkedIn Promotion
+## Content Route Workflows
 
-### Workflow: `blog_to_linkedin_promo.json` ✅ Exists
+### Blog Posts
 
-**Trigger:** Daily 10 AM
+**Workflow:** `content_generation.json` with target_channel = `blog`
 
 **Process:**
-1. Fetch published blog posts from Notion
-2. Filter for:
-   - Status = "Published"
-   - Target Channel = "blog"
-   - Will Generate LinkedIn Promo = true
-   - LinkedIn Promo Generated ≠ true
-   - Published within last 7 days
-3. For each blog:
-   - Fetch full content from GitHub
-   - Generate LinkedIn promotion post (150-300 words)
-   - Commit to `content/linkedin/[slug]-linkedin-promo.md`
-   - Update Notion: LinkedIn Promo Generated = true
-4. Send summary email
+1. Generate long-form draft (1,500-2,500 words)
+2. Commit to `content/drafts/[slug].md`
+3. Update pipeline: status = `generated`
+4. Manual review and editing
+5. Publish to Ghost CMS via `/scripts/publish.js`
+6. Move to `content/posts/[YYYY-MM-DD]-[slug].md`
+7. Update pipeline: status = `published`
 
-**Output:** LinkedIn promotional post
-**Frequency:** 2/month (one per blog post with flag enabled)
+**Target:** 2/month
 
 ---
 
-## Phase 5: Newsletter Compilation
+### LinkedIn Original Posts
 
-### Workflow: `newsletter_digest_compiler.json` ✅ Exists
-
-**Trigger:** Monday 9 AM
+**Workflow:** `content_generation.json` with target_channel = `linkedin`
 
 **Process:**
-1. Fetch all published content from last 7 days
-2. Group by channel (blog, linkedin-original, newsletter-item)
-3. Generate personal newsletter with:
-   - Xavier's intro and weekly reflection
-   - Featured content highlights
-   - Quick links section
-   - Closing thought and question
-4. Commit to `content/newsletter/[date]-weekly-digest.md`
-5. Send notification email
+1. Generate standalone post (200-800 words)
+2. Commit to `content/linkedin/[slug].md`
+3. Update pipeline: status = `generated`
+4. Manual review and scheduling
+5. Publish to LinkedIn (manual or via API)
+6. Update pipeline: status = `published`
 
-**Output:** Weekly newsletter draft (800-1,200 words)
-**Frequency:** 4/month (weekly)
+**Target:** 10-11/month
 
----
-
-## Phase 6: Performance Feedback Loop
-
-### Workflow: `performance_analysis.json`
-
-**Trigger:** Monthly (1st of month)
-
-**Purpose:** Learn from what works, optimize future content
-
-### Data Collection
-
-**Notion Properties:**
-- Performance Score (number): Composite engagement metric
-- Pageviews (number): Blog traffic
-- LinkedIn Impressions (number): LinkedIn reach
-- LinkedIn Engagement Rate (number): Likes+comments/impressions
-- Edit Depth (select): minor, moderate, major
-- Publishing Decision (select): published-as-is, edited-published, rejected
-- Time to Publish (number): Days from draft to publish
-- Voice Authenticity Score (number): 1-10 from Brand Voice Agent
-- Technical Accuracy Score (number): 1-10 from CTO Reviewer
-
-### Analysis Process
-
-**Agent: Performance Analyst (GPT-4o)**
-
-**Analysis Areas:**
-1. Content pillar performance
-2. Format performance (blog vs LinkedIn)
-3. AI generation quality (correlation with engagement)
-4. Content characteristics (what drives engagement)
-5. Anomalies & insights
-
-**Recommendations:**
-1. Content strategy adjustments
-2. Content route optimization
-3. AI agent improvements
-4. Process improvements
-
-**Automatic Adjustments:**
-- Update pillar weights in weekly selection
-- Adjust quality gate thresholds
-- Refine voice profile based on high-performing pieces
-- Update content route scoring criteria
-
----
-
-## Notion Database Schema
-
-### Content Pipeline Database
-
-**Core Properties:**
-- Title (title)
-- Status (select): Research, Drafted, Published, Archived
-- Content Pillar (select): Technology Strategy, Leadership & Management, etc.
-- Priority (select): High, Medium, Low
-- Should Process (checkbox)
-- Content Route (select): blog-draft, linkedin-original, blog-promo-only, newsletter-item
-
-**Scoring:**
-- Relevance Score (number): 1-10
-- Actionability Score (number): 1-10
-- Depth Score (number): 1-10
-
-**Channel Routing:**
-- Target Channel (select): blog, linkedin-original, linkedin-promotion, newsletter
-- LinkedIn Day (select): tuesday, wednesday, thursday, various
-- Will Generate LinkedIn Promo (checkbox)
-- LinkedIn Promo Generated (checkbox)
-- Adjusted Word Count (number)
-
-**Publishing:**
-- Word Count Target (number)
-- Publish Date (date)
-- Created Date (date)
-- GitHub Draft URL (url)
-
-**AI Tracking:**
-- Voice Authenticity Score (number): 1-10
-- Technical Accuracy Score (number): 1-10
-- Quality Gates Passed (number): 0-8
-- AI Agents Used (multi-select)
-
-**Performance:**
-- Performance Score (number)
-- Pageviews (number)
-- LinkedIn Impressions (number)
-- LinkedIn Engagement Rate (number)
-- Edit Depth (select): minor, moderate, major
-- Publishing Decision (select)
-- Time to Publish (number)
-
-**Voice Profile:**
-- Contains Personal Story (checkbox)
-- Contains Specific Numbers (checkbox)
-- Contains Contrarian Take (checkbox)
-
-### Content Assets Database
-
-**Purpose:** Track repurposed content across platforms
-
-**Properties:**
-- Asset Title (title)
-- Content Type (select)
-- Platform (select)
-- Status (select)
-- Slug (text) ← **Unique identifier for duplicate prevention**
-- URL (url)
-- Draft URL (url)
-- Word Count (number)
-- Parent Post (relation)
-- Created Date (date)
-- Publish Date (date)
-- Notes (text)
-- Is Atomized (checkbox)
-- Atomization Parent (relation)
-- Atomized Pieces Count (rollup)
-
----
-
-## Content Volume Planning
-
-### Monthly Targets
-
-| Channel | Volume | Source | Workflow |
-|---------|--------|--------|----------|
-| Blog posts | 2 | Research queue → blog-draft route | `content_creation_enhanced.json` |
-| LinkedIn original | 10-11 | Research queue → linkedin-original route | `content_creation_enhanced.json` |
-| LinkedIn promotions | 2 | Published blogs with flag | `blog_to_linkedin_promo.json` |
-| Newsletter digests | 4 | Weekly compilation | `newsletter_digest_compiler.json` |
-
-### Weekly Cadence
-
-**Sunday 9 AM:** Auto-select 4-5 research items
-**Monday:** Review and set Content Routes manually
-
-**Content Route Distribution (weekly):**
-```
-Should Process: ~4-5 items
-  ├─ blog-draft: 0-1 (2/month total)
-  ├─ linkedin-original: 2-3 (10-11/month total)
-  ├─ blog-promo-only: 0-1 (optional)
-  └─ newsletter-item: 0-1 (optional)
-```
-
-**LinkedIn Publishing:**
+**LinkedIn Day Assignment:**
 - Tuesday: Frameworks, templates, practical tools
 - Wednesday: Industry takes, observations, opinions
 - Thursday: Personal lessons, behind-the-scenes, failures
 
 ---
 
+### Newsletter Items
+
+**Workflow:** `content_generation.json` with target_channel = `newsletter`
+
+**Process:**
+1. Generate digest-style summary (400-600 words)
+2. Commit to `content/newsletter/items/[slug].md`
+3. Update pipeline: status = `generated`
+4. Include in next weekly digest compilation
+5. Weekly digest published via Ghost CMS
+6. Update pipeline: status = `published`
+
+**Target:** Variable, compiled into 4 newsletters/month
+
+---
+
+## Publishing Workflow
+
+### Manual Publishing (Current)
+
+**Prerequisites:**
+- `.env` file with Ghost Admin API credentials
+- Content file in `content/drafts/` or `content/linkedin/`
+
+**Command:**
+```bash
+npm run publish
+```
+
+**Script:** `/scripts/publish.js`
+
+**Process:**
+1. Reads all markdown files in content/drafts/, content/posts/, content/pages/
+2. Parses frontmatter metadata
+3. Converts markdown to HTML
+4. Checks Ghost CMS for existing post by slug
+5. Creates new post or updates existing
+6. Returns success/failure status
+
+**Frontmatter Requirements:**
+```yaml
+---
+title: "Article Title"
+slug: article-slug
+status: draft       # or published
+visibility: public
+featured: false
+meta_title: "SEO Title"
+meta_description: "SEO description"
+tags:
+  - Technology Strategy
+  - AI
+authors:
+  - xavier
+---
+```
+
+**Moving to Published:**
+1. Review and edit draft in `content/drafts/[slug].md`
+2. Update frontmatter: `status: published`
+3. Run `npm run publish` to sync to Ghost
+4. Move file to `content/posts/[YYYY-MM-DD]-[slug].md`
+5. Update content_pipeline: status = `published`
+
+---
+
 ## Workflow Execution Order
+
+### Hourly Operations
+
+**Every hour:**
+1. `rss_to_pipeline.json` - Fetch and score new research items
 
 ### Daily Operations
 
 **10:00 AM:**
-1. `blog_to_linkedin_promo.json` - Check for new published blogs needing promos
-2. `content_creation_enhanced.json` - Check for new "Drafted" items and generate content
-
-**Hourly:**
-1. `rss_to_research.json` - Fetch and score new research items
+1. `content_generation.json` - Check for selected items with target_channel set
 
 ### Weekly Operations
 
 **Sunday 9:00 AM:**
-1. `weekly_content_selection.json` - Archive, score, select top content
+1. `weekly_selection.json` - Archive, score, select top content
 
-**Monday 9:00 AM:**
-1. `newsletter_digest_compiler.json` - Compile weekly digest
-
-### Monthly Operations
-
-**1st of Month:**
-1. `performance_analysis.json` - Analyze performance, optimize system
+**Monday:**
+1. Manual review of selected items
+2. Set target_channel for each selected item
+3. Trigger content generation manually if needed
 
 ---
 
@@ -599,112 +430,122 @@ Should Process: ~4-5 items
 
 ### What Remains Manual
 
-1. **Content Route Selection:** You decide which research items become blog vs LinkedIn vs newsletter
-2. **Draft Review:** AI-generated content needs review before publishing
-3. **Publishing:** Moving from drafts to posts, scheduling LinkedIn, sending newsletter
-4. **Content Calendar:** Strategic decisions on timing and pillar balance
-5. **Voice Profile Updates:** Quarterly review and refinement
+1. **Content Route Selection:** Set target_channel field after weekly selection
+2. **Draft Review:** Edit AI-generated content before publishing
+3. **Publishing:** Run publish script, move files, update Ghost
+4. **Content Calendar:** Strategic timing and pillar balance decisions
+5. **LinkedIn Scheduling:** Post timing and engagement
 
 ### What's Automated
 
-1. **Research Discovery:** RSS feeds automatically populate queue
+1. **Research Discovery:** RSS feeds automatically populate pipeline
 2. **Content Scoring:** Automatic relevance/actionability/depth scoring
-3. **Content Generation:** Multi-agent AI writes drafts based on route selection
-4. **Quality Validation:** 8 automated quality gates before commit
-5. **Promotion Generation:** Blog posts automatically get LinkedIn promos
-6. **Content Atomization:** Blog posts auto-generate 5-10 derivative pieces
-7. **Newsletter Compilation:** Weekly digest auto-generated from published content
-8. **Queue Management:** Automatic archiving of stale/low-quality items
-9. **Performance Tracking:** Monthly analysis and optimization recommendations
-10. **Voice Consistency:** Automated brand voice validation
-11. **Duplicate Prevention:** Slug-based detection in Notion and GitHub
+3. **Weekly Curation:** Automatic selection of top 4-5 research items
+4. **Queue Management:** Automatic archiving of stale/low-quality items
+5. **Content Generation:** AI writes drafts based on target_channel
+6. **Quality Validation:** Automated quality gates before GitHub commit
+7. **Duplicate Prevention:** GUID-based and slug-based deduplication
+8. **GitHub Commits:** Automatic version control
+
+---
+
+## Performance Characteristics
+
+### n8n Data Tables Performance
+
+**Query Speed:**
+- Average query time: 8ms
+- vs Notion API: 800ms
+- **100x faster**
+
+**Storage:**
+- Limit: 50MB per workspace
+- Estimated usage: <5MB for content pipeline
+- RSS sources: ~1MB
+- Sufficient for 1,000+ pipeline items
+
+**Limitations:**
+- No complex SQL joins
+- No full-text search (use external tools if needed)
+- No public API access (n8n workflows only)
+- Beta feature (monitor for stability)
+
+**Advantages:**
+- Built into n8n (no external dependencies)
+- Simple schema management (UI-based)
+- Fast queries for workflow automation
+- No API rate limits
+- No additional cost
+
+---
+
+## Migration from Notion
+
+### What Was Removed
+
+**Notion Databases:**
+- ~~Content Pipeline database~~ → n8n Data Tables: content_pipeline
+- ~~Content Assets database~~ → Removed (not needed)
+
+**Notion-Specific Features:**
+- ~~Relations and rollups~~ → Simple foreign keys
+- ~~Rich text properties~~ → Plain text fields
+- ~~Multi-select properties~~ → Text fields with delimited values
+- ~~Formula properties~~ → Calculated in code nodes
+
+### What Was Migrated
+
+**RSS Sources:**
+- Manually recreate in rss_sources table
+- Expect ~10-20 feeds
+
+**Content Pipeline:**
+- **NOT MIGRATED** - starting fresh
+- Historical data archived in Notion (read-only)
+- Clean slate for new workflow
+
+### Migration Benefits
+
+**Simplified Architecture:**
+- No external API dependencies
+- Faster workflow execution (100x)
+- Lower monthly costs (£30-60 vs £100+)
+- Easier debugging (all in n8n)
+
+**Reduced Complexity:**
+- No Notion API authentication
+- No Notion schema management
+- No Notion rate limit handling
+- No Notion property mapping
 
 ---
 
 ## Cost & Resource Analysis
 
-### API Costs (Monthly)
+### Monthly Costs
 
-**Per Content Piece:**
-- Writer Agent (GPT-4o): £0.15
-- CTO Reviewer (Claude 3.5): £0.20
-- Editor Agent (GPT-4o): £0.10
-- Brand Voice Agent (GPT-4o): £0.08
-- Content Atomizer (GPT-4o): £0.12
-- **Total per piece:** £0.65
+**n8n Cloud (Pro Plan):**
+- £30-60/month (depending on executions)
+- Includes Data Tables feature
+- 10,000 workflow executions/month
 
-**Monthly Volume:**
-- 2 blog posts × £0.65 = £1.30
-- 2 blog atomizations × £0.12 = £0.24
-- 10 LinkedIn original × £0.65 = £6.50
-- 4 newsletters × £0.20 = £0.80
-- **Total monthly:** ~£9.00
+**AI API Costs:**
+- GPT-4o or Claude 3.5 Sonnet
+- ~£0.50 per content piece
+- Monthly volume: 2 blog + 10 LinkedIn + 4 newsletter = 16 pieces
+- **£8/month**
 
-**Annual:** ~£110
+**GitHub:**
+- Free (public repository)
 
-**ROI Analysis:**
-- **Time saved:** 20-30 hours/month (60-70% less editing)
-- **Value at £100/hour:** £2,000-3,000/month
-- **ROI:** 1,818% - 2,727%
+**Ghost CMS:**
+- Separate hosting cost (not part of automation)
 
-### Performance Expectations
+**Total Automation Cost:** £38-68/month
 
-**Quality Improvements:**
-- Technical accuracy: +40%
-- Voice consistency: +90%
-- Reader engagement: +25-35%
-- SEO performance: +15-20%
+**vs Previous (Notion + n8n):** £100+/month
 
-**Efficiency Gains:**
-- Editing time: -60-70%
-- Time to publish: -50%
-- Content volume: +300-400% (via atomization)
-- Quality consistency: +85%
-
----
-
-## Key Metrics & Monitoring
-
-### Weekly KPIs
-
-**Content Production:**
-- Drafts generated vs target
-- Quality gate pass rate
-- Voice authenticity avg score
-- Technical accuracy avg score
-
-**Process Efficiency:**
-- Avg time per draft (target: <5 min)
-- Manual editing time saved
-- Flagged for review rate (target: <10%)
-
-### Monthly KPIs
-
-**Content Performance:**
-- Engagement rate by channel
-- Traffic growth month-over-month
-- Newsletter subscriber growth
-- Lead generation (consultation bookings)
-
-**AI System Quality:**
-- Voice score trend (target: ≥8.5 avg)
-- Technical score trend (target: ≥8.0 avg)
-- Quality gate pass rate (target: ≥90%)
-- Publishing decision: as-is % (target: ≥60%)
-
-### Quarterly Reviews
-
-**Strategic Alignment:**
-- Content pillar distribution vs targets
-- Channel performance vs strategy
-- Voice profile evolution
-- ROI: time saved vs investment
-
-**System Optimization:**
-- Agent prompt effectiveness
-- Quality gate accuracy
-- Atomization value generation
-- Performance feedback loop impact
+**Savings:** 40-60% cost reduction
 
 ---
 
@@ -712,203 +553,151 @@ Should Process: ~4-5 items
 
 ### Common Issues
 
-**Issue:** Too many research items, can't keep up
-- **Solution:** Lower weekly auto-selection count
-- **Solution:** Tighten RSS feed relevance filters
-- **Solution:** Increase auto-archive thresholds
+**Issue:** RSS feed fails to fetch
+- **Check:** Feed URL is valid and accessible
+- **Check:** Feed format is valid RSS/Atom XML
+- **Fix:** Test feed URL in browser, validate XML
+- **Fix:** Update rss_sources.url if feed moved
 
-**Issue:** Not enough LinkedIn content
-- **Solution:** Route more research items to linkedin-original
-- **Solution:** Lower word count target for LinkedIn route
-- **Solution:** Add more actionability-focused RSS feeds
+**Issue:** Duplicate articles in pipeline
+- **Check:** guid field populated correctly
+- **Fix:** Ensure "Check If Exists" node queries by guid
+- **Fix:** Manually delete duplicates from content_pipeline table
 
-**Issue:** Generated content needs too much editing
-- **Solution:** Improve generation prompts with examples
-- **Solution:** Add more context to research notes
-- **Solution:** Update voice profile with recent high-performing pieces
-- **Solution:** Adjust quality gate thresholds
+**Issue:** Quality gates rejecting all content
+- **Check:** Quality gate thresholds too strict
+- **Fix:** Adjust thresholds in code node
+- **Test:** Manual run with known good content
 
-**Issue:** LinkedIn promos not generating
-- **Solution:** Check Notion property names match workflow
-- **Solution:** Verify `will_generate_linkedin_promo` is true
-- **Solution:** Check published date is within 7 days
+**Issue:** GitHub commit fails
+- **Check:** GitHub API token valid and has write permissions
+- **Check:** Repository path correct
+- **Fix:** Regenerate GitHub token
+- **Fix:** Verify file path format
 
-**Issue:** Duplicate files/entries in Notion or GitHub
-- **Solution:** Verify slug-based duplicate check is working
-- **Solution:** Check "Search Existing Asset" node has correct filter
-- **Solution:** Clean up existing duplicates manually
+**Issue:** Data Tables query slow
+- **Check:** Table size (<50MB limit)
+- **Fix:** Archive old items if table growing too large
+- **Monitor:** Query execution times in n8n logs
 
-**Issue:** Agent outputs don't flow correctly
-- **Check:** JSON parsing between agents
-- **Fix:** Add explicit output format validation
-- **Test:** Manual run of each agent individually
-
-**Issue:** CTO Reviewer too pedantic, over-edits
-- **Fix:** Adjust prompt: "Focus on critical issues only"
-- **Tune:** Set minimum severity threshold
-- **Alternative:** Run CTO review selectively
-
-**Issue:** Brand Voice Agent flags everything as off-voice
-- **Check:** Voice profile might be too narrow
-- **Fix:** Expand acceptable ranges in profile
-- **Test:** Compare agent score vs your subjective score on 10 pieces
-
-**Issue:** API costs higher than expected
-- **Audit:** Track costs per agent
-- **Optimize:** Use GPT-4o-mini for simple tasks
-- **Cache:** Reuse voice profile
-- **Limit:** Set monthly budget cap
+**Issue:** Generated content quality poor
+- **Check:** Source article quality
+- **Check:** AI prompt clarity
+- **Fix:** Improve generation prompts with examples
+- **Fix:** Add more context to research notes
 
 ---
 
-## Implementation Roadmap
+## Quick Reference: Data Tables Queries
 
-### Phase 1: Foundation (Week 1-2)
+### RSS Sources
 
-**Week 1:**
-- [ ] Run voice profile extractor on 15 best pieces
-- [ ] Create `/automation/config/voice_profile.json`
-- [ ] Validate voice profile with test generations
-- [ ] Add new Notion properties (performance tracking, AI metadata)
+```javascript
+// Get all active feeds
+SELECT * FROM rss_sources WHERE active = true
 
-**Week 2:**
-- [ ] Design multi-agent workflow in n8n
-- [ ] Set up Agent 1 (Writer) with voice profile integration
-- [ ] Set up Agent 2 (CTO Reviewer) with Claude 3.5
-- [ ] Test Writer → CTO chain with 1 research item
+// Get feeds by pillar
+SELECT * FROM rss_sources
+WHERE content_pillar = 'Technology Strategy'
+AND active = true
 
-### Phase 2: Multi-Agent System (Week 3-4)
+// Disable a feed
+UPDATE rss_sources
+SET active = false
+WHERE id = 'uuid-here'
+```
 
-**Week 3:**
-- [ ] Add Agent 3 (Editor) to chain
-- [ ] Add Agent 4 (Brand Voice) to chain
-- [ ] Build quality gates validation
-- [ ] Implement duplicate prevention (Notion + GitHub)
-- [ ] Test full chain with 3 content routes
+### Content Pipeline
 
-**Week 4:**
-- [ ] Refine agent prompts based on output quality
-- [ ] Tune quality gate thresholds
-- [ ] Add error handling and retry logic
-- [ ] Production test with 5 real research items
+```javascript
+// Get research items for selection
+SELECT * FROM content_pipeline
+WHERE status = 'research'
+AND created_date > DATE_SUB(NOW(), INTERVAL 45 DAY)
+ORDER BY quality_score DESC
 
-### Phase 3: Content Atomization (Week 5-6)
+// Get selected items needing routing
+SELECT * FROM content_pipeline
+WHERE status = 'selected'
+AND target_channel IS NULL
 
-**Week 5:**
-- [ ] Build content atomizer workflow
-- [ ] Create atomized content file structure
-- [ ] Test atomization on 2 published blog posts
-- [ ] Validate atomized LinkedIn posts quality
+// Get items ready for generation
+SELECT * FROM content_pipeline
+WHERE status = 'selected'
+AND target_channel IS NOT NULL
 
-**Week 6:**
-- [ ] Add atomization scheduling logic
-- [ ] Create atomized content review interface
-- [ ] Test full blog → 5 LinkedIn posts flow
-- [ ] Document atomization best practices
+// Update status to generated
+UPDATE content_pipeline
+SET status = 'generated',
+    processed_date = NOW(),
+    github_path = 'content/drafts/slug.md',
+    github_commit_url = 'https://...'
+WHERE id = 'uuid-here'
 
-### Phase 4: Performance Loop (Week 7-8)
+// Archive stale items
+UPDATE content_pipeline
+SET status = 'archived'
+WHERE status = 'research'
+AND created_date < DATE_SUB(NOW(), INTERVAL 45 DAY)
 
-**Week 7:**
-- [ ] Build performance data collection
-- [ ] Create monthly analysis workflow
-- [ ] Design performance report template
-- [ ] Set up automated feedback integration
-
-**Week 8:**
-- [ ] Run first performance analysis on historical data
-- [ ] Implement recommended voice profile updates
-- [ ] Adjust pillar weights based on performance
-- [ ] Document performance optimization process
-
-### Phase 5: Optimization & Scale (Week 9-12)
-
-**Week 9-10:**
-- [ ] Fine-tune all agent prompts based on first month data
-- [ ] Optimize quality gates based on false positive rate
-- [ ] A/B test different atomization strategies
-- [ ] Build analytics dashboard
-
-**Week 11-12:**
-- [ ] Document complete system
-- [ ] Create troubleshooting guides
-- [ ] Plan future enhancements
+// Get published count by pillar (this month)
+SELECT content_pillar, COUNT(*) as count
+FROM content_pipeline
+WHERE status = 'published'
+AND published_date >= DATE_FORMAT(NOW(), '%Y-%m-01')
+GROUP BY content_pillar
+```
 
 ---
 
-## Future Enhancements (Phase 6+)
+## Implementation Checklist
 
-### Context Enhancement System
-Before content generation, ask Xavier 3 quick questions (2 min investment):
-1. Personal experience (any specific failure or success?)
-2. Contrarian angle (what would most CTOs get wrong?)
-3. Practical reality check (hidden complexity nobody talks about?)
+### Setup (One-Time)
 
-**Value add:** 10x authenticity
+- [ ] Create n8n Data Tables workspace (if not exists)
+- [ ] Create `rss_sources` table with schema
+- [ ] Create `content_pipeline` table with schema
+- [ ] Populate `rss_sources` with RSS feed URLs
+- [ ] Configure GitHub API token in n8n credentials
+- [ ] Configure OpenAI/Anthropic API keys in n8n credentials
+- [ ] Test Data Tables queries manually
 
-### Smart Content Routing
-AI-suggested Content Route based on:
-- Article characteristics
-- Historical performance
-- Current pipeline needs
-- Content pillar balance
+### Workflow Setup
 
-Still allows manual override
+- [ ] Import or build `rss_to_pipeline.json` workflow
+- [ ] Import or build `weekly_selection.json` workflow
+- [ ] Import or build `content_generation.json` workflow
+- [ ] Configure cron triggers (hourly, weekly)
+- [ ] Test each workflow with sample data
+- [ ] Activate workflows
 
-### A/B Testing System
-Generate 2-3 variations of same piece:
-- Version A: Tactical focus
-- Version B: Strategic focus
-- Version C: Story focus
+### Content Creation Process
 
-Track performance, learn what works
+- [ ] Run RSS workflow manually (first time) to populate pipeline
+- [ ] Run weekly selection workflow to get initial candidates
+- [ ] Review selected items and set target_channel
+- [ ] Trigger content generation manually
+- [ ] Review generated drafts in GitHub
+- [ ] Edit and publish via Ghost CMS
+- [ ] Update pipeline status to published
 
-### Continuous Voice Learning
-After each high-performing piece:
-1. Extract successful patterns
-2. Update voice profile automatically
-3. A/B test new patterns vs old
-4. Keep what works
+### Ongoing Maintenance
 
-**Result:** Voice profile evolves to match your best work
-
-### Predictive Content Scoring
-Train model on historical data to predict engagement rate and traffic estimate. Use to prioritize high-predicted-value content in queue.
-
----
-
-## Appendix: Content Pillar Guidelines
-
-### When to Route to Each Channel
-
-**Blog (blog-draft or blog-promo-only):**
-- Depth score ≥ 7
-- Word count target ≥ 1,500
-- Complex frameworks or methodologies
-- Case studies requiring detailed analysis
-- Strategic deep-dives
-
-**LinkedIn Original (linkedin-original):**
-- Actionability score ≥ 7
-- Word count target 200-800
-- Quick wins and tactical advice
-- Personal lessons and stories
-- Industry observations and hot takes
-- Template/framework shares
-
-**Newsletter Item (newsletter-item):**
-- Trend analysis
-- Weekly themes
-- Curated insights
-- Market commentary
-- Multi-source compilations
-
-**LinkedIn Day Assignments:**
-- **Tuesday:** Frameworks, templates, practical tools
-- **Wednesday:** Industry takes, observations, opinions
-- **Thursday:** Personal lessons, behind-the-scenes, failures
+- [ ] Weekly: Review selected research items and route
+- [ ] Weekly: Monitor RSS feed health
+- [ ] Monthly: Archive old pipeline items
+- [ ] Monthly: Review content pillar balance
+- [ ] Quarterly: Update RSS sources list
+- [ ] Quarterly: Audit and optimise AI prompts
 
 ---
 
 *This architecture supports the content strategy defined in `/docs/content_strategy.md` and `/docs/execution_strategy.md`.*
 
-*Next steps: Review implementation roadmap and begin Phase 1 (Voice Profile Setup) within 1 week.*
+*For detailed migration plan from Notion, see `/automation/docs/migration_plan_notion_to_n8n_datatables.md`.*
+
+*For complete table schemas and SQL examples, see `/automation/docs/data_table_schemas.md`.*
+
+*For node-by-node workflow specifications, see `/automation/docs/workflow_specifications.md`.*
+
+*Next steps: Create Data Tables, populate RSS sources, build 3 core workflows.*
