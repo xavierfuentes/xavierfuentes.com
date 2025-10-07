@@ -4,36 +4,30 @@
 
 ### Publishing Rhythm
 
-**Long-Form Articles:** 2 per month (1st and 3rd weeks)
+**Long-Form Articles:** 2-3 per month (flexible scheduling)
 
-- Week 1: Framework or methodology piece (1,500-2,500 words)
-- Week 3: Tactical how-to or case study (1,000-1,500 words)
+- Publish when ready: Framework pieces, case studies, tactical how-tos, opinion pieces (1,500-2,500 words)
+- No strict weekly constraints—focus on quality over calendar adherence
 
-**LinkedIn Content:** 3 posts per week (optimised for B2B engagement)
+**LinkedIn Content:** 3 posts per week (12-13/month, optimised for B2B engagement)
 
 - Tuesday: Framework share or template (peak B2B engagement day)
 - Wednesday: Industry hot take or observation (continued high engagement)
 - Thursday: Personal lesson or behind-the-scenes (maintains mid-week momentum)
+- All original content—no blog promotion posts
 
 **Newsletter:** Weekly, incorporating blog content teasers and additional commentary
 
 ### Content Creation Workflow
 
-**Week 1 (Planning):**
+**Weekly Rhythm:**
 
-- Monday: Choose topic based on content calendar
-- Tuesday: Research, outline, gather examples
-- Wednesday: First draft
-- Thursday: Edit and refine
-- Friday: SEO optimisation, publish, create repurposed content
-
-**Week 2 (Amplification):**
-
-- Create LinkedIn carousel from frameworks
-- Write LinkedIn posts expanding on key points
-- Develop newsletter section
-- Schedule social promotion
-- Engage with comments and discussions
+- **Monday:** Review automated weekly selection (4-5 curated research items)
+- **Monday:** Route selected items to channels (blog/linkedin/newsletter)
+- **Tuesday-Friday:** AI generates drafts, manual review and editing
+- **Ongoing:** 3 LinkedIn posts/week (Tue/Wed/Thu)—auto-scheduled after quality gates
+- **Ongoing:** Blog posts published when ready (2-3/month flexible)
+- **Sunday:** Weekly newsletter compilation and publishing
 
 ---
 
@@ -41,11 +35,11 @@
 
 ### Time Investment
 
-- **Long-form writing:** 4-6 hours per article (research, writing, editing)
-- **LinkedIn content:** 30 minutes per post (Tue/Wed/Thu = 1.5 hours/week)
-- **Newsletter writing:** 1 hour per week
-- **Content repurposing:** 2 hours per long-form article
-- **Total weekly:** 6-8 hours during publishing weeks, 3-4 hours during off weeks
+- **Content routing and review:** 1 hour/week (Monday selection review)
+- **AI draft editing:** 1-2 hours per piece (reduced from 4-6 with AI assistance)
+- **LinkedIn content:** 20 minutes per post review (Tue/Wed/Thu = 1 hour/week)
+- **Newsletter compilation:** 1 hour per week
+- **Total weekly:** 4-6 hours (60-70% reduction with automation)
 
 ### Tools and Systems
 

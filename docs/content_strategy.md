@@ -84,10 +84,10 @@ This strategy transforms XavierFuentes.com into a lead-generation engine for coa
 
 ## Content Calendar Framework
 
-### Long-Form Articles (2 per month)
+### Long-Form Articles (2-3 per month)
 
-**Week 1:** Deep-dive framework or case study (1,500-2,500 words)
-**Week 3:** Tactical how-to or opinion piece (1,000-1,500 words)
+**Flexible scheduling:** Deep-dive frameworks, case studies, tactical how-tos, or opinion pieces (1,500-2,500 words)
+**Publishing:** As content is ready, no strict weekly constraints
 
 **Template Structure:**
 
@@ -99,11 +99,13 @@ This strategy transforms XavierFuentes.com into a lead-generation engine for coa
 6. Pitfalls: What to avoid
 7. Next Steps: Clear actions
 
-### Weekly LinkedIn Content
+### Weekly LinkedIn Content (3 posts/week = 12-13/month)
 
 **Tuesday:** Framework or template share
 **Wednesday:** Industry observation or hot take
 **Thursday:** Personal lesson or behind-the-scenes
+
+**Note:** All original content—no blog promotion posts
 
 ### The Jungle Brief (Weekly Newsletter)
 

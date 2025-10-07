@@ -33,10 +33,8 @@ This architecture defines a simplified automation system for XavierFuentes.com c
 ## Core Problem Statement
 
 The content strategy requires:
-- **Blog:** 2 posts/month (1,500-2,500 words)
-- **LinkedIn:** 12-13 posts/month (200-800 words)
-  - 10-11 original standalone posts
-  - 2 blog promotion posts
+- **Blog:** 2-3 posts/month (1,500-2,500 words)
+- **LinkedIn:** 12-13 posts/month (200-800 words) - 3 posts/week on Tue/Wed/Thu
 - **Newsletter:** 4 digests/month (weekly compilation)
 
 **Solution:** Automated content pipeline using n8n Data Tables for state tracking, GitHub for content storage, and AI-enhanced generation.
@@ -311,25 +309,26 @@ content/
 6. Move to `content/posts/[YYYY-MM-DD]-[slug].md`
 7. Update pipeline: status = `published`
 
-**Target:** 2/month
+**Target:** 2-3/month
 
 ---
 
-### LinkedIn Original Posts
+### LinkedIn Posts
 
 **Workflow:** `content_generation.json` with target_channel = `linkedin`
 
 **Process:**
 1. Generate standalone post (200-800 words)
-2. Commit to `content/linkedin/[slug].md`
-3. Update pipeline: status = `generated`
-4. Manual review and scheduling
-5. Publish to LinkedIn (manual or via API)
-6. Update pipeline: status = `published`
+2. Assign to next available day slot (Tue/Wed/Thu)
+3. Commit to `content/linkedin/[slug].md` with scheduled_date in frontmatter
+4. Update pipeline: status = `generated`
+5. Manual review and editing (optional)
+6. Publish to LinkedIn on scheduled date (manual or via API)
+7. Update pipeline: status = `published`
 
-**Target:** 10-11/month
+**Target:** 12-13/month (3 posts/week on Tue/Wed/Thu)
 
-**LinkedIn Day Assignment:**
+**LinkedIn Day Themes:**
 - Tuesday: Frameworks, templates, practical tools
 - Wednesday: Industry takes, observations, opinions
 - Thursday: Personal lessons, behind-the-scenes, failures

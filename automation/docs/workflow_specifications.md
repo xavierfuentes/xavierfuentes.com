@@ -978,18 +978,32 @@ return [{
 **Configuration:**
 
 ```javascript
-// Content is already in markdown format from AI
-const markdown = items[0].json.ai_generated_content;
+const item = items[0].json;
+let markdown = item.ai_generated_content;
+
+// For LinkedIn posts, inject scheduled_date into frontmatter
+if (item.current_channel === 'linkedin' && item.scheduled_date) {
+  // Parse frontmatter
+  const parts = markdown.split('---');
+  if (parts.length >= 3) {
+    const frontmatter = parts[1];
+    const body = parts.slice(2).join('---');
+
+    // Add scheduled_date to frontmatter
+    const updatedFrontmatter = frontmatter + `\nscheduled_date: ${item.scheduled_date}`;
+    markdown = `---${updatedFrontmatter}---${body}`;
+  }
+}
 
 return [{
   json: {
-    ...items[0].json,
+    ...item,
     markdown_content: markdown
   }
 }];
 ```
 
-#### Node 12: Route to Directory
+#### Node 12: Route to Directory & Schedule LinkedIn
 **Type:** Code (JavaScript)
 **Configuration:**
 
@@ -1000,11 +1014,15 @@ const channel = item.current_channel; // Use current_channel from split
 
 let directory;
 let filename = `${slug}.md`;
+let scheduledDate = null;
 
 if (channel === 'blog') {
   directory = 'content/drafts';
 } else if (channel === 'linkedin') {
   directory = 'content/linkedin';
+
+  // Auto-schedule to next available Tue/Wed/Thu
+  scheduledDate = getNextLinkedInSlot();
 } else if (channel === 'newsletter') {
   directory = 'content/newsletter/items';
 } else {
@@ -1013,13 +1031,34 @@ if (channel === 'blog') {
 
 const filePath = `${directory}/${filename}`;
 
+// Helper: Get next available Tue/Wed/Thu slot
+function getNextLinkedInSlot() {
+  const today = new Date();
+  const daysOfWeek = [2, 3, 4]; // Tue=2, Wed=3, Thu=4
+
+  // Start from tomorrow
+  let checkDate = new Date(today);
+  checkDate.setDate(checkDate.getDate() + 1);
+
+  // Find next Tue/Wed/Thu
+  while (!daysOfWeek.includes(checkDate.getDay())) {
+    checkDate.setDate(checkDate.getDate() + 1);
+  }
+
+  // Format as YYYY-MM-DD
+  return checkDate.toISOString().split('T')[0];
+}
+
 return [{
   json: {
     ...item,
-    github_file_path: filePath
+    github_file_path: filePath,
+    scheduled_date: scheduledDate
   }
 }];
 ```
+
+**Note:** This simple implementation assigns the next available Tue/Wed/Thu. For production, you may want to query existing scheduled posts to avoid double-booking.
 
 #### Node 13: Commit to GitHub
 **Type:** GitHub
