@@ -1,11 +1,12 @@
 name: Publish Content to Ghost
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'content/**'
+  # TEMPORARILY DISABLED - Re-enable after n8n workflow development
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - 'content/**'
   workflow_dispatch:
 
 jobs:
