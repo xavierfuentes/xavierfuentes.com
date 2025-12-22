@@ -2,12 +2,13 @@
 
 ## 1. Agent overview
 
-- `strategy-agent` – maintains the idea backlog under `content/ideas/`.
-- `drafting-agent` – turns selected ideas into full canonical drafts.
-- `projection-agent-blog` – turns an idea into a Ghost-ready blog post.
-- `projection-agent-linkedin` – turns an idea into 2–3 LinkedIn posts.
-- `projection-agent-junglebrief` – (later) assembles Jungle Brief issues.
-- `editorial-agent` – checks consistency and suggests improvements.
+- `idea-builder` – interactively collects inputs from you and creates new idea files under `content/ideas/`.
+- `strategy` – maintains the idea backlog under `content/ideas/`.
+- `drafting` – turns selected ideas into full canonical drafts.
+- `projection-blog` – turns an idea into a Ghost-ready blog post.
+- `projection-linkedin` – turns an idea into 2–3 LinkedIn posts.
+- `projection-junglebrief` – (later) assembles Jungle Brief issues.
+- `editorial` – checks consistency and suggests improvements.
 
 ## 2. File scopes and patterns
 
@@ -60,39 +61,53 @@
 
 ## 3. Agent actions vs files
 
-- `strategy-agent`
+- `idea-builder`
+  - Interacts with you to gather a small, fixed set of inputs:
+    - Working title / rough topic.
+    - Pillar (`technology-strategy`, `leadership-management`, `execution-delivery`, `founder-lessons`, `market-ai-trends`).
+    - Primary channel (`personal_blog`, `linkedin`, `junglebrief`).
+    - Target audience (short descriptor).
+    - Target outcome (`inbound_leads`, `newsletter_signup`, `authority`, `pipeline_warm`).
+    - 1–3 sentence angle / contrarian point of view.
+  - Derives:
+    - Filename and `id` as `YYYY-MM-slug`.
+    - Sensible defaults for `seo_keyword` and `lead_magnet` when possible.
+  - Writes:
+    - A new `content/ideas/YYYY-MM-slug.md` file with full frontmatter and a standard outline skeleton.
+  - Sets:
+    - `status: idea` or `status: drafting` depending on how concrete your inputs are.
+
+- `strategy`
   - Reads: `docs/content_strategy.md`, `docs/execution_strategy.md`, `CLAUDE.md`.
   - Reads/Writes: `content/ideas/*.md` (frontmatter + body).
 
-- `drafting-agent`
+- `drafting`
   - Reads/Writes: `content/ideas/*.md` (outline + draft; updates `status`).
 
-- `projection-agent-blog`
+- `projection-blog`
   - Reads: one idea file.
   - Reads/Writes: one post file under `content/posts/` for that idea.
 
-- `projection-agent-linkedin`
+- `projection-linkedin`
   - Reads: one idea file.
   - Reads/Writes: one LinkedIn file under `content/linkedin/` for that idea.
 
-- `projection-agent-junglebrief`
+- `projection-junglebrief`
   - Reads: multiple ideas and posts.
   - Reads/Writes: one Jungle Brief issue file.
 
-- `editorial-agent`
+- `editorial`
   - Reads: ideas, posts, LinkedIn, Jungle Brief.
   - Writes: small edits and suggestions only.
 
 ## 4. State transitions (Ideas)
 
-- `strategy-agent`:
+- `strategy`:
   - Creates new ideas with `status: idea`.
   - Marks selected ideas as `status: drafting`.
-- `drafting-agent`:
+- `drafting`:
   - Moves ideas from `status: drafting` to `status: ready_for_projection` when the canonical draft is solid.
-- `projection-agent-*`:
+- `projection-*`:
   - Do not change idea `status` except to propose `published` once key projections exist.
-- `editorial-agent`:
+- `editorial`:
   - May recommend `status: published` but does not change automation or publishing scripts.
-
-
