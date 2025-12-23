@@ -2,7 +2,17 @@
 
 ## Content Production System
 
-### Publishing Rhythm
+### Current Phase (You + AI, File-Based OS)
+
+- **Long-form articles:** Target 2 per month (1,500–1,800 words default; up to 2,200 for authority pieces).
+- **LinkedIn:** Target 2–3 posts per week (Tue–Thu), 1,200–1,800 characters each, prioritising quality over quota.
+- **The Jungle Brief:** Start as a bi-weekly newsletter (800–1,200 words per issue); move to weekly only once the Content OS + agents are running smoothly.
+- All pillar content should flow through `content/ideas/` first, then be projected into:
+  - Blog posts in `content/posts/`.
+  - LinkedIn posts in `content/linkedin/`.
+  - Jungle Brief issues/sections in `content/junglebrief/`.
+
+### Original Target Publishing Rhythm (North Star)
 
 **Long-Form Articles:** 2-3 per month (flexible scheduling)
 

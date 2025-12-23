@@ -86,7 +86,13 @@ This strategy transforms XavierFuentes.com into a lead-generation engine for coa
 
 ### Long-Form Articles (2-3 per month)
 
-**Flexible scheduling:** Deep-dive frameworks, case studies, tactical how-tos, or opinion pieces (1,500-2,500 words)
+**Flexible scheduling:** Deep-dive frameworks, case studies, tactical how-tos, or opinion pieces
+**Word counts by type:**
+- Framework/how-to: 1,500–2,000 words
+- Thought leadership: 1,800–2,200 words
+- Opinion/hot take: 800–1,200 words
+- Default target: 1,500–1,800 words
+
 **Publishing:** As content is ready, no strict weekly constraints
 
 **Template Structure:**
@@ -104,6 +110,12 @@ This strategy transforms XavierFuentes.com into a lead-generation engine for coa
 **Tuesday:** Framework or template share
 **Wednesday:** Industry observation or hot take
 **Thursday:** Personal lesson or behind-the-scenes
+
+**Length guidelines:**
+- Optimal: 1,200–1,800 characters
+- Hook (first line): Under 140 characters (before "See more")
+- Maximum: 2,000 characters (engagement drops beyond)
+- Minimum: 500 characters (algorithm penalises shorter)
 
 **Note:** All original content—no blog promotion posts
 
