@@ -136,6 +136,21 @@ target_outcome: "inbound_leads"  # Same as idea
 - Store in `content/drafts/` directory (for Ghost Admin preview)
 - Move to `content/posts/` and change `status: published` when ready to go live
 
+## Ghost Sync Behaviour
+
+**The repo is the source of truth.** Ghost is downstream.
+
+When `scripts/publish.js` runs, it overwrites Ghost posts based on the markdown files. This means:
+
+- **Publishing in Ghost UI works** but will be reverted on next publish if the markdown still has `status: draft`
+- **Edits made in Ghost Admin** (title, content, etc.) will be overwritten by the repo version
+- **To publish correctly:**
+  1. Move file from `content/drafts/` to `content/posts/`
+  2. Change `status: draft` to `status: published` in frontmatter
+  3. Push to main (or run `npm run publish`)
+
+**Never edit posts directly in Ghost Admin** unless you also update the corresponding markdown file.
+
 ## File Management Rules
 
 ### You MAY:

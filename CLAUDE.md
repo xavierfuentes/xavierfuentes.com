@@ -35,19 +35,21 @@ All content and strategy live inside the `content/` directory of this repo.
 
 DIRECTORIES:
 - `content/ideas/`
-  - Canonical “Idea” files – the source of truth for pillar content.
+  - Canonical "Idea" files – the source of truth for pillar content.
   - Each Idea contains metadata, notes, and (optionally) a canonical draft.
+- `content/drafts/`
+  - Blog post drafts for Ghost Admin preview.
+  - Projection agents create posts here first with `status: draft`.
+  - Move to `content/posts/` and change `status: published` when ready to go live.
 - `content/posts/`
   - Ghost-ready blog posts (published or scheduled).
-  - These are the only markdown files that get published as posts.
+  - Only move files here when ready to publish.
 - `content/pages/`
   - Ghost pages (e.g. About, Work With Me).
 - `content/linkedin/`
   - LinkedIn projections derived from Ideas (1+ posts per Idea).
 - `content/junglebrief/`
   - The Jungle Brief newsletter issues and/or sections derived from Ideas where relevant.
-- `content/drafts/` (optional)
-  - Staging area for experiments; content here is never published automatically.
 
 IDEA FRONTMATTER (content/ideas/*.md):
 - `id` (string, required): unique stable identifier (e.g. `2025-01-fractional-cto-positioning`).
@@ -158,12 +160,13 @@ AGENT NAMES AND SCOPES:
   - Does not create or modify any channel projection files.
 
 - `projection-agent-blog`:
-  - Reads: `content/ideas/*.md`.
-  - Reads/Writes: `content/posts/*.md`.
+  - Reads: `content/ideas/*.md`, `docs/templates/blog-post-draft.md`.
+  - Reads/Writes: `content/drafts/*.md`.
   - Responsibilities:
-    - For Ideas with `status: ready_for_projection` and `primary_channel: personal_blog`, create or update a single Ghost post file.
-    - Set Ghost frontmatter (`title`, `slug`, `status`, `visibility`) plus OS metadata (`idea_id`, `pillar`, `target_audience`, `target_outcome`).
+    - For Ideas with `status: ready_for_projection` and `primary_channel: personal_blog`, create or update a Ghost post draft file.
+    - Set Ghost frontmatter (`title`, `slug`, `status: draft`, `visibility`) plus OS metadata (`idea_id`, `pillar`, `target_audience`, `target_outcome`).
     - Adapt the canonical draft into a blog article that obeys SEO + lead-gen guidance from `docs/content_strategy.md`.
+    - Files stay in `content/drafts/` until manually moved to `content/posts/` for publishing.
 
 - `projection-agent-linkedin`:
   - Reads: `content/ideas/*.md`.
@@ -232,11 +235,23 @@ LINKEDIN-SPECIFIC:
 ################################################################################
 
 - Ghost integration:
-  - Only `content/posts/*.md` and `content/pages/*.md` are published via `scripts/publish.js`.
+  - `content/drafts/*.md` and `content/posts/*.md` are published via `scripts/publish.js`.
+  - `content/pages/*.md` are also published (as Ghost pages).
   - All other `content/` directories are for the content OS and external projections.
 - Validation:
   - `scripts/validate.js` is the authority on allowed frontmatter fields for posts/pages.
   - `idea_id`, `pillar`, `target_audience`, `target_outcome` are allowed and encouraged on posts.
+
+GHOST SYNC BEHAVIOUR:
+- **The repo is the source of truth.** Ghost is downstream.
+- When `scripts/publish.js` runs, it overwrites Ghost posts based on the markdown files.
+- Publishing directly in Ghost UI works but will be reverted on next publish if the markdown file differs.
+- Edits made in Ghost Admin (title, content, etc.) will be overwritten by the repo version.
+- **Never edit posts directly in Ghost Admin** unless you also update the corresponding markdown file.
+- To publish a draft:
+  1. Move file from `content/drafts/` to `content/posts/`
+  2. Change `status: draft` to `status: published` in frontmatter
+  3. Push to main (or run `npm run publish`)
 
 REMINDER:
 - This repo is the source of truth for content and strategy.
