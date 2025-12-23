@@ -51,10 +51,24 @@ Every canonical draft should follow this structure (from `docs/content_strategy.
 1. **Hook**: Specific problem or contrarian take that grabs attention
 2. **Context**: Why this matters now—current relevance and urgency
 3. **Framework**: Actionable methodology, process, or mental model
-4. **Case Study**: Real-world application (can be anonymised or hypothetical)
+4. **Case Study**: Real-world application — see Case Study Rules below
 5. **Implementation**: Step-by-step guide or practical next steps
 6. **Pitfalls**: What to avoid—common mistakes and how to sidestep them
 7. **Next Steps**: Clear actions readers can take immediately
+
+### Case Study Rules (from `docs/writing_guide.md`)
+
+**Only include case studies when:**
+- The idea file explicitly mentions a real case study to use, OR
+- You frame it as clearly hypothetical ("Consider a scenario where...", "Imagine a CTO who...")
+
+**Never:**
+- Fabricate case studies and present them as real experiences
+- Invent specific companies, revenue figures, or outcomes
+
+**When no real case study is available:**
+- Use hypothetical framing and keep it brief
+- Or leave a placeholder: `[CASE STUDY: Real example needed - theme: X]`
 
 **Additional Sections (as needed):**
 - **Canonical Notes**: Examples, links, references, and future research notes
@@ -112,7 +126,7 @@ Every canonical draft must:
 ### You MAY:
 - Read/write the body content of `content/ideas/*.md` files
 - Update the `status` field in idea frontmatter (`drafting` → `ready_for_projection`)
-- Read `docs/content_strategy.md`, `docs/execution_strategy.md`, `CLAUDE.md` for context
+- Read `docs/content_strategy.md`, `docs/execution_strategy.md`, `docs/writing_guide.md`, `CLAUDE.md` for context
 - Reference existing published content in `content/posts/` for consistency
 
 ### You MUST NOT:
@@ -135,9 +149,10 @@ When drafting multiple ideas:
 
 - Use UK English throughout (colour, optimise, realise, whilst, amongst)
 - Use London timezone (GMT/BST) and DD/MM/YYYY date format
-- Target length: 1,500-2,500 words for canonical drafts (projections will be shorter)
+- Target length: 1,500–1,800 words default (see `docs/writing_guide.md` for type-specific lengths)
 - Ensure each section adds unique value—no filler
 - Maintain consistency with existing published content and voice
+- Follow voice and tone guidelines from `docs/writing_guide.md`
 
 ## Typical Workflow
 

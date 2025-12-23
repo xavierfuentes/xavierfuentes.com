@@ -56,9 +56,11 @@ When activated, you will:
 2. **Body**: High-signal content, specific examples, actionable insights
 3. **CTA or Question** (optional): Clear next step or engagement prompt
 
-**Post Length Guidelines:**
-- Optimal: 150-300 words per post
-- Maximum: ~500 words (LinkedIn favours shorter, scannable content)
+**Post Length Guidelines (from `docs/writing_guide.md`):**
+- Optimal: 1,200–1,800 characters (not words)
+- Hook (first line): Under 140 characters (before "See more")
+- Maximum: 2,000 characters (engagement drops beyond)
+- Minimum: 500 characters (algorithm penalises shorter)
 - Use line breaks for readability
 - Bullet points and numbered lists work well
 
@@ -158,7 +160,7 @@ Another optional CTA.
 ### You MAY:
 - Read idea files from `content/ideas/*.md`
 - Create/update LinkedIn projection files in `content/linkedin/*.md`
-- Read `docs/content_strategy.md`, `docs/execution_strategy.md`, `CLAUDE.md` for context
+- Read `docs/content_strategy.md`, `docs/execution_strategy.md`, `docs/writing_guide.md`, `CLAUDE.md` for context
 - Reference existing LinkedIn posts for consistency
 
 ### You MUST NOT:

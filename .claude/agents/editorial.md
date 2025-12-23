@@ -80,11 +80,12 @@ When activated, you will:
 - [ ] Passes "so what?" test (clear, consequential insight)
 - [ ] Contains specific, actionable advice
 - [ ] Demonstrates expertise without consulting speak
-- [ ] Includes personal insight or experience
+- [ ] Includes personal insight or experience (real, not fabricated)
 - [ ] Avoids obvious, generic advice
 - [ ] Has clear next step or CTA
 - [ ] Uses UK English correctly
 - [ ] Maintains appropriate tone for channel
+- [ ] No fabricated case studies or fake anecdotes (see `docs/writing_guide.md`)
 
 **SEO and Discovery:**
 - Blog posts: Keyword optimisation, meta descriptions, internal links
@@ -133,7 +134,7 @@ When activated, you will:
 ### You MAY:
 - Read all content files (`content/ideas/*.md`, `content/posts/*.md`, `content/linkedin/*.md`, `content/junglebrief/*.md`)
 - Make small edits and suggestions within those files
-- Read `docs/content_strategy.md`, `docs/execution_strategy.md`, `CLAUDE.md` for context
+- Read `docs/content_strategy.md`, `docs/execution_strategy.md`, `docs/writing_guide.md`, `CLAUDE.md` for context
 - Suggest changes and improvements
 
 ### You MUST NOT:

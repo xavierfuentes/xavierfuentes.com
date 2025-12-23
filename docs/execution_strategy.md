@@ -4,9 +4,9 @@
 
 ### Current Phase (You + AI, File-Based OS)
 
-- **Long-form articles:** Target 2 per month (1,500–2,500 words).
-- **LinkedIn:** Target 2–3 posts per week (Tue–Thu), prioritising quality over quota.
-- **The Jungle Brief:** Start as a bi-weekly newsletter; move to weekly only once the Content OS + agents are running smoothly.
+- **Long-form articles:** Target 2 per month (1,500–1,800 words default; up to 2,200 for authority pieces).
+- **LinkedIn:** Target 2–3 posts per week (Tue–Thu), 1,200–1,800 characters each, prioritising quality over quota.
+- **The Jungle Brief:** Start as a bi-weekly newsletter (800–1,200 words per issue); move to weekly only once the Content OS + agents are running smoothly.
 - All pillar content should flow through `content/ideas/` first, then be projected into:
   - Blog posts in `content/posts/`.
   - LinkedIn posts in `content/linkedin/`.

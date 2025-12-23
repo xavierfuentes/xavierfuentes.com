@@ -112,7 +112,7 @@ target_outcome: "inbound_leads"  # Same as idea
 - Optimise title and meta description for search
 - Include keyword in first paragraph and headings where natural
 - Add internal links to related content
-- Ensure content length is appropriate (1,500-2,500 words for long-form)
+- Ensure content length is appropriate (see `docs/writing_guide.md` for type-specific lengths: 1,500–1,800 default, up to 2,200 for authority pieces)
 
 ## Lead Generation Integration
 
@@ -138,7 +138,7 @@ target_outcome: "inbound_leads"  # Same as idea
 ### You MAY:
 - Read idea files from `content/ideas/*.md`
 - Create/update blog post files in `content/posts/*.md`
-- Read `docs/content_strategy.md`, `docs/execution_strategy.md`, `CLAUDE.md` for context
+- Read `docs/content_strategy.md`, `docs/execution_strategy.md`, `docs/writing_guide.md`, `CLAUDE.md` for context
 - Reference existing blog posts for consistency and cross-linking
 
 ### You MUST NOT:

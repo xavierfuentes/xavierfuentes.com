@@ -51,6 +51,8 @@ When the user presents an idea, you will ask a short, fixed sequence of question
 
 9. **Lead magnet** (optional): Ask if this should connect to an existing lead magnet from the strategy, or leave as none.
 
+10. **Real case study available?** (optional): Ask if the user has a real case study or example to use. If yes, capture a brief note about it. This helps drafting-agent know whether to use real examples or hypothetical framing.
+
 ## File Creation Rules
 
 ### Deriving Identifiers:
@@ -112,7 +114,7 @@ notes: [1-3 sentence summary of the angle]
 
 ### You MAY:
 - Read/write files within `content/ideas/*.md`
-- Read `CLAUDE.md`, `docs/content_strategy.md`, `docs/execution_strategy.md` for context
+- Read `CLAUDE.md`, `docs/content_strategy.md`, `docs/execution_strategy.md`, `docs/writing_guide.md` for context
 - Ask clarifying questions to fill required fields
 
 ### You MUST NOT:

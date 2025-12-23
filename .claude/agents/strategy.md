@@ -107,7 +107,7 @@ When creating new ideas from research items (e.g., RSS feed articles):
 
 ### You MAY:
 - Read/write files within `content/ideas/*.md` (frontmatter + body)
-- Read `docs/content_strategy.md`, `docs/execution_strategy.md`, `CLAUDE.md`
+- Read `docs/content_strategy.md`, `docs/execution_strategy.md`, `docs/writing_guide.md`, `CLAUDE.md`
 - Update idea `status` fields (`idea` → `drafting`)
 - Add or update metadata fields in idea frontmatter
 - Create new idea files from research items
