@@ -1,0 +1,88 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//XavierFuentes.com//Content OS//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Content OS Weekly Rhythm
+X-WR-TIMEZONE:Europe/London
+
+BEGIN:VTIMEZONE
+TZID:Europe/London
+X-LIC-LOCATION:Europe/London
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+0000
+TZOFFSETTO:+0100
+TZNAME:BST
+DTSTART:19700329T010000
+RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0000
+TZNAME:GMT
+DTSTART:19701025T020000
+RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU
+END:STANDARD
+END:VTIMEZONE
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20251222T090000
+DTEND;TZID=Europe/London:20251222T100000
+RRULE:FREQ=WEEKLY;BYDAY=MO
+SUMMARY:Content OS: Strategy & Planning
+DESCRIPTION:Weekly content strategy session (1 hour)\n\nTasks:\n• Review new research items (RSS feeds\, ideas from the week)\n• Run strategy agent to review idea backlog\n• Propose 1-2 ideas to move to status: drafting\n• Use idea-builder to capture any new ideas\n• Check pillar distribution (30% tech-strategy\, 25% leadership\, 20% execution\, 15% founder\, 10% AI trends)\n\nAgents: strategy\, idea-builder\n\nFiles: content/ideas/*.md
+UID:content-os-monday-strategy@xavierfuentes.com
+STATUS:CONFIRMED
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20251223T090000
+DTEND;TZID=Europe/London:20251223T092000
+RRULE:FREQ=WEEKLY;BYDAY=TU
+SUMMARY:LinkedIn: Review Framework Post
+DESCRIPTION:Tuesday LinkedIn post review (20 mins)\n\nPost type: Framework or template share\n\nTasks:\n• Review AI-generated LinkedIn draft\n• Edit for voice and quality\n• Check hook is strong and specific\n• Ensure actionable takeaway\n• Schedule or post\n\nExamples:\n• "3 mistakes every first-time CTO makes"\n• Decision-making templates\n• Framework breakdowns\n\nFiles: content/linkedin/*.md
+UID:content-os-tuesday-linkedin@xavierfuentes.com
+STATUS:CONFIRMED
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20251224T090000
+DTEND;TZID=Europe/London:20251224T092000
+RRULE:FREQ=WEEKLY;BYDAY=WE
+SUMMARY:LinkedIn: Review Industry Take
+DESCRIPTION:Wednesday LinkedIn post review (20 mins)\n\nPost type: Industry observation or hot take\n\nTasks:\n• Review AI-generated LinkedIn draft\n• Edit for voice and quality\n• Ensure contrarian but well-supported opinion\n• Check it passes the "so what?" test\n• Schedule or post\n\nExamples:\n• "Why your startup doesn't need microservices (yet)"\n• Technology trend analysis\n• Industry commentary with personal angle\n\nFiles: content/linkedin/*.md
+UID:content-os-wednesday-linkedin@xavierfuentes.com
+STATUS:CONFIRMED
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20251225T090000
+DTEND;TZID=Europe/London:20251225T092000
+RRULE:FREQ=WEEKLY;BYDAY=TH
+SUMMARY:LinkedIn: Review Personal Lesson
+DESCRIPTION:Thursday LinkedIn post review (20 mins)\n\nPost type: Personal lesson or behind-the-scenes\n\nTasks:\n• Review AI-generated LinkedIn draft\n• Edit for voice and authenticity\n• Ensure personal experience is specific\, not generic\n• Include failure or lesson learned\n• Schedule or post\n\nExamples:\n• "5 things I wish I'd known before my first CTO role"\n• Retrospectives on failed projects\n• Behind-the-scenes startup stories\n\nFiles: content/linkedin/*.md
+UID:content-os-thursday-linkedin@xavierfuentes.com
+STATUS:CONFIRMED
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20251228T100000
+DTEND;TZID=Europe/London:20251228T110000
+RRULE:FREQ=WEEKLY;BYDAY=SU
+SUMMARY:Jungle Brief: Compile Newsletter
+DESCRIPTION:Weekly newsletter compilation (1 hour)\n\nTasks:\n• Assemble issue from existing ideas and published posts\n• Write one deep insight section\n• Add template or tool of the week\n• Curate reading list with personal commentary\n• Light performance review (what resonated this week)\n• Schedule or send\n\nStructure:\n• One deep insight\n• Template/tool\n• Curated links\n\nAgents: projection-junglebrief\, editorial\n\nFiles: content/junglebrief/*.md
+UID:content-os-sunday-newsletter@xavierfuentes.com
+STATUS:CONFIRMED
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20251223T100000
+DTEND;TZID=Europe/London:20251223T113000
+RRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=TU
+SUMMARY:Blog: Draft Editing Session
+DESCRIPTION:Bi-weekly blog draft editing session (1.5 hours)\n\nTarget: 2 blog posts per month (1\,500-2\,500 words)\n\nTasks:\n• Run drafting agent on ideas in status: drafting\n• Run projection-blog agent for Ghost-ready output\n• Review and edit AI-generated draft\n• Check SEO (meta_title\, meta_description\, seo_keyword)\n• Ensure clear CTA and lead magnet connection\n• Move to status: ready_for_projection or published\n\nQuality checklist:\n• Passes "so what?" test\n• Specific\, actionable advice\n• Personal insight or experience\n• Clear next step or CTA\n\nAgents: drafting\, projection-blog\, editorial\n\nFiles: content/ideas/*.md\, content/posts/*.md
+UID:content-os-biweekly-blog@xavierfuentes.com
+STATUS:CONFIRMED
+END:VEVENT
+
+END:VCALENDAR
