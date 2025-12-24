@@ -142,6 +142,15 @@ WEEKLY RHYTHM (PRAGMATIC VERSION):
 
 AGENT NAMES AND SCOPES:
 
+- `idea-builder`:
+  - Reads: `CLAUDE.md`, `docs/content_strategy.md`, `docs/templates/idea.md`.
+  - Reads/Writes: `content/ideas/*.md`.
+  - Responsibilities:
+    - Capture new content ideas interactively.
+    - Create structured Idea files with complete frontmatter and skeleton body.
+    - Ensure downstream agents have everything they need to proceed.
+  - This is the front door for new content - use before strategy-agent or drafting-agent.
+
 - `strategy-agent`:
   - Reads: `docs/content_strategy.md`, `docs/execution_strategy.md`, `CLAUDE.md`.
   - Reads/Writes: `content/ideas/*.md` only.
@@ -198,6 +207,50 @@ HARD RULES FOR ALL AGENTS:
 - DO NOT touch `scripts/publish.js` or `scripts/validate.js` unless explicitly requested.
 - Treat `content/ideas/` as the primary strategic brain; everything else is a projection.
 - Preserve UK spelling, target personas, and the tone/quality guidelines below.
+
+################################################################################
+# SKILLS AND COMMANDS
+################################################################################
+
+The Content OS uses the Skills vs Commands vs Agents framework:
+- **Agents** handle creative/strategic work (drafting, projection, editorial review).
+- **Skills** are domain containers with context files.
+- **Commands** are quick operational tasks nested inside skills.
+
+AVAILABLE COMMANDS (via `/command` syntax):
+
+| Command | Purpose |
+|---------|---------|
+| `/publish` | Sync content to Ghost CMS via publish script |
+| `/validate` | Run frontmatter validation on all content files |
+| `/pipeline` | Show content pipeline status and pillar distribution |
+| `/promote [slug]` | Move a draft to posts and set status to published |
+| `/weekly` | Generate weekly review summary for Monday planning |
+
+WHEN TO USE WHAT:
+
+```
+User Intent                         → Use
+─────────────────────────────────────────────────────────
+"I have an idea about X"            → idea-builder agent
+"What should I write next?"         → strategy agent
+"Draft this idea"                   → drafting agent
+"Create blog post from idea"        → projection-blog agent
+"Create LinkedIn posts"             → projection-linkedin agent
+"Review this for quality"           → editorial agent
+─────────────────────────────────────────────────────────
+"Publish to Ghost"                  → /publish command
+"Check validation"                  → /validate command
+"Show me the pipeline"              → /pipeline command
+"Move draft to published"           → /promote command
+"Monday planning review"            → /weekly command
+```
+
+SKILL CONTEXT FILES (`.claude/skills/content-os/context/`):
+- `frontmatter-schemas.md` - Frontmatter schemas for all file types
+- `pillar-definitions.md` - Content pillar definitions and targets
+- `quality-checklist.md` - Quality checklist for content review
+- `mcp-recommendations.md` - Recommended MCP integrations
 
 ################################################################################
 # TONE, QUALITY, AND STYLE
