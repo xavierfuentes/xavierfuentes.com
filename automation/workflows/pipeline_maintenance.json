@@ -1,0 +1,178 @@
+{
+  "name": "Pipeline Maintenance",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 10 * * 0"
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Sunday 10am Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [250, 300],
+      "notes": "Runs every Sunday at 10am, after the digest email"
+    },
+    {
+      "parameters": {
+        "operation": "getMany",
+        "dataTableId": "research_items",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "field": "status",
+              "operator": "notEqual",
+              "value": "archived"
+            }
+          ]
+        }
+      },
+      "id": "get-all-items",
+      "name": "Get All Active Items",
+      "type": "@n8n/n8n-nodes-langchain.dataTable",
+      "typeVersion": 1,
+      "position": [470, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Find items to archive:\n// 1. Status 'new' or 'reviewed' AND older than 45 days\n// 2. Quality score < 5\n\nconst allItems = items.map(i => i.json);\n\nconst fortyFiveDaysAgo = new Date();\nfortyFiveDaysAgo.setDate(fortyFiveDaysAgo.getDate() - 45);\nconst cutoffDate = fortyFiveDaysAgo.toISOString().split('T')[0];\n\nconst toArchive = allItems.filter(item => {\n  // Don't archive items already promoted to ideas\n  if (item.idea_id) return false;\n  \n  // Archive low quality items\n  if ((item.quality_score || 0) < 5) return true;\n  \n  // Archive old unprocessed items\n  if (['new', 'reviewed'].includes(item.status) && item.created_date < cutoffDate) {\n    return true;\n  }\n  \n  return false;\n});\n\nreturn toArchive.map(item => ({ json: item }));"
+      },
+      "id": "find-stale-items",
+      "name": "Find Items to Archive",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [690, 300]
+    },
+    {
+      "parameters": {},
+      "id": "loop-items",
+      "name": "Loop Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [910, 300]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": "research_items",
+        "matchField": "id",
+        "matchValue": "={{ $json.id }}",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldName": "status",
+              "fieldValue": "archived"
+            }
+          ]
+        }
+      },
+      "id": "archive-item",
+      "name": "Archive Item",
+      "type": "@n8n/n8n-nodes-langchain.dataTable",
+      "typeVersion": 1,
+      "position": [1130, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Count archived items\nconst archivedItems = $('Archive Item').all();\n\nconst count = archivedItems.length;\nconst reasons = {\n  low_quality: archivedItems.filter(i => (i.json.quality_score || 0) < 5).length,\n  stale: archivedItems.filter(i => (i.json.quality_score || 0) >= 5).length\n};\n\nreturn [{\n  json: {\n    archived_count: count,\n    low_quality_count: reasons.low_quality,\n    stale_count: reasons.stale,\n    message: `Archived ${count} items (${reasons.low_quality} low quality, ${reasons.stale} stale)`\n  }\n}];"
+      },
+      "id": "summarise",
+      "name": "Summarise",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1350, 300]
+    },
+    {
+      "parameters": {
+        "operation": "getMany",
+        "dataTableId": "research_items",
+        "returnAll": true,
+        "options": {}
+      },
+      "id": "get-all-for-export",
+      "name": "Get All for Export",
+      "type": "@n8n/n8n-nodes-langchain.dataTable",
+      "typeVersion": 1,
+      "position": [470, 500]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Export research items to JSON for Claude to read\nconst allItems = items.map(i => i.json);\n\n// Only include active items (not archived)\nconst activeItems = allItems.filter(i => i.status !== 'archived');\n\n// Sort by quality score\nactiveItems.sort((a, b) => (b.quality_score || 0) - (a.quality_score || 0));\n\nconst exportData = {\n  generated_at: new Date().toISOString(),\n  total_count: activeItems.length,\n  by_status: {\n    new: activeItems.filter(i => i.status === 'new').length,\n    reviewed: activeItems.filter(i => i.status === 'reviewed').length,\n    promoted: activeItems.filter(i => i.idea_id).length\n  },\n  by_pillar: {},\n  items: activeItems.map(item => ({\n    id: item.id,\n    title: item.title,\n    url: item.url,\n    source_name: item.source_name,\n    content_pillar: item.content_pillar,\n    quality_score: item.quality_score,\n    status: item.status,\n    created_date: item.created_date,\n    notes: item.notes,\n    idea_id: item.idea_id\n  }))\n};\n\n// Count by pillar\nactiveItems.forEach(item => {\n  const pillar = item.content_pillar || 'Uncategorised';\n  exportData.by_pillar[pillar] = (exportData.by_pillar[pillar] || 0) + 1;\n});\n\nreturn [{ json: exportData }];"
+      },
+      "id": "prepare-export",
+      "name": "Prepare Export",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [690, 500]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "operation": "create",
+        "name": "=research_items.json",
+        "folderId": {
+          "__rl": true,
+          "value": "root",
+          "mode": "id"
+        },
+        "options": {
+          "updateExisting": true
+        },
+        "binaryData": false,
+        "content": "={{ JSON.stringify($json, null, 2) }}"
+      },
+      "id": "export-to-github",
+      "name": "Export to GitHub",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [910, 500],
+      "disabled": true,
+      "notes": "Optional: Export research items to GitHub for Claude to query. Enable and configure as needed."
+    }
+  ],
+  "connections": {
+    "Sunday 10am Trigger": {
+      "main": [
+        [{ "node": "Get All Active Items", "type": "main", "index": 0 }],
+        [{ "node": "Get All for Export", "type": "main", "index": 0 }]
+      ]
+    },
+    "Get All Active Items": {
+      "main": [[{ "node": "Find Items to Archive", "type": "main", "index": 0 }]]
+    },
+    "Find Items to Archive": {
+      "main": [[{ "node": "Loop Items", "type": "main", "index": 0 }]]
+    },
+    "Loop Items": {
+      "main": [
+        [{ "node": "Archive Item", "type": "main", "index": 0 }],
+        [{ "node": "Summarise", "type": "main", "index": 0 }]
+      ]
+    },
+    "Archive Item": {
+      "main": [[{ "node": "Loop Items", "type": "main", "index": 0 }]]
+    },
+    "Get All for Export": {
+      "main": [[{ "node": "Prepare Export", "type": "main", "index": 0 }]]
+    },
+    "Prepare Export": {
+      "main": [[{ "node": "Export to GitHub", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/London"
+  },
+  "staticData": null,
+  "tags": ["content-os", "maintenance"],
+  "triggerCount": 0,
+  "versionId": "1.0"
+}

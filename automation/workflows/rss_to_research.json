@@ -7,1002 +7,276 @@
           "interval": [
             {
               "field": "hours",
-              "hoursInterval": 8
+              "hoursInterval": 1
             }
           ]
         }
       },
+      "id": "schedule-trigger",
+      "name": "Schedule Trigger",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
-      "position": [
-        -1856,
-        -64
-      ],
-      "id": "aeb44b68-6e10-409b-adfb-04e2a672927e",
-      "name": "Schedule",
-      "alwaysOutputData": true
+      "position": [250, 300],
+      "notes": "Runs hourly to fetch new RSS articles"
     },
     {
       "parameters": {
-        "resource": "databasePage",
-        "operation": "getAll",
-        "databaseId": {
-          "__rl": true,
-          "value": "https://www.notion.so/696682be460146f7b2b018ad3c106cec?v=25390f466795805e8466000c64898052&source=copy_link",
-          "mode": "url"
-        },
-        "simple": false,
-        "filterType": "manual",
+        "operation": "getMany",
+        "dataTableId": "rss_sources",
+        "returnAll": true,
         "filters": {
           "conditions": [
             {
-              "key": "Active|checkbox",
-              "condition": "equals",
-              "checkboxValue": true
+              "field": "active",
+              "operator": "equal",
+              "value": true
             }
           ]
         },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.notion",
-      "typeVersion": 2.2,
-      "position": [
-        -1632,
-        -64
-      ],
-      "id": "22106e0a-f173-4071-ad79-908b41410230",
-      "name": "Fetch Active Sources",
-      "alwaysOutputData": true,
-      "credentials": {
-        "notionApi": {
-          "id": "lC4G957VFihVvFG2",
-          "name": "Notion account"
+        "options": {
+          "sort": {
+            "sortFieldsUi": {
+              "sortField": [
+                {
+                  "fieldName": "priority",
+                  "order": "DESC"
+                }
+              ]
+            }
+          }
         }
       },
-      "onError": "continueRegularOutput"
+      "id": "get-active-sources",
+      "name": "Get Active RSS Sources",
+      "type": "@n8n/n8n-nodes-langchain.dataTable",
+      "typeVersion": 1,
+      "position": [470, 300]
     },
     {
-      "parameters": {
-        "jsCode": "// Validates RSS feed URLs from Notion database and checks if sources are stale\n// Adds metadata for downstream processing and filters invalid sources\nconst out = [];\n\nfor (const it of $input.all()) {\n  // Your data has property_url directly, not nested in properties\n  const url = it.json.property_url; // Changed this line\n  const sourceName = it.json.property_source_name || it.json.name || \"Unknown\"; // Multiple fallbacks\n  const lastScraped = it.json.property_last_scraped?.start;\n\n  console.log(`Processing source: ${sourceName}, URL: ${url}`);\n\n  // Calculate staleness\n  let isStale = false;\n  if (lastScraped) {\n    const days = (Date.now() - new Date(lastScraped).getTime()) / 86400000;\n    isStale = days > 7;\n  }\n\n  // Add feed URL for downstream processing\n  it.json.feedUrl = url;\n  it.json.sourceName = sourceName;\n  it.json.isStale = isStale;\n\n  // Add validation status\n  it.json.isValidUrl = !!(url && /^https?:\\/\\//.test(url));\n  it.json.validationError = null;\n\n  // Add priority multiplier\n  it.json.priorityMultiplier = it.json.property_priority_multiplier || 1.0;\n\n  // Add content quality level\n  it.json.sourceContentQuality = it.json.property_content_quality || \"Unknown\";\n\n  if (!url) {\n    it.json.validationError = \"No URL provided\";\n    console.log(`❌ ${sourceName}: No URL provided`);\n  } else if (!/^https?:\\/\\//.test(url)) {\n    it.json.validationError = \"Invalid URL format\";\n    console.log(`❌ ${sourceName}: Invalid URL format: ${url}`);\n  } else {\n    console.log(`✅ ${sourceName}: Valid URL: ${url}`);\n  }\n\n  // ALWAYS add to output\n  out.push(it);\n}\n\nconsole.log(\n  `Validated ${out.length} sources (${\n    out.filter((s) => s.json.isValidUrl).length\n  } valid, ${out.filter((s) => !s.json.isValidUrl).length} invalid)`\n);\n\nreturn out;"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -1184,
-        -64
-      ],
-      "id": "72d22a59-02d1-467e-aa15-2b31d6ccd0c9",
-      "name": "Validate Sources"
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
+      "parameters": {},
+      "id": "loop-sources",
+      "name": "Loop Through Sources",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
-      "position": [
-        -960,
-        -64
-      ],
-      "id": "0b9e8d93-2beb-4a8e-b012-ce3fc467426d",
-      "name": "Loop Feeds"
+      "position": [690, 300]
     },
     {
       "parameters": {
-        "url": "={{ $json.property_url }}",
-        "sendHeaders": true,
-        "specifyHeaders": "json",
-        "jsonHeaders": "{\n  \"User-Agent\": \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36\",\n  \"Accept\": \"application/rss+xml, application/xml, text/xml, */*;q=0.9\",\n  \"Accept-Language\": \"en-US,en;q=0.9\",\n  \"Cache-Control\": \"no-cache\"\n}",
+        "url": "={{ $json.url }}",
         "options": {
+          "timeout": 30000,
           "response": {
             "response": {
               "responseFormat": "text"
             }
-          },
-          "timeout": 10000
+          }
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (compatible; XavierFuentes.com RSS Reader)"
+            }
+          ]
         }
       },
+      "id": "fetch-rss",
+      "name": "Fetch RSS Feed",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [
-        -752,
-        144
-      ],
-      "id": "fa8420ce-042a-4daf-92ad-2ec490e3763a",
-      "name": "Download RSS",
-      "alwaysOutputData": true,
-      "onError": "continueRegularOutput"
+      "position": [910, 300],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "mode": "xmlToJson",
+        "options": {}
+      },
+      "id": "parse-xml",
+      "name": "Parse RSS/Atom XML",
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1.1,
+      "position": [1130, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract items from RSS 2.0 or Atom feed\nconst data = items[0].json.data;\nconst sourceInfo = items[0].json;\n\nlet feedItems = [];\n\n// Try RSS 2.0 format\nif (data.rss && data.rss.channel && data.rss.channel.item) {\n  const rssItems = Array.isArray(data.rss.channel.item) \n    ? data.rss.channel.item \n    : [data.rss.channel.item];\n  \n  feedItems = rssItems.map(item => ({\n    title: item.title,\n    url: item.link,\n    guid: item.guid && typeof item.guid === 'object' ? item.guid._ : (item.guid || item.link),\n    description: item.description || item['content:encoded'] || '',\n    source_name: sourceInfo.name,\n    content_pillar: sourceInfo.content_pillar,\n    source_priority: sourceInfo.priority\n  }));\n}\n// Try Atom format\nelse if (data.feed && data.feed.entry) {\n  const atomEntries = Array.isArray(data.feed.entry) \n    ? data.feed.entry \n    : [data.feed.entry];\n  \n  feedItems = atomEntries.map(entry => {\n    const link = Array.isArray(entry.link) \n      ? entry.link.find(l => l.$.rel === 'alternate' || !l.$.rel)?.$.href || entry.link[0].$.href\n      : entry.link?.$.href || '';\n    \n    return {\n      title: entry.title,\n      url: link,\n      guid: entry.id || link,\n      description: entry.summary || entry.content?.$?._ || entry.content || '',\n      source_name: sourceInfo.name,\n      content_pillar: sourceInfo.content_pillar,\n      source_priority: sourceInfo.priority\n    };\n  });\n}\n\n// Return items (limit to 10 most recent per feed)\nreturn feedItems.slice(0, 10).map(item => ({ json: item }));"
+      },
+      "id": "extract-items",
+      "name": "Extract Items",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1350, 300]
+    },
+    {
+      "parameters": {},
+      "id": "loop-articles",
+      "name": "Loop Through Articles",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [1570, 300]
+    },
+    {
+      "parameters": {
+        "operation": "getMany",
+        "dataTableId": "research_items",
+        "returnAll": false,
+        "limit": 1,
+        "filters": {
+          "conditions": [
+            {
+              "field": "guid",
+              "operator": "equal",
+              "value": "={{ $json.guid }}"
+            }
+          ]
+        }
+      },
+      "id": "check-exists",
+      "name": "Check If Exists",
+      "type": "@n8n/n8n-nodes-langchain.dataTable",
+      "typeVersion": 1,
+      "position": [1790, 300]
     },
     {
       "parameters": {
         "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 2
-          },
-          "conditions": [
+          "number": [
             {
-              "leftValue": "={{ $json.data }}",
-              "rightValue": "",
-              "operator": {
-                "type": "string",
-                "operation": "notEmpty",
-                "singleValue": true
-              },
-              "id": "7d77ebf5-d54d-484e-91ba-5626b4cbd652"
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        -528,
-        144
-      ],
-      "id": "06c0e60e-5a55-46fc-9a98-96399a39a4c6",
-      "name": "Fetch OK?"
-    },
-    {
-      "parameters": {
-        "jsCode": "// Parses RSS and Atom feed XML into structured article objects\n// Handles both feed formats, extracts metadata, and cleans HTML content\nconst xml = $(\"Download RSS\").item.json.data || \"\";\nconst items = [];\n\nconsole.log(`Parsing feed data (${xml.length} characters)`);\n\n// Detect feed type\nconst isAtom =\n  xml.includes(\"<feed\") && xml.includes('xmlns=\"http://www.w3.org/2005/Atom\"');\nconst isRss = xml.includes(\"<rss\") || xml.includes(\"<item\");\n\nconsole.log(`Feed type: ${isAtom ? \"Atom\" : isRss ? \"RSS\" : \"Unknown\"}`);\n\nif (isAtom) {\n  // Parse Atom feed\n  const entryRegex = /<entry[^>]*>[\\s\\S]*?<\\/entry>/gi;\n  let match;\n\n  while ((match = entryRegex.exec(xml)) !== null) {\n    const entryXml = match[0];\n\n    // Extract Atom fields\n    const title = extractTag(entryXml, \"title\");\n    const linkMatch = entryXml.match(/<link[^>]*href=\"([^\"]*)\"[^>]*\\/?>/);\n    const link = linkMatch ? linkMatch[1] : \"\";\n    const content =\n      extractTag(entryXml, \"content\") || extractTag(entryXml, \"summary\") || \"\";\n    const updated = extractTag(entryXml, \"updated\");\n    const id = extractTag(entryXml, \"id\");\n\n    if (!title || !link) continue;\n\n    // Clean content and create description\n    const cleanContent = cleanText(content);\n    const description = cleanContent.slice(0, 800);\n\n    // Convert updated date to publishedAt\n    const publishedAt = updated\n      ? new Date(updated).toISOString()\n      : new Date().toISOString();\n\n    items.push({\n      json: {\n        // Feed metadata\n        sourceName: $(\"Loop Feeds\").item.json.sourceName,\n        sourceId: $(\"Loop Feeds\").item.json.id || \"unknown\",\n        feedUrl: $(\"Loop Feeds\").item.json.feedUrl,\n\n        // Article fields\n        title: cleanText(title),\n        link: link,\n        description: description,\n        guid: id || link,\n        author: extractTag(entryXml, \"name\") || \"Unknown\",\n        category: extractTag(entryXml, \"category\") || \"General\",\n        publishedAt: publishedAt,\n        scrapedAt: new Date().toISOString(),\n\n        // Quality signals\n        sourcePriorityMultiplier: $(\"Loop Feeds\").item.json.priorityMultiplier,\n        wordCount: cleanContent\n          ? cleanContent.split(/\\s+/).filter(Boolean).length\n          : 0,\n        feedType: \"atom\",\n      },\n    });\n  }\n} else if (isRss) {\n  // Parse RSS feed\n  const itemRegex = /<item[\\s\\S]*?<\\/item>/gi;\n  let match;\n\n  while ((match = itemRegex.exec(xml)) !== null) {\n    const block = match[0];\n\n    const title = extractTag(block, \"title\");\n    const link = extractTag(block, \"link\") || extractTag(block, \"guid\");\n    if (!title || !link) continue;\n\n    const body =\n      extractTag(block, \"content:encoded\") ||\n      extractTag(block, \"description\") ||\n      \"\";\n    const description = cleanText(body).slice(0, 800);\n\n    const pubDate =\n      extractTag(block, \"pubDate\") || extractTag(block, \"published\");\n    const publishedAt = pubDate\n      ? new Date(pubDate).toISOString()\n      : new Date().toISOString();\n\n    items.push({\n      json: {\n        // Feed metadata\n        sourceName: $(\"Loop Feeds\").item.json.sourceName,\n        sourceId: $(\"Loop Feeds\").item.json.id || \"unknown\",\n        feedUrl: $(\"Loop Feeds\").item.json.feedUrl,\n\n        // Article fields\n        title: cleanText(title),\n        link: link,\n        description: description,\n        guid: extractTag(block, \"guid\") || link,\n        author:\n          extractTag(block, \"dc:creator\") ||\n          extractTag(block, \"author\") ||\n          \"Unknown\",\n        category: extractTag(block, \"category\") || \"General\",\n        publishedAt: publishedAt,\n        scrapedAt: new Date().toISOString(),\n\n        // Quality signals\n        sourcePriorityMultiplier: $(\"Loop Feeds\").item.json.priorityMultiplier,\n        wordCount: body\n          ? cleanText(body).split(/\\s+/).filter(Boolean).length\n          : 0,\n        feedType: \"rss\",\n      },\n    });\n  }\n}\n\n// Helper function to extract tag content\nfunction extractTag(xml, tagName) {\n  const regex = new RegExp(`<${tagName}[^>]*>([\\\\s\\\\S]*?)<\\\\/${tagName}>`, \"i\");\n  const match = xml.match(regex);\n  return match ? match[1] : \"\";\n}\n\n// Enhanced function to completely remove HTML and clean text\nfunction cleanText(text) {\n  if (typeof text !== \"string\" || !text) return \"\";\n\n  let cleaned = text;\n\n  // Remove CDATA sections first\n  cleaned = cleaned.replace(/<!\\[CDATA\\[([\\s\\S]*?)\\]\\]>/g, \"$1\");\n\n  // Remove HTML comments\n  cleaned = cleaned.replace(/<!--[\\s\\S]*?-->/g, \"\");\n\n  // Remove script, style, and other unwanted tags completely\n  cleaned = cleaned.replace(\n    /<(script|style|noscript|iframe|object|embed|form|input|button)[^>]*>[\\s\\S]*?<\\/\\1>/gi,\n    \"\"\n  );\n\n  // Remove self-closing tags\n  cleaned = cleaned.replace(\n    /<(img|br|hr|input|meta|link|area|base|col|source|track|wbr)[^>]*\\/?>/gi,\n    \" \"\n  );\n\n  // Remove ALL HTML tags - be very aggressive\n  cleaned = cleaned.replace(/<\\/?[^>]*>/g, \" \");\n\n  // Remove any remaining < or > characters\n  cleaned = cleaned.replace(/[<>]/g, \"\");\n\n  // Decode HTML entities - comprehensive list\n  const entities = {\n    \"&amp;\": \"&\",\n    \"&lt;\": \"<\",\n    \"&gt;\": \">\",\n    \"&quot;\": '\"',\n    \"&#39;\": \"'\",\n    \"&apos;\": \"'\",\n    \"&nbsp;\": \" \",\n    \"&copy;\": \"©\",\n    \"&reg;\": \"®\",\n    \"&trade;\": \"™\",\n    \"&hellip;\": \"...\",\n    \"&mdash;\": \"—\",\n    \"&ndash;\": \"—\",\n    \"&lsquo;\": \"'\",\n    \"&rsquo;\": \"'\",\n    \"&ldquo;\": '\"',\n    \"&rdquo;\": '\"',\n    \"&bull;\": \"•\",\n    \"&middot;\": \"·\",\n    \"&sect;\": \"§\",\n    \"&para;\": \"¶\",\n    \"&dagger;\": \"†\",\n    \"&Dagger;\": \"‡\",\n    \"&permil;\": \"‰\",\n    \"&lsaquo;\": \"‹\",\n    \"&rsaquo;\": \"›\",\n    \"&euro;\": \"€\",\n    \"&pound;\": \"£\",\n    \"&yen;\": \"¥\",\n    \"&cent;\": \"¢\",\n  };\n\n  // Replace known entities\n  for (const [entity, replacement] of Object.entries(entities)) {\n    cleaned = cleaned.replace(new RegExp(entity, \"gi\"), replacement);\n  }\n\n  // Handle numeric entities (decimal)\n  cleaned = cleaned.replace(/&#(\\d+);/g, (match, num) => {\n    const code = parseInt(num, 10);\n    if (code >= 32 && code <= 126) return String.fromCharCode(code);\n    if (code === 8217) return \"'\"; // Right single quotation mark\n    if (code === 8216) return \"'\"; // Left single quotation mark\n    if (code === 8220) return '\"'; // Left double quotation mark\n    if (code === 8221) return '\"'; // Right double quotation mark\n    if (code === 8211) return \"—\"; // En dash\n    if (code === 8212) return \"—\"; // Em dash\n    if (code === 8230) return \"...\"; // Horizontal ellipsis\n    return \" \";\n  });\n\n  // Handle hexadecimal entities\n  cleaned = cleaned.replace(/&#x([0-9a-f]+);/gi, (match, hex) => {\n    const code = parseInt(hex, 16);\n    if (code >= 32 && code <= 126) return String.fromCharCode(code);\n    return \" \";\n  });\n\n  // Remove any remaining HTML entities\n  cleaned = cleaned.replace(/&[a-zA-Z][a-zA-Z0-9]{1,30};/g, \" \");\n\n  // Remove URLs that might be embedded\n  cleaned = cleaned.replace(/https?:\\/\\/[^\\s]+/g, \"\");\n  cleaned = cleaned.replace(/www\\.[^\\s]+/g, \"\");\n\n  // Remove email addresses\n  cleaned = cleaned.replace(\n    /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/g,\n    \"\"\n  );\n\n  // Remove common leftover HTML-like fragments\n  cleaned = cleaned.replace(\n    /^\\s*(img src|href|class|id|style|alt|title|width|height|src)\\s*.*$/gm,\n    \"\"\n  );\n\n  // Remove standalone attribute-like strings\n  cleaned = cleaned.replace(\n    /\\b(src|href|alt|title|class|id|width|height|style)=[\"'][^\"']*[\"']/gi,\n    \"\"\n  );\n\n  // Remove multiple consecutive punctuation\n  cleaned = cleaned.replace(/[.]{3,}/g, \"...\");\n  cleaned = cleaned.replace(/[!]{2,}/g, \"!\");\n  cleaned = cleaned.replace(/[?]{2,}/g, \"?\");\n\n  // Aggressive whitespace normalization\n  cleaned = cleaned.replace(/\\s+/g, \" \");\n\n  // Remove control and non-printable characters\n  cleaned = cleaned.replace(\n    /[\\u0000-\\u001F\\u007F-\\u009F\\u2000-\\u200F\\uFEFF]/g,\n    \"\"\n  );\n\n  // Remove leading/trailing punctuation that might be artifacts\n  cleaned = cleaned.replace(/^[^\\w\\s]+|[^\\w\\s.!?]+$/g, \"\");\n\n  return cleaned.trim();\n}\n\nconsole.log(\n  `Successfully parsed ${items.length} articles from ${\n    isAtom ? \"Atom\" : \"RSS\"\n  } feed`\n);\n\nreturn items;\n"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -304,
-        128
-      ],
-      "id": "e5675ccb-1afc-4630-a961-52292aca5cfb",
-      "name": "Parse RSS",
-      "alwaysOutputData": true,
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
-        "jsCode": "// Stores parsed articles in workflow static data for accumulation across feed iterations\n// Preserves articles between loop executions until collection phase\nconst s = $getWorkflowStaticData(\"global\");\nif (!s.articles) s.articles = [];\nconst inItems = $input.all();\nfor (const it of inItems) {\n  if (it.json?.title && it.json?.link) s.articles.push(it.json);\n}\nreturn inItems;\n"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -80,
-        144
-      ],
-      "id": "448e54ed-c16f-4327-8658-0af4d1bc1680",
-      "name": "Store Articles (Static)"
-    },
-    {
-      "parameters": {
-        "jsCode": "// Collects all articles accumulated during the feed loop from workflow static storage\n// Clears the static storage and returns articles for downstream processing\nconst s = $getWorkflowStaticData(\"global\");\nconst all = (s.articles || []).map((a) => ({ json: a }));\ns.articles = [];\nreturn all;\n"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -752,
-        -288
-      ],
-      "id": "7cb07aca-1304-4414-ae9a-e867340ab2d2",
-      "name": "Accumulate All Articles"
-    },
-    {
-      "parameters": {
-        "resource": "databasePage",
-        "operation": "getAll",
-        "databaseId": {
-          "__rl": true,
-          "value": "https://www.notion.so/9d899a561818444f8de1d7bd72ee1528?v=25390f46679580bcb9bc000cc4a3bf1e",
-          "mode": "url"
-        },
-        "returnAll": true,
-        "simple": false,
-        "filterType": "manual",
-        "matchType": "allFilters",
-        "filters": {
-          "conditions": [
-            {
-              "key": "Created Date|created_time",
-              "condition": "on_or_after",
-              "createdTimeValue": "={{ new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] }}"
+              "value1": "={{ $json.length || 0 }}",
+              "operation": "equal",
+              "value2": 0
             }
           ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.notion",
-      "typeVersion": 2.2,
-      "position": [
-        -528,
-        -288
-      ],
-      "id": "80b39eb4-9de2-4aa7-9fc6-e4c5d505b567",
-      "name": "Get Recent Articles",
-      "alwaysOutputData": true,
-      "executeOnce": true,
-      "credentials": {
-        "notionApi": {
-          "id": "lC4G957VFihVvFG2",
-          "name": "Notion account"
         }
       },
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
-        "jsCode": "// Deduplicates articles by comparing against existing Notion database entries\n// Filters out articles with matching titles to prevent duplicate content storage\n\n// Gather existing Notion titles (normalized), excluding trashed/archived\nconst notionPages = ($items(\"Get Recent Articles\", 0) || []).filter(\n  (p) => p?.json?.in_trash !== true && p?.json?.archived !== true\n);\n\nfunction normalized(str) {\n  return (str || \"\").toString().replace(/\\s+/g, \" \").trim().toLowerCase();\n}\n\nfunction getNotionTitle(page) {\n  // raw API shape\n  const t1 = page?.json?.properties?.Title?.title;\n  const titlePlain = Array.isArray(t1)\n    ? t1\n        .map((x) => x?.plain_text || \"\")\n        .join(\" \")\n        .trim()\n    : \"\";\n  if (titlePlain) return titlePlain;\n\n  // simplified or fallback shapes\n  return page?.json?.Title || page?.json?.title || \"\";\n}\n\nconst existingTitleSet = new Set(\n  notionPages.map(getNotionTitle).map(normalized).filter(Boolean)\n);\n\n// New articles from Accumulate\nconst newArticles = $items(\"Accumulate All Articles\", 0) || [];\n\nconst uniques = [];\nfor (const it of newArticles) {\n  const title = normalized(it?.json?.title || it?.json?.Title);\n  if (!title) continue;\n  if (existingTitleSet.has(title)) continue; // duplicate → skip\n  uniques.push(it);\n}\n\nreturn uniques;\n"
-      },
-      "type": "n8n-nodes-base.code",
+      "id": "is-new",
+      "name": "Is New Article?",
+      "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [
-        -304,
-        -288
-      ],
-      "id": "3ab01ab6-cd7b-4003-99ce-5a2b83c75151",
-      "name": "Remove Duplicates"
-    },
-    {
-      "parameters": {
-        "jsCode": "// Filters articles based on quality signals, source priority, and recency\n// Uses source-specific age limits and scoring to reduce noise whilst preserving valuable content\n\nconst MIN_COMBINED_WORDS = 10;\nconst MIN_TITLE_LEN = 40;\n\n// Different age limits based on source quality\nconst SOURCE_AGE_LIMITS = {\n  // Premium sources - content stays relevant longer\n  \"Martin Fowler's Blog\": 90, // 3 months - his content is timeless\n  \"Stripe Engineering Blog\": 60,\n  \"Netflix Tech Blog\": 60,\n  \"Google Cloud Blog\": 45,\n  \"AWS Architecture Blog\": 45,\n  \"Thoughtworks Technology Radar\": 90,\n  \"First Round Review\": 60,\n  \"Lenny's Newsletter\": 30,\n  InfoQ: 45,\n  Stratechery: 30,\n\n  // Default for most sources\n  Default: 30, // Increased from 21 to 30 days\n};\n\n// NOTE: Source priority multipliers are now retrieved from Notion database\n// instead of being hardcoded here. This allows for dynamic configuration.\n\n// Keywords that indicate high-value content for tech leaders\nconst HIGH_VALUE_KEYWORDS = [\n  \"ai\",\n  \"artificial intelligence\",\n  \"agentic\",\n  \"model\",\n  \"models\",\n  \"compute\",\n  \"gpu\",\n  \"architecture\",\n  \"scaling\",\n  \"performance\",\n  \"optimisation\",\n  \"framework\",\n  \"pattern\",\n  \"leadership\",\n  \"management\",\n  \"strategy\",\n  \"culture\",\n  \"hiring\",\n  \"team\",\n  \"platform\",\n  \"compliance\",\n  \"security\",\n  \"cyber\",\n  \"cloud\",\n  \"open-source\",\n  \"startup\",\n  \"scale-up\",\n  \"supercomputer\",\n  \"sovereign\",\n  \"quantum\",\n  \"benchmark\",\n  \"llm\",\n];\n\n// Keywords that indicate low-value content (funding noise)\nconst LOW_VALUE_KEYWORDS = [\n  \"job opening\",\n  \"we are hiring\",\n  \"webinar\",\n  \"podcast\",\n  \"event\",\n  \"conference\",\n  \"newsletter\",\n  \"roundup\",\n  \"sponsored\",\n  \"advertorial\",\n  \"press release\",\n];\n\nfunction normalize(str) {\n  return (str || \"\").toString().replace(/\\s+/g, \" \").trim();\n}\n\nfunction lower(str) {\n  return normalize(str).toLowerCase();\n}\n\nfunction wordsCount(str) {\n  return normalize(str).split(/\\s+/).filter(Boolean).length;\n}\n\nfunction hasAny(text, list) {\n  const t = lower(text);\n  return list.some((k) => t.includes(k));\n}\n\nfunction daysSince(dateIso) {\n  const t = Date.parse(dateIso);\n  if (!Number.isFinite(t)) return Infinity;\n  return (Date.now() - t) / 86400000;\n}\n\nfunction calculateArticleScore(article) {\n  // Get multiplier from article's source data (passed from Notion)\n  const priorityMultiplier = article.sourcePriorityMultiplier || 1.0;\n\n  let score = 0;\n\n  // Body richness (prefer content:encoded-derived wordCount)\n  const bodyWords = article.wordCount || 0;\n  if (bodyWords >= 400) score += 3;\n  else if (bodyWords >= 250) score += 2;\n  else if (bodyWords >= 120) score += 1;\n\n  // Headline/teaser substance\n  const combined = `${article.title} ${article.description}`;\n  const combinedWords = wordsCount(combined);\n  if (combinedWords >= MIN_COMBINED_WORDS) score += 1;\n\n  // Title strength\n  if (article.title && article.title.length >= MIN_TITLE_LEN) score += 1;\n\n  // High-value keyword signals (multiple hits add more weight)\n  const highValueHits = HIGH_VALUE_KEYWORDS.filter((kw) =>\n    lower(combined).includes(kw)\n  ).length;\n  if (highValueHits >= 3) score += 2;\n  else if (highValueHits >= 1) score += 1;\n\n  // Recency bonus (but don't penalize quality sources too much)\n  const age = article.publishedAt ? daysSince(article.publishedAt) : Infinity;\n  if (age <= 3) score += 2;\n  else if (age <= 7) score += 1;\n  else if (age <= 14 && priorityMultiplier >= 1.3) score += 1; // Bonus for high-priority sources even if older\n\n  // Apply source priority multiplier\n  score = Math.round(score * priorityMultiplier);\n\n  return score;\n}\n\n// Lightweight in-flow de-duplication by guid/link/title\nconst seen = new Set();\n\nconst out = [];\nlet filteredByAge = 0;\nlet filteredByLowValue = 0;\nlet filteredByThreshold = 0;\n\nfor (const it of $input.all()) {\n  const j = it?.json || {};\n  const title = normalize(j.title);\n  const link = normalize(j.link);\n  if (!title || !link) continue;\n\n  // Local de-dupe key (within this node's run)\n  const key = `${lower(title)}|${lower(link)}`;\n  if (seen.has(key)) continue;\n  seen.add(key);\n\n  // Get age limit for this source\n  const ageLimit =\n    SOURCE_AGE_LIMITS[j.sourceName] || SOURCE_AGE_LIMITS[\"Default\"];\n\n  // Recency filter with source-specific limits\n  if (j.publishedAt) {\n    const age = daysSince(j.publishedAt);\n    if (age > ageLimit) {\n      filteredByAge++;\n      console.log(\n        `❌ Too old for ${\n          j.sourceName\n        } (${ageLimit}d limit): \"${title.substring(0, 40)}...\" (${age.toFixed(\n          1\n        )} days)`\n      );\n      continue;\n    }\n  }\n\n  const combined = `${title} ${normalize(j.description)}`;\n\n  // Fast negative filter on obvious low-signal content\n  if (hasAny(combined, LOW_VALUE_KEYWORDS)) {\n    filteredByLowValue++;\n    continue;\n  }\n\n  // Calculate score with source priority\n  const score = calculateArticleScore(j);\n\n  // Dynamic threshold based on source priority\n  const baseThreshold = 2;\n  const sourceMultiplier = j.sourcePriorityMultiplier || 1.0;\n\n  // Since sourceContentQuality doesn't exist in the data, we'll use a simpler threshold logic\n  const priorityAdjustedThreshold = sourceMultiplier < 1.0 ? Math.max(baseThreshold + 1, 3) : baseThreshold;\n  const threshold = priorityAdjustedThreshold;\n\n  // Hard includes: strong signals even if body is short\n  const hardInclude =\n    /\\b(raises|raised|acquire|acquisition|series [abc]|seed|pre-seed)\\b/i.test(\n      combined\n    ) || /\\b(series\\s?[abc])\\b/i.test(combined);\n\n  if (hardInclude || score >= threshold) {\n    // Add source priority info for debugging\n    const enhancedArticle = {\n      ...j,\n      _sourcePriority: sourceMultiplier,\n      _articleScore: score,\n      _threshold: threshold,\n      _ageLimit: ageLimit,\n    };\n\n    out.push({ json: enhancedArticle });\n  } else {\n    filteredByThreshold++;\n  }\n}\n\nconsole.log(\n  `Pre-filtered ${out.length} articles from ${\n    $input.all().length\n  } input articles`\n);\nconsole.log(\n  `Filtered: Age=${filteredByAge}, LowValue=${filteredByLowValue}, BelowThreshold=${filteredByThreshold}`\n);\n\n// Quality statistics tracking\nconst scoreStats = [];\nfor (const item of out) {\n  if (item.json._articleScore) {\n    scoreStats.push(item.json._articleScore);\n  }\n}\n\nconst avgScore = scoreStats.length > 0 ? (scoreStats.reduce((a, b) => a + b, 0) / scoreStats.length).toFixed(1) : 0;\nconst minScore = scoreStats.length > 0 ? Math.min(...scoreStats) : 0;\nconst maxScore = scoreStats.length > 0 ? Math.max(...scoreStats) : 0;\n\nconsole.log(`Score stats - Avg: ${avgScore}, Min: ${minScore}, Max: ${maxScore}`);\n\nreturn out;\n"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -80,
-        -288
-      ],
-      "id": "01d7b11c-7a0b-4497-a4a3-e6e736e2a337",
-      "name": "Pre-filter"
-    },
-    {
-      "parameters": {
-        "jsCode": "// Article Cap Node - Quality threshold + daily maximum\n// Only process articles above minimum score, up to daily max\n\nconst MIN_SCORE_THRESHOLD = 6; // Minimum quality score to process\nconst MAX_ARTICLES_PER_RUN = 20; // Maximum articles per run (cost control)\nconst STRICT_CAP = 15; // Strict cap for normal days\n\nconst articles = $input.all();\n\n// Sort by score (highest first)\nconst sorted = articles.sort((a, b) => \n  (b.json._articleScore || 0) - (a.json._articleScore || 0)\n);\n\n// Filter by quality threshold first\nconst aboveThreshold = sorted.filter(item => \n  (item.json._articleScore || 0) >= MIN_SCORE_THRESHOLD\n);\n\n// Apply cap based on quality distribution\nlet capped;\nif (aboveThreshold.length <= STRICT_CAP) {\n  // If we have 15 or fewer quality articles, take them all\n  capped = aboveThreshold;\n} else {\n  // If we have many quality articles, check if they're exceptional\n  const avgScore = aboveThreshold.slice(0, MAX_ARTICLES_PER_RUN)\n    .reduce((sum, item) => sum + (item.json._articleScore || 0), 0) / Math.min(aboveThreshold.length, MAX_ARTICLES_PER_RUN);\n  \n  if (avgScore >= 8) {\n    // Exceptional day - allow up to MAX (20)\n    capped = aboveThreshold.slice(0, MAX_ARTICLES_PER_RUN);\n    console.log(`🌟 Exceptional content day! Processing ${capped.length} high-quality articles`);\n  } else {\n    // Normal day - stick to STRICT_CAP (15)\n    capped = aboveThreshold.slice(0, STRICT_CAP);\n  }\n}\n\n// Logging\nconsole.log(`Article Cap Results:`);\nconsole.log(`  Input: ${articles.length} articles`);\nconsole.log(`  Above threshold (${MIN_SCORE_THRESHOLD}): ${aboveThreshold.length} articles`);\nconsole.log(`  Final selection: ${capped.length} articles`);\n\nif (articles.length > aboveThreshold.length) {\n  const rejected = articles.length - aboveThreshold.length;\n  console.log(`  ❌ Rejected ${rejected} articles below score ${MIN_SCORE_THRESHOLD}`);\n}\n\nif (capped.length > 0) {\n  const scores = capped.map(item => item.json._articleScore || 0);\n  const avgScore = scores.reduce((a, b) => a + b, 0) / scores.length;\n  const minScore = Math.min(...scores);\n  const maxScore = Math.max(...scores);\n  \n  console.log(`  Score range: ${minScore} - ${maxScore} (avg: ${avgScore.toFixed(1)})`);\n  \n  // Quality breakdown\n  const qualityBreakdown = {};\n  capped.forEach(item => {\n    const quality = item.json._contentQuality || \"Unknown\";\n    qualityBreakdown[quality] = (qualityBreakdown[quality] || 0) + 1;\n  });\n  \n  console.log(`  Quality distribution:`);\n  Object.entries(qualityBreakdown).forEach(([quality, count]) => {\n    console.log(`    ${quality}: ${count}`);\n  });\n} else {\n  console.log(`⚠️ No articles met the minimum quality threshold of ${MIN_SCORE_THRESHOLD}`);\n}\n\nreturn capped;"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        144,
-        -288
-      ],
-      "id": "5d17772c-af0d-4ee8-b61b-5ceb8988c2fe",
-      "name": "Article Cap"
-    },
-    {
-      "parameters": {
-        "jsCode": "// Make AI Batches: robust batching + tight prompt for structured JSON\n// - Keeps batch size 5 (safe for token limits with short bodies)\n// - Uses cleaned body if available; otherwise description\n// - Adds strict instructions (no prose/markdown, exact array length, ordered mapping)\n// - Includes per-item ids to aid downstream alignment\n// - Escapes quotes/newlines; trims long text\n\nconst DEFAULT_BATCH_SIZE = 5;\nconst MAX_SNIPPET_CHARS = 550; // short context keeps tokens bounded\n\nfunction normalize(str) {\n  return (str || \"\").toString().replace(/\\s+/g, \" \").trim();\n}\nfunction clip(str, n) {\n  const s = normalize(str);\n  return s.length > n ? s.slice(0, n) + \"…\" : s;\n}\nfunction escapeForPrompt(str) {\n  return (str || \"\")\n    .replace(/\\\\/g, \"\\\\\\\\\")\n    .replace(/\"/g, '\\\\\"')\n    .replace(/\\n/g, \" \");\n}\nfunction cleanHtml(str) {\n  return (str || \"\")\n    .replace(/<[^>]*>/g, \" \")      // Remove all HTML tags\n    .replace(/&[^;]+;/g, \" \")       // Remove HTML entities  \n    .replace(/\\s+/g, \" \")           // Normalize whitespace\n    .trim();\n}\nfunction getBody(j) {\n  // Prefer cleaned full body if parser provided; otherwise description\n  const body = j.contentEncodedClean || j.body || j.description || \"\";\n  return cleanHtml(body);\n}\n\nconst items = $input.all();\nconst batches = [];\n\nfor (let i = 0; i < items.length; i += DEFAULT_BATCH_SIZE) {\n  const batch = items.slice(i, i + DEFAULT_BATCH_SIZE);\n\n  // Build per-article lines with stable index (1-based within batch)\n  const lines = batch\n    .map((it, idx) => {\n      const a = it.json || {};\n      const title = escapeForPrompt(normalize(a.title));\n      const link = normalize(a.link);\n      const cat = normalize(a.category || \"General\");\n      const pub = normalize(a.publishedAt || \"Unknown\");\n\n      const body = getBody(a);\n      const snippet = escapeForPrompt(clip(body, MAX_SNIPPET_CHARS));\n      const teaser = escapeForPrompt(clip(cleanHtml(a.description) || \"\", 280));\n\n      // Use both snippet and teaser; snippet first (higher signal)\n      return `${idx + 1}. id=${idx + 1}\nTitle: \"${title}\"\nLink: ${link}\nCategory: ${cat}\nPublished: ${pub}\nBody: \"${snippet}\"\nTeaser: \"${teaser}\"`;\n    })\n    .join(\"\\n\\n\");\n\n  const prompt = `You are classifying tech articles for the editorial backlog at xavierFuentes.com (audience: CTOs, EMs, tech leaders, PMs, founders, VCs in the UK and Europe).\nReturn ONLY a JSON array (no markdown, no prose). The array MUST have exactly ${batch.length} objects, in the SAME ORDER as the input (1..${batch.length}).\nEach object corresponds to the item with the same id.\nIMPORTANT: Write all output in UK English (e.g., organisation not organization, analyse not analyze, optimisation not optimization).\n\nInclude all fields and ensure every score is an integer 1..10 (no nulls).\nIf an article is irrelevant, still include it with priority \"Low\" and low scores.\nIf information is missing, infer conservatively.\n\nAllowed enums:\n- content_pillar: \"Market & Trends\" | \"Leadership & Management\" | \"Technology Strategy\" | \"Execution & Delivery\" | \"Founder Lessons\" | \"Personal Angle\"\n- priority: \"High\" | \"Medium\" | \"Low\"\n- target_audience (subset): [\"CTOs\",\"Engineering Managers\",\"Tech Leaders\",\"Product Managers\",\"Founders\",\"VCs & Investors\",\"Scale-up Leaders\"]\n- word_count_target: one of 400, 600, 900\n\nScoring rubrics (use 1..10 integers):\n- relevance_score: how aligned to the chosen audience and content_pillar.\n  1-3 = marginal/tenuous; 4-6 = moderately relevant; 7-8 = strong; 9-10 = must-cover.\n- actionability_score: presence of concrete takeaways, decisions, frameworks, or steps.\n  1-3 = mostly newsy; 4-6 = some takeaways; 7-8 = clear actions; 9-10 = highly actionable.\n- depth_score: technical/analytical substance (data, architecture, trade-offs, rigorous analysis).\n  1-3 = surface-level; 4-6 = moderate depth; 7-8 = solid depth; 9-10 = deep/rigorous.\n\nNotes field:\n- \"notes\" should be 1-3 concise sentences advising how to angle the article for the chosen target_audience\n  (e.g., organisational framing for EMs, architectural implications for CTOs, market signals for VCs).\n- Avoid generic advice; tie to the article's specifics.\n- Write notes in UK English with proper British spelling and terminology.\n\nSCHEMA (each object):\n{\n  \"id\": number,                  // 1..${batch.length} from input\n  \"title\": string,               // unchanged\n  \"link\": string,                // unchanged\n  \"content_pillar\": string,      // enum\n  \"priority\": string,            // enum\n  \"target_audience\": string[],   // 1-3 from allowed list\n  \"word_count_target\": number,   // 400 | 600 | 900\n  \"seo_keywords\": string,        // 3-6 comma-separated terms\n  \"description\": string,         // 1 sentence (<= 24 words)\n  \"notes\": string,               // 1-3 sentences: how to angle for the chosen audience\n  \"relevance_score\": number,     // 1..10 (int)\n  \"actionability_score\": number, // 1..10 (int)\n  \"depth_score\": number          // 1..10 (int)\n}\n\nConstraints:\n- Output must be valid JSON (UTF-8), no markdown, no backticks, no comments, no trailing commas.\n- Keep titles and links exactly as provided; do not rewrite.\n- Do not drop items; if weak, set priority \"Low\" with low scores and explain briefly in \"notes\".\n- Align each object’s \"id\" to the corresponding input id.\n- Prefer \"Market & Trends\" for funding/market moves; \"Leadership & Management\" for organisation/process/people; \"Technology Strategy\" for architecture/infrastructure/ML/compute; \"Execution & Delivery\" for practices/tooling; \"Founder Lessons\" for founder narratives; \"Personal Angle\" sparingly.\n\nARTICLES:\n${lines}\n\nReturn ONLY the JSON array.`;\n\n  batches.push({\n    json: {\n      batchPrompt: prompt,\n      batchArticles: batch.map((x) => x.json),\n      batchSize: batch.length,\n    },\n  });\n}\n\nreturn batches;"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        368,
-        -288
-      ],
-      "id": "51be0597-a106-4b25-8e6c-39b5e2821bff",
-      "name": "Make AI Batches"
+      "position": [2010, 300]
     },
     {
       "parameters": {
         "modelId": {
           "__rl": true,
-          "value": "claude-3-haiku-20240307",
+          "value": "gpt-4o-mini",
           "mode": "list",
-          "cachedResultName": "claude-3-haiku-20240307"
+          "cachedResultName": "gpt-4o-mini"
         },
         "messages": {
           "values": [
             {
-              "content": "={{ $json.batchPrompt }}"
+              "message": "=You are scoring RSS articles for a fractional CTO's research pipeline.\n\nTarget audience: CTOs, Engineering Managers, Tech Leaders, Product Managers, Founders\n\nScore this article on a scale of 1-10 based on:\n- RELEVANCE: How relevant to tech leadership challenges?\n- ACTIONABILITY: Does it offer practical frameworks or advice?\n- DEPTH: Does it go beyond surface-level observations?\n\nArticle:\nTitle: {{ $json.title }}\nSource: {{ $json.source_name }} ({{ $json.source_priority }} priority)\nPillar: {{ $json.content_pillar }}\nDescription: {{ $json.description.substring(0, 500) }}\n\nReturn ONLY valid JSON:\n{\"score\": 7.5, \"reason\": \"Brief 1-sentence explanation\"}"
             }
           ]
         },
         "options": {
-          "maxTokens": 2000
+          "temperature": 0.2,
+          "maxTokens": 100
         }
       },
-      "type": "@n8n/n8n-nodes-langchain.anthropic",
+      "id": "score-article",
+      "name": "Score Article",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.4,
+      "position": [2230, 200],
+      "credentials": {
+        "openAiApi": {
+          "id": "YOUR_OPENAI_CREDENTIAL_ID",
+          "name": "OpenAI account"
+        }
+      },
+      "notes": "Using gpt-4o-mini for cost-effective scoring"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = items[0].json;\n\n// Extract score from AI response\nlet score = 5.0;\nlet reason = '';\n\ntry {\n  const responseText = item.message?.content || item.text || '{}';\n  const parsed = JSON.parse(responseText);\n  score = parseFloat(parsed.score) || 5.0;\n  reason = parsed.reason || '';\n} catch (e) {\n  reason = 'Scoring failed - default score applied';\n}\n\n// Generate UUID\nconst crypto = require('crypto');\nconst id = crypto.randomUUID();\n\n// Today's date\nconst today = new Date().toISOString().split('T')[0];\n\nreturn [{\n  json: {\n    id: id,\n    guid: item.guid,\n    title: item.title,\n    url: item.url,\n    source_name: item.source_name,\n    content_pillar: item.content_pillar,\n    description: (item.description || '').substring(0, 500),\n    quality_score: score,\n    status: 'new',\n    created_date: today,\n    notes: reason,\n    idea_id: null\n  }\n}];"
+      },
+      "id": "prepare-item",
+      "name": "Prepare Research Item",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2450, 200]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "dataTableId": "research_items",
+        "fieldsUi": {
+          "fieldValues": [
+            { "fieldName": "id", "fieldValue": "={{ $json.id }}" },
+            { "fieldName": "guid", "fieldValue": "={{ $json.guid }}" },
+            { "fieldName": "title", "fieldValue": "={{ $json.title }}" },
+            { "fieldName": "url", "fieldValue": "={{ $json.url }}" },
+            { "fieldName": "source_name", "fieldValue": "={{ $json.source_name }}" },
+            { "fieldName": "content_pillar", "fieldValue": "={{ $json.content_pillar }}" },
+            { "fieldName": "description", "fieldValue": "={{ $json.description }}" },
+            { "fieldName": "quality_score", "fieldValue": "={{ $json.quality_score }}" },
+            { "fieldName": "status", "fieldValue": "={{ $json.status }}" },
+            { "fieldName": "created_date", "fieldValue": "={{ $json.created_date }}" },
+            { "fieldName": "notes", "fieldValue": "={{ $json.notes }}" },
+            { "fieldName": "idea_id", "fieldValue": "={{ $json.idea_id }}" }
+          ]
+        }
+      },
+      "id": "insert-research",
+      "name": "Insert Research Item",
+      "type": "@n8n/n8n-nodes-langchain.dataTable",
       "typeVersion": 1,
-      "position": [
-        592,
-        -288
-      ],
-      "id": "eebc373d-ece4-41a1-b489-8cc43379e8bf",
-      "name": "AI Content Analysis",
-      "alwaysOutputData": true,
-      "credentials": {
-        "anthropicApi": {
-          "id": "tLx1lap9eXXXkj3m",
-          "name": "Anthropic account"
-        }
-      },
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
-        "jsCode": "// Merges AI classification results from batches into individual article items\n// Normalises AI outputs and prepares data for Notion database storage\n\n// Helper function to clean HTML from descriptions\nfunction cleanDescription(desc) {\n  return (desc || \"\")\n    .replace(/<[^>]*>/g, \" \") // Remove all HTML tags\n    .replace(/&[^;]+;/g, \" \") // Remove HTML entities\n    .replace(/\\s+/g, \" \") // Normalize whitespace\n    .trim();\n}\n\n// Merges AI classification results from batches into individual article items\n// Normalises AI outputs and prepares data for Notion database storage\nconst allAi = $input.all();\nconst batches = $(\"Make AI Batches\").all() || [];\n\n\nconst validPillars = [\n  \"Leadership & Management\",\n  \"Technology Strategy\",\n  \"Execution & Delivery\",\n  \"Founder Lessons\",\n  \"Market & Trends\",\n  \"Personal Angle\",\n];\nconst normPillar = (p) => {\n  if (typeof p === \"string\") {\n    const exact = validPillars.find((v) => v === p.trim());\n    if (exact) return exact;\n    const lower = p.toLowerCase();\n    const fuzzy = validPillars.find(\n      (v) => v.toLowerCase().includes(lower) || lower.includes(v.toLowerCase())\n    );\n    if (fuzzy) return fuzzy;\n  }\n  return \"Market & Trends\";\n};\nconst normPriority = (p) => {\n  const s = String(p || \"Medium\").toLowerCase();\n  return s === \"high\" ? \"High\" : s === \"low\" ? \"Low\" : \"Medium\";\n};\nconst clamp10 = (v, d = 5) => {\n  const n = Number(v);\n  const i = Number.isFinite(n) ? Math.round(n) : d;\n  return Math.max(1, Math.min(10, i));\n};\nconst normalizeKeywords = (k) =>\n  String(k || \"\")\n    .split(\",\")\n    .map((s) => s.trim())\n    .filter(Boolean)\n    .slice(0, 8)\n    .join(\", \")\n    .toLowerCase();\nconst allowedWordTargets = new Set([400, 600, 900]);\nconst normWordTarget = (n) =>\n  allowedWordTargets.has(Number(n)) ? Number(n) : 600;\nconst limitAudience = (a) =>\n  Array.isArray(a) && a.length ? a.slice(0, 3) : [\"Tech Leaders\"];\n\nfunction parseAiArray(text) {\n  try {\n    let cleaned = (text || \"\")\n      .replace(/```json/g, \"\")\n      .replace(/```/g, \"\")\n      .trim();\n    const s = cleaned.indexOf(\"[\"),\n      e = cleaned.lastIndexOf(\"]\");\n    if (s !== -1 && e !== -1) cleaned = cleaned.slice(s, e + 1);\n    const parsed = JSON.parse(cleaned);\n    return Array.isArray(parsed) ? parsed : [parsed];\n  } catch {\n    return null;\n  }\n}\n\nconst out = [];\nfor (let k = 0; k < allAi.length; k++) {\n  const ai = allAi[k]?.json || {};\n  const batch = batches[k]?.json;\n  if (!batch) continue;\n\n  const aiText = ai?.content?.[0]?.text || ai?.text || \"\";\n  let classifications = parseAiArray(aiText);\n\n  if (\n    !classifications ||\n    classifications.length !== batch.batchArticles.length\n  ) {\n    console.log(\n      `AI parsing failed for batch ${k}, generating intelligent fallbacks`\n    );\n\n    classifications = batch.batchArticles.map((a, idx) => {\n      // Use the actual article description, properly cleaned\n      const cleanDesc = (a.description || \"\")\n        .replace(/<[^>]*>/g, \" \")\n        .replace(/\\s+/g, \" \")\n        .trim();\n      const shortDesc =\n        cleanDesc.length > 120 ? cleanDesc.slice(0, 120) + \"...\" : cleanDesc;\n\n      // Smart content analysis for better fallbacks\n      const title = (a.title || \"\").toLowerCase();\n      const description = cleanDesc.toLowerCase();\n      const combined = `${title} ${description}`;\n      const sourceName = (a.sourceName || \"\").toLowerCase();\n\n      // Intelligent content pillar detection\n      let contentPillar = \"Market & Trends\"; // default\n      if (\n        combined.match(\n          /\\b(leadership|management|team|culture|hiring|organization)\\b/\n        )\n      ) {\n        contentPillar = \"Leadership & Management\";\n      } else if (\n        combined.match(\n          /\\b(architecture|performance|security|infrastructure|cloud|api|database|scaling)\\b/\n        )\n      ) {\n        contentPillar = \"Technology Strategy\";\n      } else if (\n        combined.match(\n          /\\b(agile|devops|testing|deployment|process|methodology|framework)\\b/\n        )\n      ) {\n        contentPillar = \"Execution & Delivery\";\n      } else if (\n        combined.match(\n          /\\b(founder|startup|entrepreneur|funding|venture|seed|series)\\b/\n        )\n      ) {\n        contentPillar = \"Founder Lessons\";\n      }\n\n      // Generate relevant keywords based on content\n      const potentialKeywords = [];\n      const keywordMap = {\n        \"ai|artificial intelligence|machine learning|ml\": \"ai\",\n        \"cloud|aws|azure|gcp\": \"cloud computing\",\n        \"security|cybersecurity|vulnerability\": \"security\",\n        \"performance|optimization|scalability\": \"performance\",\n        \"leadership|management\": \"leadership\",\n        \"startup|entrepreneur\": \"startups\",\n        \"development|programming|coding\": \"software development\",\n        \"api|microservices|architecture\": \"software architecture\",\n      };\n\n      for (const [pattern, keyword] of Object.entries(keywordMap)) {\n        if (new RegExp(pattern, \"i\").test(combined)) {\n          potentialKeywords.push(keyword);\n        }\n      }\n\n      // Fallback keywords if none found\n      if (potentialKeywords.length === 0) {\n        potentialKeywords.push(\"technology\", \"innovation\");\n      }\n\n      // Smart priority based on source quality and content\n      let priority = \"Medium\";\n      if (\n        sourceName.match(/martin fowler|stripe|netflix|google|aws|thoughtworks/)\n      ) {\n        priority = \"High\";\n      } else if (\n        combined.match(/\\b(funding|raised|investment|acquired|ipo)\\b/) &&\n        !combined.match(/\\b(strategy|technology|innovation)\\b/)\n      ) {\n        priority = \"Low\";\n      }\n\n      // Better audience targeting\n      const audience = [\"Tech Leaders\"];\n      if (combined.match(/\\b(cto|engineering manager|technical director)\\b/)) {\n        audience.push(\"CTOs\", \"Engineering Managers\");\n      } else if (combined.match(/\\b(founder|ceo|startup)\\b/)) {\n        audience.push(\"Founders\");\n      } else if (combined.match(/\\b(product|pm|product manager)\\b/)) {\n        audience.push(\"Product Managers\");\n      }\n\n      // Generate meaningful notes instead of \"Fallback\"\n      const notes = `Article covers ${contentPillar.toLowerCase()} topics. ${\n        sourceName ? `Source: ${sourceName}. ` : \"\"\n      }Content appears relevant for ${audience.join(\", \").toLowerCase()}.`;\n\n      return {\n        id: idx + 1,\n        title: a.title,\n        link: a.link,\n        content_pillar: contentPillar,\n        priority: priority,\n        target_audience: audience.slice(0, 3),\n        word_count_target: 600,\n        seo_keywords: potentialKeywords.slice(0, 4).join(\", \"),\n        description: shortDesc || \"Article summary not available\",\n        notes: notes,\n        relevance_score: 6,\n        actionability_score: 5,\n        depth_score: 5,\n      };\n    });\n  }\n\n  for (let i = 0; i < batch.batchArticles.length; i++) {\n    const a = batch.batchArticles[i] || {};\n    const c = classifications[i] || {};\n\n    out.push({\n      json: {\n        sourceName: a.sourceName,\n        sourceId: a.sourceId,\n        feedUrl: a.feedUrl,\n        title: a.title,\n        link: a.link,\n        description: a.description,\n        guid: a.guid || a.link,\n        author: a.author,\n        category: a.category,\n        publishedAt: a.publishedAt,\n        scrapedAt: a.scrapedAt,\n        wordCount: a.wordCount,\n\n        property_title: a.title,\n        property_description: cleanDescription(c.description || a.description),\n        property_author: a.author,\n        property_source: a.sourceName,\n        property_article_link: a.link,\n        property_guid: a.guid || a.link,\n        property_content_pillar: normPillar(c.content_pillar),\n        property_priority: normPriority(c.priority),\n        property_target_audience: limitAudience(c.target_audience),\n        property_word_count_target: normWordTarget(c.word_count_target),\n        property_seo_keywords: normalizeKeywords(c.seo_keywords),\n        property_relevance_score: clamp10(c.relevance_score, 5),\n        property_actionability_score: clamp10(c.actionability_score, 5),\n        property_depth_score: clamp10(c.depth_score, 5),\n        property_status: \"Research\",\n        property_notes: (c.notes || \"\").toString().trim().slice(0, 1000),\n\n        processed_at: new Date().toISOString(),\n      },\n    });\n  }\n}\n\nreturn out;"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        944,
-        -288
-      ],
-      "id": "e3fbc4da-7597-4ef3-a448-95f0ec078b4e",
-      "name": "Merge Batch Results"
-    },
-    {
-      "parameters": {
-        "resource": "databasePage",
-        "databaseId": {
-          "__rl": true,
-          "value": "https://www.notion.so/9d899a561818444f8de1d7bd72ee1528?v=25090f46679580679c2b000c6016836d&source=copy_link",
-          "mode": "url"
-        },
-        "title": "={{ $json.property_title }}",
-        "propertiesUi": {
-          "propertyValues": [
-            {
-              "key": "Content Pillar|select",
-              "selectValue": "={{ $json.property_content_pillar }}"
-            },
-            {
-              "key": "Target Audience|multi_select",
-              "multiSelectValue": "={{ $json.property_target_audience }}"
-            },
-            {
-              "key": "Priority|select",
-              "selectValue": "={{ $json.property_priority }}"
-            },
-            {
-              "key": "Status|select",
-              "selectValue": "={{ $json.property_status }}"
-            },
-            {
-              "key": "Article Link|url",
-              "urlValue": "={{ $json.property_article_link }}"
-            },
-            {
-              "key": "SEO Keywords|rich_text",
-              "textContent": "={{ $json.property_seo_keywords }}"
-            },
-            {
-              "key": "Word Count Target|number",
-              "numberValue": "={{ $json.property_word_count_target }}"
-            },
-            {
-              "key": "Source|rich_text",
-              "textContent": "={{ $json.property_source }}"
-            },
-            {
-              "key": "Author|rich_text",
-              "textContent": "={{ $json.property_author }}"
-            },
-            {
-              "key": "Description|rich_text",
-              "textContent": "={{ $json.property_description }}"
-            },
-            {
-              "key": "GUID|rich_text",
-              "textContent": "={{ $json.property_guid }}"
-            },
-            {
-              "key": "Relevance Score|number",
-              "numberValue": "={{ $json.property_relevance_score }}"
-            },
-            {
-              "key": "Actionability Score|number",
-              "numberValue": "={{ $json.property_actionability_score }}"
-            },
-            {
-              "key": "Depth Score|number",
-              "numberValue": "={{ $json.property_depth_score }}"
-            },
-            {
-              "key": "Notes|rich_text",
-              "richText": true,
-              "text": {
-                "text": [
-                  {
-                    "text": "={{ $json.property_notes }}",
-                    "annotationUi": {}
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.notion",
-      "typeVersion": 2.2,
-      "position": [
-        1168,
-        -288
-      ],
-      "id": "2a092bdb-08bd-4586-a76e-1ed2a99e222b",
-      "name": "Create Pipeline Entry",
-      "credentials": {
-        "notionApi": {
-          "id": "lC4G957VFihVvFG2",
-          "name": "Notion account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "resource": "databasePage",
-        "operation": "update",
-        "pageId": {
-          "__rl": true,
-          "value": "={{ $json.id }}",
-          "mode": "id"
-        },
-        "propertiesUi": {
-          "propertyValues": [
-            {
-              "key": "Last Scraped|date",
-              "date": "={{ new Date().toISOString() }}",
-              "timezone": "Europe/London"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.notion",
-      "typeVersion": 2.2,
-      "position": [
-        -1408,
-        -64
-      ],
-      "id": "8e8d28ce-ac76-45eb-b1a3-8a8086030b83",
-      "name": "Update Last Scraped Date",
-      "credentials": {
-        "notionApi": {
-          "id": "lC4G957VFihVvFG2",
-          "name": "Notion account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "loose",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "id": "7b437afc-71d1-478a-b6e5-5bc2583b8c64",
-              "leftValue": "={{ $json.needsNotionUpdate }}",
-              "rightValue": "=true",
-              "operator": {
-                "type": "string",
-                "operation": "equals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "looseTypeValidation": true,
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        144,
-        480
-      ],
-      "id": "c83aa6bc-73d6-4c49-9449-08d76ed6548b",
-      "name": "Need Notion Update?"
-    },
-    {
-      "parameters": {
-        "resource": "databasePage",
-        "operation": "update",
-        "pageId": {
-          "__rl": true,
-          "value": "={{ $json.id }}",
-          "mode": "id"
-        },
-        "propertiesUi": {
-          "propertyValues": [
-            {
-              "key": "Active|checkbox",
-              "checkboxValue": "={{ $json.updateActive }}"
-            },
-            {
-              "key": "API Key Required|checkbox",
-              "checkboxValue": "={{ $json.updateApiKeyRequired }}"
-            },
-            {
-              "key": "Error Notes|rich_text",
-              "richText": true,
-              "text": {
-                "text": [
-                  {
-                    "text": "={{ $json.updateNotes }}",
-                    "annotationUi": {}
-                  }
-                ]
-              }
-            },
-            {
-              "key": "Last Error|date",
-              "date": "={{ $json.updateLastErrorDate }}",
-              "timezone": "Europe/London"
-            },
-            {
-              "key": "Consecutive Failures|number",
-              "numberValue": "={{ $json.updateConsecutiveFailures }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.notion",
-      "typeVersion": 2.2,
-      "position": [
-        368,
-        544
-      ],
-      "id": "19086ac0-4fc5-4e77-ae36-c6a86b9903cf",
-      "name": "Update Source Status",
-      "credentials": {
-        "notionApi": {
-          "id": "lC4G957VFihVvFG2",
-          "name": "Notion account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "// Gather pipeline execution metrics and store in Notion Pipeline Metrics DB\n// Track success rates, quality distribution, and source performance over time\n\nconst articles = $items(\"Create Pipeline Entry\", 0) || [];\nconst prefiltered = $items(\"Pre-filter\", 0) || [];\nconst deduped = $items(\"Remove Duplicates\", 0) || [];\nconst accumulated = $items(\"Accumulate All Articles\", 0) || [];\nconst capped = $items(\"Article Cap\", 0) || [];\nconst sourcesData = $items(\"Validate Sources\", 0) || [];\n\n// Calculate filtering effectiveness\nconst metrics = {\n  // Volume metrics\n  totalScraped: accumulated.length,\n  afterDedup: deduped.length,\n  afterPrefilter: prefiltered.length,\n  afterCap: capped.length,\n  finalStored: articles.length,\n\n  // Filtering rates\n  dedupRate: accumulated.length > 0 ?\n    Math.round(((accumulated.length - deduped.length) / accumulated.length) * 100) : 0,\n  filterRate: deduped.length > 0 ?\n    Math.round(((deduped.length - prefiltered.length) / deduped.length) * 100) : 0,\n  capRate: prefiltered.length > 0 ?\n    Math.round(((prefiltered.length - capped.length) / prefiltered.length) * 100) : 0,\n\n  // Quality distribution from stored articles\n  byPriority: { High: 0, Medium: 0, Low: 0 },\n  byPillar: {},\n  avgScores: { relevance: 0, actionability: 0, depth: 0 },\n\n  // Source performance\n  topSources: {},\n\n  // Cost estimate\n  estimatedTokens: articles.length * 500, // ~500 tokens per article for Haiku\n  estimatedCost: (articles.length * 500 / 1000000) * 0.25 // $0.25 per 1M tokens\n};\n\n// Analyze stored articles\narticles.forEach(item => {\n  const j = item.json;\n\n  // Priority distribution\n  const priority = j.property_priority || \"Medium\";\n  metrics.byPriority[priority]++;\n\n  // Pillar distribution\n  const pillar = j.property_content_pillar || \"Unknown\";\n  metrics.byPillar[pillar] = (metrics.byPillar[pillar] || 0) + 1;\n\n  // Average scores\n  metrics.avgScores.relevance += j.property_relevance_score || 0;\n  metrics.avgScores.actionability += j.property_actionability_score || 0;\n  metrics.avgScores.depth += j.property_depth_score || 0;\n\n  // Track sources\n  const source = j.property_source || \"Unknown\";\n  metrics.topSources[source] = (metrics.topSources[source] || 0) + 1;\n});\n\n// Calculate averages\nif (articles.length > 0) {\n  metrics.avgScores.relevance = parseFloat((metrics.avgScores.relevance / articles.length).toFixed(1));\n  metrics.avgScores.actionability = parseFloat((metrics.avgScores.actionability / articles.length).toFixed(1));\n  metrics.avgScores.depth = parseFloat((metrics.avgScores.depth / articles.length).toFixed(1));\n}\n\n// Sort sources by contribution\nmetrics.topSourcesList = Object.entries(metrics.topSources)\n  .sort((a, b) => b[1] - a[1])\n  .slice(0, 5)\n  .map(([source, count]) => `${source} (${count})`);\n\n// Calculate efficiency score (0-100)\nconst efficiency = articles.length > 0 && accumulated.length > 0 ?\n  Math.round((articles.length / accumulated.length) * 100) : 0;\n\n// Determine run quality\nlet runQuality = \"Poor\";\nif (efficiency >= 15 && metrics.avgScores.relevance >= 7) runQuality = \"Excellent\";\nelse if (efficiency >= 10 && metrics.avgScores.relevance >= 6) runQuality = \"Good\";\nelse if (efficiency >= 5 && metrics.avgScores.relevance >= 5) runQuality = \"Fair\";\n\n// Log summary\nconsole.log(`📊 Pipeline Metrics:`);\nconsole.log(`  Scraped: ${metrics.totalScraped} → Deduped: ${metrics.afterDedup} → Filtered: ${metrics.afterPrefilter} → Capped: ${metrics.afterCap} → Stored: ${metrics.finalStored}`);\nconsole.log(`  Efficiency: ${efficiency}% | Quality: ${runQuality}`);\nconsole.log(`  Avg Scores: R=${metrics.avgScores.relevance}, A=${metrics.avgScores.actionability}, D=${metrics.avgScores.depth}`);\nconsole.log(`  Est. Cost: $${metrics.estimatedCost.toFixed(4)}`);\n\n// Prepare data for Notion Pipeline Metrics DB\nreturn [{\n  json: {\n    // For Notion database storage\n    property_run_date: new Date().toISOString().split('T')[0], // YYYY-MM-DD format\n    property_total_scraped: metrics.totalScraped,\n    property_after_dedup: metrics.afterDedup,\n    property_after_filter: metrics.afterPrefilter,\n    property_after_cap: metrics.afterCap,\n    property_final_stored: metrics.finalStored,\n    property_dedup_rate: metrics.dedupRate,\n    property_filter_rate: metrics.filterRate,\n    property_cap_rate: metrics.capRate,\n    property_efficiency: efficiency,\n    property_run_quality: runQuality,\n    property_avg_relevance: metrics.avgScores.relevance,\n    property_avg_actionability: metrics.avgScores.actionability,\n    property_avg_depth: metrics.avgScores.depth,\n    property_high_priority: metrics.byPriority.High,\n    property_medium_priority: metrics.byPriority.Medium,\n    property_low_priority: metrics.byPriority.Low,\n    property_estimated_cost: parseFloat(metrics.estimatedCost.toFixed(4)),\n    property_top_sources: metrics.topSourcesList.join(\", \"),\n    property_content_pillars: Object.entries(metrics.byPillar)\n      .map(([pillar, count]) => `${pillar}: ${count}`)\n      .join(\", \"),\n    property_sources_processed: sourcesData.length,\n    property_summary: `Pipeline processed ${sourcesData.length} sources, scraped ${metrics.totalScraped} articles, applied quality filters (${metrics.filterRate}% filtered), and stored ${metrics.finalStored} final articles. Run quality: ${runQuality}. Top sources: ${metrics.topSourcesList.slice(0, 3).join(\", \")}.`,\n\n    // For email notification (pass through)\n    metrics,\n    articles: articles.map(a => a.json),\n    timestamp: new Date().toISOString()\n  }\n}];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        1392,
-        -288
-      ],
-      "id": "2299c40e-01be-456a-9920-ac54e1eeb773",
-      "name": "Pipeline Metrics"
-    },
-    {
-      "parameters": {
-        "resource": "databasePage",
-        "databaseId": {
-          "__rl": true,
-          "value": "https://www.notion.so/27390f46679580d9bd79c8407e4254d7?v=27390f46679580a381d0000cdbfc90fd",
-          "mode": "url"
-        },
-        "title": "={{ $json.property_summary || 'Pipeline Run ' + $now.format('DD/MM/YYYY   HH:mm') }}",
-        "propertiesUi": {
-          "propertyValues": [
-            {
-              "key": "Timestamp|date",
-              "date": "={{ $json.property_run_date }}",
-              "timezone": "Europe/London"
-            },
-            {
-              "key": "Sources Processed|number",
-              "numberValue": "={{ $json.property_sources_processed || 0 }}"
-            },
-            {
-              "key": "Articles Downloaded|number",
-              "numberValue": "={{ $json.property_total_scraped }}"
-            },
-            {
-              "key": "Articles Stored|number",
-              "numberValue": "={{ $json.property_final_stored }}"
-            },
-            {
-              "key": "Filter Rate|number",
-              "numberValue": "={{ $json.property_filter_rate }}"
-            },
-            {
-              "key": "API Cost|number",
-              "numberValue": "={{ $json.property_estimated_cost }}"
-            },
-            {
-              "key": "Status|select",
-              "selectValue": "={{ $json.property_run_quality }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.notion",
-      "typeVersion": 2.2,
-      "position": [
-        1616,
-        -288
-      ],
-      "id": "ef7542e9-3048-4b67-abe5-4e874db7d62d",
-      "name": "Store Pipeline Metrics",
-      "credentials": {
-        "notionApi": {
-          "id": "lC4G957VFihVvFG2",
-          "name": "Notion account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "// Prepare email notification with articles summary and pipeline metrics\n// Access data from the previous node (Pipeline Metrics, not Store Pipeline Metrics)\nconst pipelineData = $items(\"Pipeline Metrics\", 0)?.[0]?.json;\n\nif (!pipelineData) {\n  console.log(\"No pipeline data available, skipping email\");\n  return [];\n}\n\nconst metrics = pipelineData.metrics;\nconst articles = pipelineData.articles || [];\nconst articlesCount = articles.length;\n\nif (articlesCount === 0) {\n  console.log(\"No articles to report, skipping email\");\n  return [];\n}\n\n// Group articles by priority for display\nconst byPriority = {\n  High: [],\n  Medium: [],\n  Low: []\n};\n\narticles.forEach(item => {\n  const priority = item.property_priority || \"Medium\";\n  const pillar = item.property_content_pillar || \"Unknown\";\n  const title = item.property_title || \"Untitled\";\n\n  byPriority[priority].push({\n    title: title.substring(0, 80) + (title.length > 80 ? \"...\" : \"\"),\n    pillar: pillar\n  });\n});\n\n// Build email body\nlet emailBody = `<h2>🎯 New Content Added to Pipeline</h2>\\n`;\nemailBody += `<p><strong>${articlesCount}</strong> new articles have been added to your Content Hub for review.</p>\\n\\n`;\n\n// Pipeline performance summary\nemailBody += `<h3>📈 Pipeline Performance</h3>\\n`;\nemailBody += `<ul>\\n`;\nemailBody += `  <li>Scraped: ${metrics.totalScraped} articles</li>\\n`;\nemailBody += `  <li>After deduplication: ${metrics.afterDedup} (${metrics.dedupRate}% duplicates removed)</li>\\n`;\nemailBody += `  <li>After quality filter: ${metrics.afterPrefilter} (${metrics.filterRate}% filtered out)</li>\\n`;\nemailBody += `  <li>After daily cap: ${metrics.afterCap}</li>\\n`;\nemailBody += `  <li><strong>Final stored: ${metrics.finalStored}</strong></li>\\n`;\nemailBody += `</ul>\\n\\n`;\n\n// Articles by priority\nif (byPriority.High.length > 0) {\n  emailBody += `<h3>🔴 High Priority (${byPriority.High.length})</h3>\\n<ul>\\n`;\n  byPriority.High.forEach(a => {\n    emailBody += `  <li><strong>${a.title}</strong> - ${a.pillar}</li>\\n`;\n  });\n  emailBody += `</ul>\\n\\n`;\n}\n\nif (byPriority.Medium.length > 0) {\n  emailBody += `<h3>🟡 Medium Priority (${byPriority.Medium.length})</h3>\\n<ul>\\n`;\n  byPriority.Medium.forEach(a => {\n    emailBody += `  <li><strong>${a.title}</strong> - ${a.pillar}</li>\\n`;\n  });\n  emailBody += `</ul>\\n\\n`;\n}\n\nif (byPriority.Low.length > 0) {\n  emailBody += `<h3>🟢 Low Priority (${byPriority.Low.length})</h3>\\n<ul>\\n`;\n  byPriority.Low.forEach(a => {\n    emailBody += `  <li>${a.title} - ${a.pillar}</li>\\n`;\n  });\n  emailBody += `</ul>\\n\\n`;\n}\n\n// Content pillar distribution\nemailBody += `<h3>📊 Content Distribution</h3>\\n<ul>\\n`;\nObject.entries(metrics.byPillar).forEach(([pillar, count]) => {\n  emailBody += `  <li>${pillar}: ${count}</li>\\n`;\n});\nemailBody += `</ul>\\n\\n`;\n\n// Quality metrics\nemailBody += `<h3>⭐ Quality Metrics</h3>\\n<ul>\\n`;\nemailBody += `  <li>Avg Relevance: ${metrics.avgScores.relevance}/10</li>\\n`;\nemailBody += `  <li>Avg Actionability: ${metrics.avgScores.actionability}/10</li>\\n`;\nemailBody += `  <li>Avg Depth: ${metrics.avgScores.depth}/10</li>\\n`;\nemailBody += `</ul>\\n\\n`;\n\n// Top contributing sources\nif (metrics.topSourcesList && metrics.topSourcesList.length > 0) {\n  emailBody += `<h3>🏆 Top Sources</h3>\\n<ul>\\n`;\n  metrics.topSourcesList.forEach(source => {\n    emailBody += `  <li>${source}</li>\\n`;\n  });\n  emailBody += `</ul>\\n\\n`;\n}\n\n// Cost estimate\nemailBody += `<p><small>💰 Estimated AI cost: $${metrics.estimatedCost.toFixed(4)}</small></p>\\n\\n`;\n\n// Add CTA\nemailBody += `<hr>\\n`;\nemailBody += `<p><strong>👉 <a href=\"https://www.notion.so/Content-Hub-24f90f46679580dca35ac2354b6b915c\">Review in Content Hub</a></strong></p>\\n`;\nemailBody += `<p style=\"color: #666; font-size: 12px;\">Processed at ${new Date().toLocaleString('en-GB', { timeZone: 'Europe/London' })}</p>`;\n\nreturn [{\n  json: {\n    subject: `📚 ${articlesCount} New Articles Added (from ${metrics.totalScraped} scraped)`,\n    body: emailBody,\n    contentHubUrl: \"https://www.notion.so/Content-Hub-24f90f46679580dca35ac2354b6b915c\",\n    articlesCount: articlesCount,\n    metrics: metrics,\n    timestamp: new Date().toISOString()\n  }\n}];\n"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        1872,
-        -288
-      ],
-      "id": "8a3b5ffc-dcfd-4f59-a180-0284ef31634c",
-      "name": "Prepare Email Notification"
-    },
-    {
-      "parameters": {
-        "fromEmail": "x@xavi.cc",
-        "toEmail": "me@xavierfuentes.com",
-        "subject": "={{ $json.subject }}",
-        "html": "={{ $json.body }}",
-        "options": {
-          "allowUnauthorizedCerts": false
-        }
-      },
-      "type": "n8n-nodes-base.emailSend",
-      "typeVersion": 2.1,
-      "position": [
-        2096,
-        -288
-      ],
-      "id": "72a1ebfd-663a-4a61-bd84-b3f65eae0cef",
-      "name": "Send Email Notification",
-      "webhookId": "baa52cc0-17a0-4598-b401-d53bdd217721",
-      "credentials": {
-        "smtp": {
-          "id": "mI3xQSjzFfN7X5DY",
-          "name": "Apple"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "// Handles RSS feed download errors and tracks consecutive failures\n// Automatically marks sources for deactivation after 5 failures\n\nconst items = [];\n\ntry {\n  // Get current source info from the Loop\n  const currentSource = $(\"Loop Feeds\").item.json;\n  const sourceName =\n    currentSource.sourceName || currentSource.property_source_name || \"Unknown\";\n  const sourceId = currentSource.id;\n\n  console.log(`Processing failed source: ${sourceName} (ID: ${sourceId})`);\n\n  // Get CURRENT failure count from Notion (this is the key!)\n  const currentFailures = currentSource.property_consecutive_failures || 0;\n  const newFailureCount = currentFailures + 1;\n\n  console.log(\n    `Previous failures: ${currentFailures}, New count: ${newFailureCount}`\n  );\n\n  // Analyze the error type from HTTP response\n  const httpResponse = $(\"Download RSS\").item.json;\n  const errorAnalysis = analyzeError(httpResponse);\n\n  console.log(`Error type: ${errorAnalysis.type} - ${errorAnalysis.message}`);\n\n  // Determine if source should be deactivated\n  const shouldDeactivate = newFailureCount >= 5;\n  const needsApiKey = errorAnalysis.needsApiKey;\n\n  if (shouldDeactivate) {\n    console.log(\n      `⚠️ Source ${sourceName} should be DEACTIVATED (${newFailureCount} failures)`\n    );\n  }\n\n  // Create error result with NEW failure count\n  const errorResult = {\n    json: {\n      // Notion page identification\n      id: sourceId,\n      sourceName: sourceName,\n\n      // Updated failure tracking\n      consecutiveFailures: newFailureCount,\n      previousFailures: currentFailures,\n\n      // Error details\n      errorType: errorAnalysis.type,\n      statusCode: errorAnalysis.statusCode,\n      errorMessage: errorAnalysis.message,\n      needsApiKey: needsApiKey,\n\n      // Status decisions\n      shouldDeactivate: shouldDeactivate,\n\n      // For Notion update\n      updateActive: shouldDeactivate ? false : true,\n      updateApiKeyRequired: needsApiKey ? true : false,\n      updateConsecutiveFailures: newFailureCount,\n      updateNotes:\n        `Last failed: ${new Date().toLocaleString('en-GB', { timeZone: 'Europe/London' })}. ` +\n        `Consecutive failures: ${newFailureCount}. ` +\n        `Error type: ${errorAnalysis.type}. ` +\n        `Message: ${errorAnalysis.message}`,\n      updateLastErrorDate: new Date().toISOString(),\n\n      // Workflow control\n      failed: true,\n      continueLoop: true,\n      needsNotionUpdate: true,\n      failedAt: new Date().toISOString(),\n    },\n  };\n\n  items.push(errorResult);\n} catch (error) {\n  console.error(\"Error in Enhanced Error Handler:\", error);\n  items.push({\n    json: {\n      error: true,\n      errorMessage: error.message,\n      failed: true,\n      continueLoop: true,\n      needsNotionUpdate: false,\n    },\n  });\n}\n\n// Helper function to analyse different error types\nfunction analyzeError(httpResponse) {\n  const data = httpResponse?.data || \"\";\n  const statusCode = httpResponse?.statusCode;\n\n  if (statusCode === 401) {\n    return {\n      type: \"AUTHENTICATION_REQUIRED\",\n      statusCode: 401,\n      message: \"Authentication required - API key needed\",\n      needsApiKey: true,\n    };\n  }\n\n  if (statusCode === 403) {\n    return {\n      type: \"ACCESS_FORBIDDEN\",\n      statusCode: 403,\n      message: \"Access forbidden - may need API key\",\n      needsApiKey: true,\n    };\n  }\n\n  if (statusCode === 404) {\n    return {\n      type: \"FEED_NOT_FOUND\",\n      statusCode: 404,\n      message: \"RSS feed not found - URL may have changed\",\n      needsApiKey: false,\n    };\n  }\n\n  if (!data || data.trim() === \"\") {\n    return {\n      type: \"EMPTY_RESPONSE\",\n      statusCode: statusCode || 200,\n      message: \"Empty response received\",\n      needsApiKey: false,\n    };\n  }\n\n  return {\n    type: \"UNKNOWN_ERROR\",\n    statusCode: statusCode || 0,\n    message: \"Unknown error occurred\",\n    needsApiKey: false,\n  };\n}\n\nreturn items;\n"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -304,
-        352
-      ],
-      "id": "e4a9c6fd-f140-4c3c-b5ac-10b2f32950f7",
-      "name": "RSS Error Handler"
-    },
-    {
-      "parameters": {
-        "jsCode": "// Automatically deactivates RSS sources after multiple consecutive failures\n// Updates Notion database with failure tracking and API key requirements\n\nconst items = [];\n\ntry {\n  // Get all items from error handling\n  const allItems = $input.all();\n  const staticData = $getWorkflowStaticData(\"global\");\n  const sourceErrors = staticData.sourceErrors || {};\n\n  // Track sources that need updates\n  const sourcesToUpdate = [];\n  const sourcesToFlag = [];\n\n  for (const item of allItems) {\n    const data = item.json;\n\n    // Skip non-error items\n    if (!data.failed) {\n      items.push(item);\n      continue;\n    }\n\n    const sourceId = data.sourceId;\n    const errorHistory = sourceErrors[`source_${sourceId}`];\n\n    if (!errorHistory) {\n      items.push(item);\n      continue;\n    }\n\n    // Determine what updates are needed\n    const updates = {\n      sourceId,\n      sourceName: data.sourceName,\n      updates: [],\n    };\n\n    // Check if source should be deactivated\n    if (\n      errorHistory.shouldDeactivate &&\n      errorHistory.consecutiveFailures >= 3\n    ) {\n      updates.updates.push({\n        field: \"Active\",\n        value: false,\n        reason: `Auto-deactivated after ${errorHistory.consecutiveFailures} consecutive failures`,\n      });\n    }\n\n    // Check if API key is needed\n    if (errorHistory.needsApiKey) {\n      updates.updates.push({\n        field: \"API Key Required\",\n        value: true,\n        reason: \"Source requires authentication or subscription\",\n      });\n    }\n\n    // Add failure count to notes\n    const errorSummary =\n      `Last failed: ${new Date().toLocaleString('en-GB', { timeZone: 'Europe/London' })}. ` +\n      `Consecutive failures: ${errorHistory.consecutiveFailures}. ` +\n      `Error type: ${data.errorType}. ` +\n      `Message: ${data.errorMessage}`;\n\n    updates.updates.push({\n      field: \"Notes\",\n      value: errorSummary,\n      reason: \"Error tracking information\",\n    });\n\n    if (updates.updates.length > 0) {\n      sourcesToUpdate.push(updates);\n    }\n\n    // Create output item for the source update\n    const updateItem = {\n      json: {\n        // Notion page identification\n        id: sourceId,\n        sourceName: data.sourceName,\n\n        // Status updates\n        shouldDeactivate: errorHistory.shouldDeactivate,\n        needsApiKey: errorHistory.needsApiKey,\n        consecutiveFailures: errorHistory.consecutiveFailures,\n\n        // Update data for Notion\n        updateActive: errorHistory.shouldDeactivate ? false : true,\n        updateApiKeyRequired: errorHistory.needsApiKey ? true : false,\n        updateNotes: errorSummary,\n        updateLastErrorDate: new Date().toISOString(),\n\n        // Original error data\n        errorType: data.errorType,\n        errorMessage: data.errorMessage,\n        failedAt: data.failedAt,\n\n        // Control flags\n        needsNotionUpdate: true,\n        isErrorHandling: true,\n      },\n    };\n\n    items.push(updateItem);\n  }\n\n  // Log summary of actions\n  console.log(`Source Management Summary:`);\n  console.log(`- Total items processed: ${allItems.length}`);\n  console.log(`- Sources needing updates: ${sourcesToUpdate.length}`);\n\n  sourcesToUpdate.forEach((source) => {\n    console.log(`Source: ${source.sourceName}`);\n    source.updates.forEach((update) => {\n      console.log(`  - ${update.field}: ${update.value} (${update.reason})`);\n    });\n  });\n\n  // If no items need updates, create a summary item\n  if (items.length === 0) {\n    items.push({\n      json: {\n        summary: \"No source updates needed\",\n        processedAt: new Date().toISOString(),\n        totalItemsChecked: allItems.length,\n        needsNotionUpdate: false,\n      },\n    });\n  }\n} catch (error) {\n  console.error(\"Error in auto-deactivate sources:\", error);\n\n  items.push({\n    json: {\n      error: true,\n      errorMessage: error.message,\n      errorType: \"AUTO_DEACTIVATE_ERROR\",\n      processedAt: new Date().toISOString(),\n      needsNotionUpdate: false,\n    },\n  });\n}\n\nreturn items;"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -80,
-        368
-      ],
-      "id": "4d74803f-6d65-4cde-a541-454c572b4a87",
-      "name": "Auto-Deactivate Source"
+      "position": [2670, 200]
     }
   ],
-  "pinData": {},
   "connections": {
-    "Schedule": {
+    "Schedule Trigger": {
+      "main": [[{ "node": "Get Active RSS Sources", "type": "main", "index": 0 }]]
+    },
+    "Get Active RSS Sources": {
+      "main": [[{ "node": "Loop Through Sources", "type": "main", "index": 0 }]]
+    },
+    "Loop Through Sources": {
       "main": [
-        [
-          {
-            "node": "Fetch Active Sources",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        [{ "node": "Fetch RSS Feed", "type": "main", "index": 0 }],
+        []
       ]
     },
-    "Fetch Active Sources": {
+    "Fetch RSS Feed": {
+      "main": [[{ "node": "Parse RSS/Atom XML", "type": "main", "index": 0 }]]
+    },
+    "Parse RSS/Atom XML": {
+      "main": [[{ "node": "Extract Items", "type": "main", "index": 0 }]]
+    },
+    "Extract Items": {
+      "main": [[{ "node": "Loop Through Articles", "type": "main", "index": 0 }]]
+    },
+    "Loop Through Articles": {
       "main": [
-        [
-          {
-            "node": "Update Last Scraped Date",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        [{ "node": "Check If Exists", "type": "main", "index": 0 }],
+        [{ "node": "Loop Through Sources", "type": "main", "index": 0 }]
       ]
     },
-    "Validate Sources": {
-      "main": [
-        [
-          {
-            "node": "Loop Feeds",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+    "Check If Exists": {
+      "main": [[{ "node": "Is New Article?", "type": "main", "index": 0 }]]
     },
-    "Loop Feeds": {
-      "main": [
-        [
-          {
-            "node": "Accumulate All Articles",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Download RSS",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+    "Is New Article?": {
+      "main": [[{ "node": "Score Article", "type": "main", "index": 0 }]]
     },
-    "Download RSS": {
-      "main": [
-        [
-          {
-            "node": "Fetch OK?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+    "Score Article": {
+      "main": [[{ "node": "Prepare Research Item", "type": "main", "index": 0 }]]
     },
-    "Fetch OK?": {
-      "main": [
-        [
-          {
-            "node": "Parse RSS",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "RSS Error Handler",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+    "Prepare Research Item": {
+      "main": [[{ "node": "Insert Research Item", "type": "main", "index": 0 }]]
     },
-    "Parse RSS": {
-      "main": [
-        [
-          {
-            "node": "Store Articles (Static)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Store Articles (Static)": {
-      "main": [
-        [
-          {
-            "node": "Loop Feeds",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Accumulate All Articles": {
-      "main": [
-        [
-          {
-            "node": "Get Recent Articles",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Get Recent Articles": {
-      "main": [
-        [
-          {
-            "node": "Remove Duplicates",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Remove Duplicates": {
-      "main": [
-        [
-          {
-            "node": "Pre-filter",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Pre-filter": {
-      "main": [
-        [
-          {
-            "node": "Article Cap",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Article Cap": {
-      "main": [
-        [
-          {
-            "node": "Make AI Batches",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Make AI Batches": {
-      "main": [
-        [
-          {
-            "node": "AI Content Analysis",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "AI Content Analysis": {
-      "main": [
-        [
-          {
-            "node": "Merge Batch Results",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Merge Batch Results": {
-      "main": [
-        [
-          {
-            "node": "Create Pipeline Entry",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Create Pipeline Entry": {
-      "main": [
-        [
-          {
-            "node": "Pipeline Metrics",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Pipeline Metrics": {
-      "main": [
-        [
-          {
-            "node": "Store Pipeline Metrics",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Store Pipeline Metrics": {
-      "main": [
-        [
-          {
-            "node": "Prepare Email Notification",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Prepare Email Notification": {
-      "main": [
-        [
-          {
-            "node": "Send Email Notification",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Update Last Scraped Date": {
-      "main": [
-        [
-          {
-            "node": "Validate Sources",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Need Notion Update?": {
-      "main": [
-        [
-          {
-            "node": "Update Source Status",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Loop Feeds",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Update Source Status": {
-      "main": [
-        [
-          {
-            "node": "Loop Feeds",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "RSS Error Handler": {
-      "main": [
-        [
-          {
-            "node": "Auto-Deactivate Source",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Auto-Deactivate Source": {
-      "main": [
-        [
-          {
-            "node": "Need Notion Update?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+    "Insert Research Item": {
+      "main": [[{ "node": "Loop Through Articles", "type": "main", "index": 0 }]]
     }
   },
-  "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "48c5f981-596a-4624-8b15-096dc9513eac",
-  "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "d052f68fee6cbc1f0a1b7b4daa7281384655d7a51d1cb62c7e57bbd86329486d"
-  },
-  "id": "iWv3QwvaZlsSc7q8",
-  "tags": []
+  "staticData": null,
+  "tags": ["content-os", "research"],
+  "triggerCount": 0,
+  "versionId": "2.0"
 }

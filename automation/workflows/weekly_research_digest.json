@@ -1,0 +1,159 @@
+{
+  "name": "Weekly Research Digest",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * 0"
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Sunday 9am Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [250, 300],
+      "notes": "Runs every Sunday at 9am London time"
+    },
+    {
+      "parameters": {
+        "operation": "getMany",
+        "dataTableId": "research_items",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "field": "status",
+              "operator": "equal",
+              "value": "new"
+            }
+          ]
+        },
+        "options": {
+          "sort": {
+            "sortFieldsUi": {
+              "sortField": [
+                {
+                  "fieldName": "quality_score",
+                  "order": "DESC"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "id": "get-new-items",
+      "name": "Get New Research Items",
+      "type": "@n8n/n8n-nodes-langchain.dataTable",
+      "typeVersion": 1,
+      "position": [470, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get all new research items\nconst allItems = items.map(i => i.json);\n\n// Filter to items from the last 7 days\nconst sevenDaysAgo = new Date();\nsevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);\nconst sevenDaysAgoStr = sevenDaysAgo.toISOString().split('T')[0];\n\nconst recentItems = allItems.filter(item => \n  item.created_date >= sevenDaysAgoStr\n);\n\n// Take top 15 by quality score\nconst topItems = recentItems\n  .sort((a, b) => (b.quality_score || 0) - (a.quality_score || 0))\n  .slice(0, 15);\n\n// Group by content pillar for the email\nconst byPillar = {};\ntopItems.forEach(item => {\n  const pillar = item.content_pillar || 'Uncategorised';\n  if (!byPillar[pillar]) byPillar[pillar] = [];\n  byPillar[pillar].push(item);\n});\n\n// Build email content\nlet emailBody = `# Weekly Research Digest\\n\\n`;\nemailBody += `**${topItems.length} top research items** from the past week.\\n\\n`;\nemailBody += `Review these and use \\`idea-builder\\` agent to promote promising items to Ideas.\\n\\n`;\nemailBody += `---\\n\\n`;\n\nfor (const [pillar, pillarItems] of Object.entries(byPillar)) {\n  emailBody += `## ${pillar}\\n\\n`;\n  pillarItems.forEach((item, i) => {\n    emailBody += `### ${i + 1}. ${item.title}\\n`;\n    emailBody += `- **Score:** ${item.quality_score}/10\\n`;\n    emailBody += `- **Source:** ${item.source_name}\\n`;\n    emailBody += `- **URL:** ${item.url}\\n`;\n    if (item.notes) emailBody += `- **AI Notes:** ${item.notes}\\n`;\n    emailBody += `\\n`;\n  });\n}\n\nemailBody += `---\\n\\n`;\nemailBody += `*This digest was generated automatically by n8n.*\\n`;\nemailBody += `*To promote an item, use the idea-builder agent in Claude.*\\n`;\n\n// Summary stats\nconst pillarCounts = Object.entries(byPillar)\n  .map(([p, items]) => `${p}: ${items.length}`)\n  .join(', ');\n\nreturn [{\n  json: {\n    subject: `Weekly Research Digest - ${new Date().toISOString().split('T')[0]}`,\n    body: emailBody,\n    item_count: topItems.length,\n    pillar_summary: pillarCounts,\n    items: topItems\n  }\n}];"
+      },
+      "id": "build-digest",
+      "name": "Build Digest Email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [690, 300]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $env.DIGEST_EMAIL || 'your-email@example.com' }}",
+        "subject": "={{ $json.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.body }}",
+        "options": {}
+      },
+      "id": "send-email",
+      "name": "Send Digest Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [910, 300],
+      "credentials": {
+        "smtp": {
+          "id": "YOUR_SMTP_CREDENTIAL_ID",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Mark all items in digest as 'reviewed'\nconst digestItems = $('Build Digest Email').first().json.items;\n\nreturn digestItems.map(item => ({ json: { id: item.id } }));"
+      },
+      "id": "get-item-ids",
+      "name": "Get Item IDs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [690, 500]
+    },
+    {
+      "parameters": {},
+      "id": "loop-items",
+      "name": "Loop Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [910, 500]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": "research_items",
+        "matchField": "id",
+        "matchValue": "={{ $json.id }}",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldName": "status",
+              "fieldValue": "reviewed"
+            }
+          ]
+        }
+      },
+      "id": "update-status",
+      "name": "Mark as Reviewed",
+      "type": "@n8n/n8n-nodes-langchain.dataTable",
+      "typeVersion": 1,
+      "position": [1130, 500]
+    }
+  ],
+  "connections": {
+    "Sunday 9am Trigger": {
+      "main": [[{ "node": "Get New Research Items", "type": "main", "index": 0 }]]
+    },
+    "Get New Research Items": {
+      "main": [[{ "node": "Build Digest Email", "type": "main", "index": 0 }]]
+    },
+    "Build Digest Email": {
+      "main": [
+        [{ "node": "Send Digest Email", "type": "main", "index": 0 }],
+        [{ "node": "Get Item IDs", "type": "main", "index": 0 }]
+      ]
+    },
+    "Get Item IDs": {
+      "main": [[{ "node": "Loop Items", "type": "main", "index": 0 }]]
+    },
+    "Loop Items": {
+      "main": [
+        [{ "node": "Mark as Reviewed", "type": "main", "index": 0 }],
+        []
+      ]
+    },
+    "Mark as Reviewed": {
+      "main": [[{ "node": "Loop Items", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/London"
+  },
+  "staticData": null,
+  "tags": ["content-os", "research"],
+  "triggerCount": 0,
+  "versionId": "1.0"
+}
