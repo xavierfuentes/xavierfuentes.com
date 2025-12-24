@@ -1,285 +1,263 @@
 # n8n Workflow Specifications
 ## Node-by-Node Implementation Guide
 
-**Last Updated:** 2025-10-06
-**Version:** 1.0
+**Last Updated:** 24/12/2024
+**Version:** 2.0 (Simplified for Content OS)
 
 ---
 
 ## Overview
 
-This document provides detailed node-by-node specifications for the three core workflows in the content automation system. Use these specifications to build the workflows in the n8n UI.
+This document provides node-by-node specifications for the three workflows in the simplified research discovery system.
 
 **Workflows:**
-1. `rss_to_pipeline.json` - Hourly RSS fetch and scoring
-2. `weekly_selection.json` - Weekly curation and auto-selection
-3. `content_generation.json` - AI draft generation and GitHub commits
+1. `rss_to_research.json` - Hourly RSS fetch and scoring
+2. `weekly_research_digest.json` - Weekly digest email
+3. `pipeline_maintenance.json` - Archiving and export
 
 ---
 
-## Workflow 1: rss_to_pipeline.json
+## Workflow 1: RSS to Research
 
 ### Purpose
-Fetch articles from active RSS feeds hourly, score them with AI, and populate the content_pipeline table.
 
-### Trigger Schedule
+Fetch articles from active RSS feeds hourly, score them for relevance, and store in the `research_items` table.
+
+### Trigger
+
 Cron: `0 * * * *` (every hour at minute 0)
 
 ### Workflow Diagram
+
 ```
-Schedule Trigger
-  ↓
-Get Active RSS Sources (Data Tables)
-  ↓
+Schedule Trigger (hourly)
+       ↓
+Get Active RSS Sources
+       ↓
 Loop: For Each Source
-  ↓
-  Fetch RSS Feed (HTTP Request)
-  ↓
-  Parse RSS/Atom (XML)
-  ↓
+       ↓
+  Fetch RSS Feed
+       ↓
+  Parse RSS/Atom XML
+       ↓
+  Extract Items (Code)
+       ↓
   Loop: For Each Article
-    ↓
-    Check If Exists (Data Tables)
-    ↓
+         ↓
+    Check If Exists (by GUID)
+         ↓
     IF: Is New Article?
-      ↓ YES
-      Score Article (AI)
-      ↓
-      Calculate Quality Score (Code)
-      ↓
-      Insert Into Pipeline (Data Tables)
-  ↓
-Send Summary Email
+         ↓ YES
+    Score Article (GPT-4o-mini)
+         ↓
+    Prepare Research Item (Code)
+         ↓
+    Insert Into research_items
 ```
 
 ### Node Specifications
 
 #### Node 1: Schedule Trigger
+
 **Type:** Schedule Trigger
-**Configuration:**
+**Config:**
 - Mode: Every Hour
-- Hour: * (every hour)
 - Minute: 0
 
+---
+
 #### Node 2: Get Active RSS Sources
+
 **Type:** n8n Data Tables → Read
-**Configuration:**
+**Config:**
 - Table: `rss_sources`
 - Operation: Get Many
-- Filters:
-  - `active` = `true`
-- Sort:
-  - Field: `priority`
-  - Direction: DESC
+- Return All: true
+- Filters: `active = true`
+- Sort: `priority DESC`
 
-**Output Example:**
-```json
-[
-  {
-    "id": "uuid-1",
-    "name": "Martin Fowler's Blog",
-    "url": "https://martinfowler.com/feed.atom",
-    "content_pillar": "Technology Strategy",
-    "priority": "High",
-    "active": true
-  }
-]
-```
+---
 
 #### Node 3: Loop Through Sources
-**Type:** Loop Over Items
-**Configuration:**
-- Input Mode: For Each Item
+
+**Type:** Split In Batches
+**Config:**
 - Batch Size: 1
 
+---
+
 #### Node 4: Fetch RSS Feed
+
 **Type:** HTTP Request
-**Configuration:**
+**Config:**
 - Method: GET
 - URL: `{{ $json.url }}`
-- Response Format: String (we'll parse XML next)
-- Timeout: 30000 (30 seconds)
-- Options:
-  - Redirect: Follow All
-  - User-Agent: Custom (e.g., "Mozilla/5.0 Content Bot")
+- Response Format: text
+- Timeout: 30000ms
+- Continue On Fail: true
+- Headers:
+  - User-Agent: `Mozilla/5.0 (compatible; XavierFuentes.com RSS Reader)`
 
-**Error Handling:**
-- On Error: Continue
-- Log: "Failed to fetch {{ $json.name }}: {{ $error.message }}"
+---
 
 #### Node 5: Parse RSS/Atom XML
-**Type:** XML
-**Configuration:**
-- Mode: XML to JSON
-- Property Name: `data` (from HTTP response body)
-- Options:
-  - Normalize: true
-  - Trim: true
-  - Explicit Array: false
 
-**Output Path:** Feed items will be in `rss.channel.item` or `feed.entry` depending on format
+**Type:** XML
+**Config:**
+- Mode: XML to JSON
+
+---
 
 #### Node 6: Extract Items
+
 **Type:** Code (JavaScript)
-**Configuration:**
 
 ```javascript
-// Handle both RSS and Atom formats
-const inputData = items[0].json.data;
+// Extract items from RSS 2.0 or Atom feed
+const data = items[0].json.data;
+const sourceInfo = items[0].json;
 
 let feedItems = [];
 
-// RSS 2.0 format
-if (inputData.rss && inputData.rss.channel && inputData.rss.channel.item) {
-  feedItems = Array.isArray(inputData.rss.channel.item)
-    ? inputData.rss.channel.item
-    : [inputData.rss.channel.item];
+// Try RSS 2.0 format
+if (data.rss && data.rss.channel && data.rss.channel.item) {
+  const rssItems = Array.isArray(data.rss.channel.item)
+    ? data.rss.channel.item
+    : [data.rss.channel.item];
+
+  feedItems = rssItems.map(item => ({
+    title: item.title,
+    url: item.link,
+    guid: item.guid && typeof item.guid === 'object'
+      ? item.guid._
+      : (item.guid || item.link),
+    description: item.description || item['content:encoded'] || '',
+    source_name: sourceInfo.name,
+    content_pillar: sourceInfo.content_pillar,
+    source_priority: sourceInfo.priority
+  }));
 }
-// Atom format
-else if (inputData.feed && inputData.feed.entry) {
-  feedItems = Array.isArray(inputData.feed.entry)
-    ? inputData.feed.entry
-    : [inputData.feed.entry];
+// Try Atom format
+else if (data.feed && data.feed.entry) {
+  const atomEntries = Array.isArray(data.feed.entry)
+    ? data.feed.entry
+    : [data.feed.entry];
+
+  feedItems = atomEntries.map(entry => {
+    const link = Array.isArray(entry.link)
+      ? entry.link.find(l => l.$.rel === 'alternate' || !l.$.rel)?.$.href
+        || entry.link[0].$.href
+      : entry.link?.$.href || '';
+
+    return {
+      title: entry.title,
+      url: link,
+      guid: entry.id || link,
+      description: entry.summary || entry.content?.$?._ || entry.content || '',
+      source_name: sourceInfo.name,
+      content_pillar: sourceInfo.content_pillar,
+      source_priority: sourceInfo.priority
+    };
+  });
 }
 
-// Get source info from parent loop
-const sourceName = items[0].json.name;
-const contentPillar = items[0].json.content_pillar;
-
-// Transform to standard format
-const output = feedItems.map(item => {
-  // Extract fields (RSS vs Atom)
-  const title = item.title?.[0] || item.title || '';
-  const link = item.link?.[0]?._ || item.link?.[0] || item.link?.href || '';
-  const guid = item.guid?.[0]?._ || item.guid?.[0] || item.id?.[0] || link;
-  const description = item.description?.[0] || item.summary?.[0]?._ || item.content?.[0]?._ || '';
-  const pubDate = item.pubDate?.[0] || item.published?.[0] || new Date().toISOString();
-
-  return {
-    guid: guid,
-    title: title,
-    url: link,
-    source_name: sourceName,
-    content_pillar: contentPillar,
-    description: description.substring(0, 1000), // Limit length
-    pub_date: pubDate
-  };
-});
-
-return output.map(item => ({ json: item }));
+// Return items (limit to 10 most recent per feed)
+return feedItems.slice(0, 10).map(item => ({ json: item }));
 ```
+
+---
 
 #### Node 7: Loop Through Articles
-**Type:** Loop Over Items
-**Configuration:**
-- Input Mode: For Each Item
+
+**Type:** Split In Batches
+**Config:**
 - Batch Size: 1
 
-#### Node 8: Check If Exists
-**Type:** n8n Data Tables → Read
-**Configuration:**
-- Table: `content_pipeline`
-- Operation: Get Many
-- Filters:
-  - `guid` = `{{ $json.guid }}`
-- Return All: false (only need to know if exists)
+---
 
-**Output:** Array of matching items (empty if new)
+#### Node 8: Check If Exists
+
+**Type:** n8n Data Tables → Read
+**Config:**
+- Table: `research_items`
+- Operation: Get Many
+- Return All: false
+- Limit: 1
+- Filters: `guid = {{ $json.guid }}`
+
+---
 
 #### Node 9: Is New Article?
+
 **Type:** IF
-**Configuration:**
-- Conditions:
-  - Value 1: `{{ $("Check If Exists").item.json.length }}`
-  - Operation: Is Equal
-  - Value 2: `0`
+**Config:**
+- Condition: `{{ $json.length || 0 }} = 0`
 
-**True Branch:** Article is new, proceed to score
-**False Branch:** Article exists, skip
+True = new article, proceed to score
+False = exists, skip
 
-#### Node 10: Score Article (AI)
-**Type:** OpenAI / Anthropic Chat Model
-**Configuration:**
-- Model: gpt-4o-mini (cost-effective for scoring) or claude-3-5-haiku
-- Temperature: 0.3 (consistent scoring)
-- Max Tokens: 500
+---
 
-**System Prompt:**
+#### Node 10: Score Article
+
+**Type:** OpenAI Chat
+**Config:**
+- Model: gpt-4o-mini (cost-effective)
+- Temperature: 0.2
+- Max Tokens: 100
+
+**System Message:**
 ```
-You are an expert content curator for a fractional CTO's thought leadership platform.
+You are scoring RSS articles for a fractional CTO's research pipeline.
 
-Audience: CTOs, Engineering Managers, Tech Leaders, Product Managers, Founders
+Target audience: CTOs, Engineering Managers, Tech Leaders, Product Managers, Founders
 
-Content Pillars (with target percentages):
-- Technology Strategy: 30%
-- Leadership & Management: 25%
-- Execution & Delivery: 20%
-- Founder Lessons: 15%
-- Market & AI Trends: 10%
+Score this article on a scale of 1-10 based on:
+- RELEVANCE: How relevant to tech leadership challenges?
+- ACTIONABILITY: Does it offer practical frameworks or advice?
+- DEPTH: Does it go beyond surface-level observations?
 
-Score the following article on a composite quality scale (1-10) considering:
-
-1. RELEVANCE: How relevant is this to our target audience?
-   - High: Directly addresses CTO/tech leader challenges
-   - Medium: Relevant to tech leadership, may need adaptation
-   - Low: Tangential or off-topic
-
-2. ACTIONABILITY: How practical and actionable is this content?
-   - High: Specific frameworks, templates, step-by-step guides
-   - Medium: Some practical advice, partly conceptual
-   - Low: Abstract theory, no clear actions
-
-3. DEPTH: How deep is the technical/strategic analysis?
-   - High: Deep expertise, nuanced trade-offs, advanced concepts
-   - Medium: Surface-level but useful
-   - Low: Shallow or generic advice
-
-Provide a single quality score (1-10) that balances all three factors.
-
-Return ONLY a JSON object:
-{
-  "quality_score": 8.5,
-  "reasoning": "Brief explanation (1-2 sentences)"
-}
+Return ONLY valid JSON:
+{"score": 7.5, "reason": "Brief 1-sentence explanation"}
 ```
 
-**User Prompt:**
+**User Message:**
 ```
+Article:
 Title: {{ $json.title }}
-Source: {{ $json.source_name }}
-Content Pillar: {{ $json.content_pillar }}
-URL: {{ $json.url }}
-Description: {{ $json.description }}
-
-Provide your scoring in JSON format.
+Source: {{ $json.source_name }} ({{ $json.source_priority }} priority)
+Pillar: {{ $json.content_pillar }}
+Description: {{ $json.description.substring(0, 500) }}
 ```
 
-**Output:** Parse JSON response to extract scores
+---
 
-#### Node 11: Calculate Quality Score
+#### Node 11: Prepare Research Item
+
 **Type:** Code (JavaScript)
-**Configuration:**
 
 ```javascript
 const item = items[0].json;
 
 // Extract score from AI response
-let aiResponse;
+let score = 5.0;
+let reason = '';
+
 try {
-  aiResponse = typeof item.ai_response === 'string'
-    ? JSON.parse(item.ai_response)
-    : item.ai_response;
-} catch (error) {
-  // Fallback if JSON parsing fails
-  aiResponse = {
-    quality_score: 5.0,
-    reasoning: 'Default score due to parsing error'
-  };
+  const responseText = item.message?.content || item.text || '{}';
+  const parsed = JSON.parse(responseText);
+  score = parseFloat(parsed.score) || 5.0;
+  reason = parsed.reason || '';
+} catch (e) {
+  reason = 'Scoring failed - default score applied';
 }
 
-// Generate UUID for new item
-const { v4: uuidv4 } = require('uuid');
-const id = uuidv4();
+// Generate UUID
+const crypto = require('crypto');
+const id = crypto.randomUUID();
+
+// Today's date
+const today = new Date().toISOString().split('T')[0];
 
 return [{
   json: {
@@ -289,953 +267,416 @@ return [{
     url: item.url,
     source_name: item.source_name,
     content_pillar: item.content_pillar,
-    description: item.description,
-    quality_score: parseFloat(aiResponse.quality_score),
-    status: 'research',
-    target_channel: null,
-    word_count_target: null,
-    created_date: new Date().toISOString().split('T')[0],
-    github_path: null,
-    github_commit_url: null,
-    notes: aiResponse.reasoning
-  }
-}];
-```
-
-#### Node 12: Insert Into Pipeline
-**Type:** n8n Data Tables → Insert
-**Configuration:**
-- Table: `content_pipeline`
-- Columns: Map all fields from previous node
-- On Conflict: Skip (if guid already exists somehow)
-
-#### Node 13: Send Summary Email
-**Type:** Email (or Slack/Discord notification)
-**Configuration:**
-- To: Your email
-- Subject: `RSS Feed Update - {{ $now.format('YYYY-MM-DD HH:mm') }}`
-- Body:
-
-```
-New articles added to content pipeline:
-
-{{ $json.items_added }} new items
-
-Top 5 by quality score:
-{{ $json.top_5_list }}
-
-Total active research items: {{ $json.total_research }}
-
-View in n8n Data Tables: [link to n8n]
-```
-
-**Aggregation Logic (Code node before email):**
-```javascript
-// Count items added in this run
-const allItems = $('Insert Into Pipeline').all();
-const itemsAdded = allItems.length;
-
-// Get top 5 by quality score
-const sorted = allItems.sort((a, b) => b.json.quality_score - a.json.quality_score);
-const top5 = sorted.slice(0, 5);
-
-const top5List = top5.map((item, i) =>
-  `${i+1}. ${item.json.title} (${item.json.quality_score}) - ${item.json.source_name}`
-).join('\n');
-
-// Query total research items (would need another Data Tables read node)
-// For now, just report new items
-
-return [{
-  json: {
-    items_added: itemsAdded,
-    top_5_list: top5List || 'None',
-    total_research: 'N/A' // Can add Data Tables query if needed
+    description: (item.description || '').substring(0, 500),
+    quality_score: score,
+    status: 'new',
+    created_date: today,
+    notes: reason,
+    idea_id: null
   }
 }];
 ```
 
 ---
 
-## Workflow 2: weekly_selection.json
+#### Node 12: Insert Research Item
+
+**Type:** n8n Data Tables → Create
+**Config:**
+- Table: `research_items`
+- Fields: Map all fields from previous node
+
+---
+
+## Workflow 2: Weekly Research Digest
 
 ### Purpose
-Run every Sunday to archive stale items, calculate weekly scores with content pillar balancing, and auto-select top 4-5 research items.
 
-### Trigger Schedule
-Cron: `0 9 * * 0` (Sunday 9 AM)
+Email the top research items from the past week for review. Mark included items as `reviewed`.
+
+### Trigger
+
+Cron: `0 9 * * 0` (Sunday 9am London time)
 
 ### Workflow Diagram
+
 ```
-Schedule Trigger
-  ↓
-Archive Stale Items (Data Tables Update)
-  ↓
-Get Research Items (Data Tables Read)
-  ↓
-Calculate Weekly Scores (Code)
-  ↓
-Select Top 4-5 (Code)
-  ↓
-Update Status to Selected (Data Tables Update Loop)
-  ↓
-Send Summary Email
+Sunday 9am Trigger
+       ↓
+Get New Research Items
+       ↓
+Build Digest Email (Code)
+       ↓
+Send Digest Email ─────────────────┐
+       ↓                           │
+Get Item IDs (Code)                │
+       ↓                           │
+Loop Items                         │
+       ↓                           │
+Mark as Reviewed                   │
+                                   │
+                        ◄──────────┘
 ```
 
 ### Node Specifications
 
-#### Node 1: Schedule Trigger
+#### Node 1: Sunday 9am Trigger
+
 **Type:** Schedule Trigger
-**Configuration:**
+**Config:**
 - Mode: Cron
 - Expression: `0 9 * * 0`
 - Timezone: Europe/London
 
-#### Node 2: Archive Stale Items
-**Type:** Code (JavaScript) + Data Tables Update
-**Configuration:**
+---
 
-First, get stale items:
+#### Node 2: Get New Research Items
 
-**Sub-Node 2a: Get Stale Items**
 **Type:** n8n Data Tables → Read
-**Configuration:**
-- Table: `content_pipeline`
+**Config:**
+- Table: `research_items`
 - Operation: Get Many
-- Filters (use Expression):
-  - `status` = `research`
-  - AND (`created_date` < 45 days ago OR `quality_score` < 5)
+- Return All: true
+- Filters: `status = 'new'`
+- Sort: `quality_score DESC`
 
-Expression for date:
-```javascript
-{{ $now.minus(45, 'days').format('YYYY-MM-DD') }}
-```
+---
 
-**Sub-Node 2b: Update to Archived**
-**Type:** n8n Data Tables → Update (in loop)
-**Configuration:**
-- Table: `content_pipeline`
-- Operation: Update
-- Match By: `id`
-- Fields to Update:
-  - `status` = `archived`
+#### Node 3: Build Digest Email
 
-#### Node 3: Get Research Items
-**Type:** n8n Data Tables → Read
-**Configuration:**
-- Table: `content_pipeline`
-- Operation: Get Many
-- Filters:
-  - `status` = `research`
-  - `created_date` >= 45 days ago (use expression: `{{ $now.minus(45, 'days').format('YYYY-MM-DD') }}`)
-- Sort:
-  - Field: `quality_score`
-  - Direction: DESC
-
-#### Node 4: Calculate Weekly Scores
 **Type:** Code (JavaScript)
-**Configuration:**
 
 ```javascript
-// Get all research items
-const items = $input.all().map(item => item.json);
+// Get all new research items
+const allItems = items.map(i => i.json);
 
-// Define content pillar targets (from CLAUDE.md)
-const pillarTargets = {
-  'Technology Strategy': 0.30,
-  'Leadership & Management': 0.25,
-  'Execution & Delivery': 0.20,
-  'Founder Lessons': 0.15,
-  'Market & AI Trends': 0.10
-};
+// Filter to items from the last 7 days
+const sevenDaysAgo = new Date();
+sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+const sevenDaysAgoStr = sevenDaysAgo.toISOString().split('T')[0];
 
-// Get current week's already-selected items (would need another query)
-// For now, use simple logic: boost under-represented pillars
+const recentItems = allItems.filter(item =>
+  item.created_date >= sevenDaysAgoStr
+);
 
-// Count items by pillar
-const pillarCounts = {};
-for (const item of items) {
-  const pillar = item.content_pillar;
-  pillarCounts[pillar] = (pillarCounts[pillar] || 0) + 1;
+// Take top 15 by quality score
+const topItems = recentItems
+  .sort((a, b) => (b.quality_score || 0) - (a.quality_score || 0))
+  .slice(0, 15);
+
+// Group by content pillar
+const byPillar = {};
+topItems.forEach(item => {
+  const pillar = item.content_pillar || 'Uncategorised';
+  if (!byPillar[pillar]) byPillar[pillar] = [];
+  byPillar[pillar].push(item);
+});
+
+// Build email content
+let emailBody = `# Weekly Research Digest\n\n`;
+emailBody += `**${topItems.length} top research items** from the past week.\n\n`;
+emailBody += `Review these and use \`idea-builder\` agent to promote promising items.\n\n`;
+emailBody += `---\n\n`;
+
+for (const [pillar, pillarItems] of Object.entries(byPillar)) {
+  emailBody += `## ${pillar}\n\n`;
+  pillarItems.forEach((item, i) => {
+    emailBody += `### ${i + 1}. ${item.title}\n`;
+    emailBody += `- **Score:** ${item.quality_score}/10\n`;
+    emailBody += `- **Source:** ${item.source_name}\n`;
+    emailBody += `- **URL:** ${item.url}\n`;
+    if (item.notes) emailBody += `- **AI Notes:** ${item.notes}\n`;
+    emailBody += `\n`;
+  });
 }
 
-// Calculate total items
-const totalItems = items.length;
-
-// Score each item with pillar balancing
-const scoredItems = items.map(item => {
-  let score = item.quality_score;
-
-  // Current pillar percentage
-  const currentPct = (pillarCounts[item.content_pillar] || 0) / totalItems;
-  const targetPct = pillarTargets[item.content_pillar] || 0.10;
-
-  // Boost if under-represented
-  if (currentPct < targetPct) {
-    const boost = (targetPct - currentPct) * 10; // Up to +1.0 boost
-    score += boost;
-  }
-
-  // Recency boost (newer is better)
-  const daysOld = Math.floor(
-    (new Date() - new Date(item.created_date)) / (1000 * 60 * 60 * 24)
-  );
-  if (daysOld < 7) score += 0.5;
-  if (daysOld < 3) score += 0.5;
-
-  // Priority boost (from source)
-  // Would need to join with rss_sources, for now skip
-
-  return {
-    ...item,
-    adjusted_score: score.toFixed(2)
-  };
-});
-
-// Sort by adjusted score
-scoredItems.sort((a, b) => b.adjusted_score - a.adjusted_score);
-
-return scoredItems.map(item => ({ json: item }));
-```
-
-#### Node 5: Select Top 4-5
-**Type:** Code (JavaScript)
-**Configuration:**
-
-```javascript
-const items = $input.all().map(item => item.json);
-
-// Select top 4-5 (use 5 to give user choice)
-const selected = items.slice(0, 5);
-
-return selected.map(item => ({ json: item }));
-```
-
-#### Node 6: Loop and Update Status
-**Type:** Loop Over Items + Data Tables Update
-
-**Loop Configuration:**
-- Input Mode: For Each Item
-- Batch Size: 1
-
-**Update Node:**
-**Type:** n8n Data Tables → Update
-**Configuration:**
-- Table: `content_pipeline`
-- Match By: `id` = `{{ $json.id }}`
-- Fields to Update:
-  - `status` = `selected`
-
-#### Node 7: Send Summary Email
-**Type:** Email
-**Configuration:**
-- To: Your email
-- Subject: `Weekly Content Selection - {{ $now.format('YYYY-MM-DD') }}`
-- Body:
-
-```
-Weekly content curation complete.
-
-SELECTED ITEMS (5):
-
-{{ $json.selected_list }}
-
-ACTION REQUIRED:
-1. Review selected items in n8n Data Tables
-2. Set target_channel for each:
-   - blog (2/month target)
-   - linkedin-original (10-11/month target)
-   - newsletter (variable)
-3. Trigger content generation workflow
-
-CONTENT PILLAR BALANCE:
-{{ $json.pillar_summary }}
-
-View items: [link to n8n Data Tables]
-```
-
-**Aggregation Logic (Code node before email):**
-```javascript
-const selected = $('Select Top 4-5').all();
-
-const selectedList = selected.map((item, i) =>
-  `${i+1}. [Score: ${item.json.adjusted_score}] ${item.json.title}
-     Pillar: ${item.json.content_pillar}
-     Source: ${item.json.source_name}
-     Quality: ${item.json.quality_score}/10
-     URL: ${item.json.url}
-  `
-).join('\n\n');
-
-// Count by pillar
-const pillarCounts = {};
-selected.forEach(item => {
-  const pillar = item.json.content_pillar;
-  pillarCounts[pillar] = (pillarCounts[pillar] || 0) + 1;
-});
-
-const pillarSummary = Object.entries(pillarCounts)
-  .map(([pillar, count]) => `${pillar}: ${count}`)
-  .join('\n');
+emailBody += `---\n\n`;
+emailBody += `*To promote an item, use: "Create an idea from this research: [URL]"*\n`;
 
 return [{
   json: {
-    selected_list: selectedList,
-    pillar_summary: pillarSummary
+    subject: `Weekly Research Digest - ${new Date().toISOString().split('T')[0]}`,
+    body: emailBody,
+    item_count: topItems.length,
+    items: topItems
   }
 }];
 ```
 
 ---
 
-## Workflow 3: content_generation.json
+#### Node 4: Send Digest Email
+
+**Type:** Email Send
+**Config:**
+- To: `{{ $env.DIGEST_EMAIL }}`
+- Subject: `{{ $json.subject }}`
+- Message: `{{ $json.body }}`
+
+---
+
+#### Node 5: Get Item IDs
+
+**Type:** Code (JavaScript)
+
+```javascript
+// Get IDs of items included in digest
+const digestItems = $('Build Digest Email').first().json.items;
+return digestItems.map(item => ({ json: { id: item.id } }));
+```
+
+---
+
+#### Node 6: Loop Items
+
+**Type:** Split In Batches
+**Config:**
+- Batch Size: 1
+
+---
+
+#### Node 7: Mark as Reviewed
+
+**Type:** n8n Data Tables → Update
+**Config:**
+- Table: `research_items`
+- Match By: `id = {{ $json.id }}`
+- Fields: `status = 'reviewed'`
+
+---
+
+## Workflow 3: Pipeline Maintenance
 
 ### Purpose
-Generate AI content drafts for selected items with target_channel set, validate quality, and commit to GitHub.
 
-### Trigger Options
-- Manual trigger (user initiates after setting target_channel)
-- OR Scheduled: Daily 10 AM check for new items
+Archive stale items and export active research for Claude to query.
+
+### Trigger
+
+Cron: `0 10 * * 0` (Sunday 10am London time, after digest)
 
 ### Workflow Diagram
+
 ```
-Trigger (Manual or Schedule)
-  ↓
-Get Selected Items with Target Channel (Data Tables)
-  ↓
-Loop: For Each Item
-  ↓
-  Fetch Source Article (HTTP Request)
-  ↓
-  Extract Content (HTML → Text)
-  ↓
-  AI Content Generation (LLM)
-  ↓
-  Quality Gates Validation (Code)
-  ↓
-  IF: Quality Gates Pass?
-    ↓ YES
-    Generate Slug (Code)
-    ↓
-    Check GitHub Duplicate (GitHub API)
-    ↓
-    Prepare Markdown (Code)
-    ↓
-    Route to Directory (Code)
-    ↓
-    Commit to GitHub (GitHub API)
-    ↓
-    Update Pipeline Record (Data Tables)
-  ↓
-Send Notification Email
+Sunday 10am Trigger
+       │
+       ├───────────────────────────┐
+       ↓                           ↓
+Get All Active Items         Get All for Export
+       ↓                           ↓
+Find Items to Archive (Code)  Prepare Export (Code)
+       ↓                           ↓
+Loop Items                   [Optional: Export to GitHub]
+       ↓
+Archive Item
+       ↓
+Summarise (Code)
 ```
 
 ### Node Specifications
 
-#### Node 1: Get Selected Items
+#### Node 1: Sunday 10am Trigger
+
+**Type:** Schedule Trigger
+**Config:**
+- Mode: Cron
+- Expression: `0 10 * * 0`
+- Timezone: Europe/London
+
+---
+
+#### Node 2: Get All Active Items
+
 **Type:** n8n Data Tables → Read
-**Configuration:**
-- Table: `content_pipeline`
+**Config:**
+- Table: `research_items`
 - Operation: Get Many
-- Filters:
-  - `status` = `selected`
-  - `target_channel` IS NOT NULL
-
-#### Node 2: Loop Through Items
-**Type:** Loop Over Items
-**Configuration:**
-- Input Mode: For Each Item
-- Batch Size: 1
-
-#### Node 2.5: Split Channels (NEW)
-**Type:** Code (JavaScript)
-**Configuration:**
-
-```javascript
-// Split comma-separated channels into separate items
-const item = items[0].json;
-const channels = item.target_channel
-  ? item.target_channel.split(',').map(c => c.trim())
-  : [];
-
-// Create one item per channel
-const output = channels.map(channel => ({
-  json: {
-    ...item,
-    current_channel: channel, // Which channel this iteration is for
-    all_channels: item.target_channel, // Original multi-channel value
-    word_count_target: getWordCountForChannel(channel, item.word_count_target)
-  }
-}));
-
-// Helper function for word count
-function getWordCountForChannel(channel, userDefined) {
-  if (userDefined) return userDefined;
-
-  // Defaults if not specified
-  const defaults = {
-    'blog': 2000,
-    'linkedin': 600,
-    'newsletter': 500
-  };
-  return defaults[channel] || 2000;
-}
-
-return output;
-```
-
-**Output:** If `target_channel = "blog,linkedin"`, creates 2 items (one for blog, one for linkedin)
-
-#### Node 3: Loop Through Channels (NEW)
-**Type:** Loop Over Items
-**Configuration:**
-- Input Mode: For Each Item
-- Batch Size: 1
-
-#### Node 4: Fetch Source Article
-**Type:** HTTP Request
-**Configuration:**
-- Method: GET
-- URL: `{{ $json.url }}`
-- Response Format: String
-- Timeout: 30000
-
-#### Node 5: Extract Content (HTML → Text)
-**Type:** HTML Extract
-**Configuration:**
-- Mode: HTML → Text
-- Selector: `article, .post-content, .entry-content, main` (try common selectors)
-- Extract: Text Content
-
-**Alternative: Code node with cheerio**
-```javascript
-const cheerio = require('cheerio');
-const html = items[0].binary.data.toString();
-const $ = cheerio.load(html);
-
-// Try common content selectors
-let content = '';
-const selectors = ['article', '.post-content', '.entry-content', 'main', 'body'];
-
-for (const selector of selectors) {
-  content = $(selector).text().trim();
-  if (content.length > 500) break;
-}
-
-// Clean up whitespace
-content = content.replace(/\s+/g, ' ').substring(0, 10000); // Limit to 10k chars
-
-return [{
-  json: {
-    ...items[0].json,
-    source_content: content
-  }
-}];
-```
-
-#### Node 6: AI Content Generation
-**Type:** OpenAI / Anthropic Chat Model
-**Configuration:**
-- Model: gpt-4o or claude-3-5-sonnet
-- Temperature: 0.7 (creative but controlled)
-- Max Tokens: 4000
-
-**System Prompt:**
-```
-You are an expert content writer for Xavier Fuentes, a fractional CTO.
-
-Audience: CTOs, Engineering Managers, Tech Leaders, Product Managers, Founders
-
-Voice & Style:
-- UK English only (colour, optimise, realise, whilst, amongst)
-- Professional but personal tone
-- Direct and assertive (not arrogant)
-- Include specific examples and numbers
-- Personal failures and lessons learned
-- Contrarian opinions when appropriate
-- High technical depth with accessible explanations
-
-Content Requirements:
-- Pass "so what?" test - clear value for busy tech leaders
-- 80/20 value-to-promotion ratio
-- Specific frameworks and actionable advice
-- No generic corporate jargon or buzzwords
-
-Structure:
-- Hook (provocative question, bold statement, or failure story)
-- Context (why this matters now)
-- Framework/Analysis (specific methodology)
-- Case Study/Example (concrete application)
-- Implementation (how to apply)
-- Pitfalls (what to avoid)
-- Next Steps (clear CTA)
-
-Generate content based on the target channel and word count specified.
-```
-
-**User Prompt (dynamic based on current_channel):**
-```javascript
-// Build prompt dynamically
-const item = $json;
-const wordCount = item.word_count_target;
-const channel = item.current_channel; // Use current_channel from split
-
-let channelInstructions = '';
-if (channel === 'blog') {
-  channelInstructions = `
-Format: Long-form blog post (${wordCount} words)
-- SEO-optimised title and meta description
-- H2/H3 subheadings for structure
-- Code examples if relevant
-- Markdown format with frontmatter
-  `;
-} else if (channel === 'linkedin') {
-  channelInstructions = `
-Format: LinkedIn post (${wordCount} words, typically 200-800)
-- Short paragraphs (2-3 sentences max)
-- Strong hook in first 2 lines
-- Use line breaks for readability
-- End with engagement question
-- Markdown format with frontmatter
-  `;
-} else if (channel === 'newsletter') {
-  channelInstructions = `
-Format: Newsletter digest item (${wordCount} words, typically 400-600)
-- Conversational tone
-- Quick summary of key insight
-- Why it matters for CTOs
-- Markdown format with frontmatter
-  `;
-}
-
-const prompt = `
-Source Article: ${item.title}
-Source URL: ${item.url}
-Content Pillar: ${item.content_pillar}
-Target Channel: ${item.current_channel}
-Word Count Target: ${wordCount}
-
-${channelInstructions}
-
-Source Content Summary:
-${item.source_content.substring(0, 5000)}
-
-Generate the complete article in Markdown format with proper frontmatter:
+- Return All: true
+- Filters: `status != 'archived'`
 
 ---
-title: "Generated Title"
-slug: auto-generated-slug
-status: draft
-visibility: public
-featured: false
-content_pillar: ${item.content_pillar}
-meta_title: "SEO Title"
-meta_description: "SEO Description"
-tags:
-  - ${item.content_pillar}
-  - [additional tags]
-authors:
-  - xavier
----
 
-[Article content here]
-`;
+#### Node 3: Find Items to Archive
 
-return prompt;
-```
-
-**Output:** Full markdown content with frontmatter
-
-#### Node 7: Quality Gates Validation
 **Type:** Code (JavaScript)
-**Configuration:**
 
 ```javascript
-const content = items[0].json.ai_generated_content;
-const targetWordCount = items[0].json.word_count_target || 2000;
+// Find items to archive:
+// 1. Status 'new' or 'reviewed' AND older than 45 days
+// 2. Quality score < 5
+// 3. NOT linked to an idea
 
-// Split frontmatter and body
-const parts = content.split('---');
-const body = parts[2] || content;
+const allItems = items.map(i => i.json);
 
-// Quality gate checks
-const checks = {
-  uk_english: {
-    critical: true,
-    passed: !/(ize|ization|color|favor|analyze|optimize)\b/i.test(body)
-  },
-  word_count: {
-    critical: true,
-    passed: Math.abs(body.split(/\s+/).length - targetWordCount) <= (targetWordCount * 0.1)
-  },
-  specific_examples: {
-    moderate: true,
-    passed: /\d+/.test(body) && (body.match(/example|instance|case/gi) || []).length >= 2
-  },
-  call_to_action: {
-    minor: true,
-    passed: /(What|How|Share|Tell|Comment|Discuss)/i.test(body.split('\n').slice(-5).join('\n'))
-  },
-  no_buzzwords: {
-    moderate: true,
-    passed: !/(synergy|leverage|disrupt|paradigm shift|circle back)/i.test(body)
-  },
-  personal_insight: {
-    moderate: true,
-    passed: /(I|my|our|we)\s+(learned|discovered|found|realized)/i.test(body)
-  }
-};
+const fortyFiveDaysAgo = new Date();
+fortyFiveDaysAgo.setDate(fortyFiveDaysAgo.getDate() - 45);
+const cutoffDate = fortyFiveDaysAgo.toISOString().split('T')[0];
 
-// Count failures by severity
-let criticalFails = 0;
-let moderateFails = 0;
-let minorFails = 0;
+const toArchive = allItems.filter(item => {
+  // Don't archive items already promoted to ideas
+  if (item.idea_id) return false;
 
-for (const [check, result] of Object.entries(checks)) {
-  if (!result.passed) {
-    if (result.critical) criticalFails++;
-    else if (result.moderate) moderateFails++;
-    else minorFails++;
-  }
-}
+  // Archive low quality items
+  if ((item.quality_score || 0) < 5) return true;
 
-// Decision logic
-const blockCommit = criticalFails > 0;
-const flagForReview = moderateFails >= 3 || minorFails >= 5;
-const allPass = criticalFails === 0 && moderateFails === 0 && minorFails === 0;
-
-return [{
-  json: {
-    ...items[0].json,
-    quality_gates: {
-      checks: checks,
-      critical_fails: criticalFails,
-      moderate_fails: moderateFails,
-      minor_fails: minorFails,
-      block_commit: blockCommit,
-      flag_for_review: flagForReview,
-      all_pass: allPass
-    }
-  }
-}];
-```
-
-#### Node 8: IF Quality Gates Pass
-**Type:** IF
-**Configuration:**
-- Condition: `{{ !$json.quality_gates.block_commit }}`
-
-**True:** Proceed to GitHub
-**False:** Send failure email and stop
-
-#### Node 9: Generate Slug
-**Type:** Code (JavaScript)
-**Configuration:**
-
-```javascript
-const content = items[0].json.ai_generated_content;
-
-// Extract title from frontmatter
-const titleMatch = content.match(/title:\s*["'](.+?)["']/);
-const title = titleMatch ? titleMatch[1] : items[0].json.title;
-
-// Generate slug
-const slug = title
-  .toLowerCase()
-  .replace(/[^a-z0-9]+/g, '-')
-  .replace(/^-|-$/g, '');
-
-// Add channel suffix if multi-channel (to avoid filename conflicts)
-const channel = items[0].json.current_channel;
-const allChannels = items[0].json.all_channels;
-const isMultiChannel = allChannels && allChannels.includes(',');
-
-let finalSlug = slug;
-if (isMultiChannel && channel === 'linkedin') {
-  finalSlug = `${slug}-linkedin`;
-}
-
-return [{
-  json: {
-    ...items[0].json,
-    slug: finalSlug
-  }
-}];
-```
-
-#### Node 10: Check GitHub Duplicate
-**Type:** GitHub
-**Configuration:**
-- Operation: Get File
-- Owner: your-github-username
-- Repository: xavierfuentes.com
-- File Path: `content/drafts/{{ $json.slug }}.md` (dynamic based on channel)
-
-**On Error:** Continue (file doesn't exist, which is fine)
-
-#### Node 11: Prepare Markdown
-**Type:** Code (JavaScript)
-**Configuration:**
-
-```javascript
-const item = items[0].json;
-let markdown = item.ai_generated_content;
-
-// For LinkedIn posts, inject scheduled_date into frontmatter
-if (item.current_channel === 'linkedin' && item.scheduled_date) {
-  // Parse frontmatter
-  const parts = markdown.split('---');
-  if (parts.length >= 3) {
-    const frontmatter = parts[1];
-    const body = parts.slice(2).join('---');
-
-    // Add scheduled_date to frontmatter
-    const updatedFrontmatter = frontmatter + `\nscheduled_date: ${item.scheduled_date}`;
-    markdown = `---${updatedFrontmatter}---${body}`;
-  }
-}
-
-return [{
-  json: {
-    ...item,
-    markdown_content: markdown
-  }
-}];
-```
-
-#### Node 12: Route to Directory & Schedule LinkedIn
-**Type:** Code (JavaScript)
-**Configuration:**
-
-```javascript
-const item = items[0].json;
-const slug = item.slug;
-const channel = item.current_channel; // Use current_channel from split
-
-let directory;
-let filename = `${slug}.md`;
-let scheduledDate = null;
-
-if (channel === 'blog') {
-  directory = 'content/drafts';
-} else if (channel === 'linkedin') {
-  directory = 'content/linkedin';
-
-  // Auto-schedule to next available Tue/Wed/Thu
-  scheduledDate = getNextLinkedInSlot();
-} else if (channel === 'newsletter') {
-  directory = 'content/newsletter/items';
-} else {
-  directory = 'content/drafts'; // fallback
-}
-
-const filePath = `${directory}/${filename}`;
-
-// Helper: Get next available Tue/Wed/Thu slot
-function getNextLinkedInSlot() {
-  const today = new Date();
-  const daysOfWeek = [2, 3, 4]; // Tue=2, Wed=3, Thu=4
-
-  // Start from tomorrow
-  let checkDate = new Date(today);
-  checkDate.setDate(checkDate.getDate() + 1);
-
-  // Find next Tue/Wed/Thu
-  while (!daysOfWeek.includes(checkDate.getDay())) {
-    checkDate.setDate(checkDate.getDate() + 1);
+  // Archive old unprocessed items
+  if (['new', 'reviewed'].includes(item.status) && item.created_date < cutoffDate) {
+    return true;
   }
 
-  // Format as YYYY-MM-DD
-  return checkDate.toISOString().split('T')[0];
-}
-
-return [{
-  json: {
-    ...item,
-    github_file_path: filePath,
-    scheduled_date: scheduledDate
-  }
-}];
-```
-
-**Note:** This simple implementation assigns the next available Tue/Wed/Thu. For production, you may want to query existing scheduled posts to avoid double-booking.
-
-#### Node 13: Commit to GitHub
-**Type:** GitHub
-**Configuration:**
-- Operation: Create or Update File
-- Owner: your-github-username
-- Repository: xavierfuentes.com
-- File Path: `{{ $json.github_file_path }}`
-- Commit Message: `chore: add AI draft ({{ $json.current_channel }}) - {{ $json.title }}`
-- Content: `{{ $json.markdown_content }}`
-- Branch: main
-
-**Output:** Commit URL
-
-#### Node 14: Aggregate Multi-Channel Results (NEW)
-**Type:** Code (JavaScript)
-**Configuration:**
-
-```javascript
-// Collect all commits from multi-channel generation
-const allCommits = $('Commit to GitHub').all();
-
-// Group by pipeline item ID
-const grouped = {};
-allCommits.forEach(commit => {
-  const id = commit.json.id;
-  if (!grouped[id]) {
-    grouped[id] = {
-      id: id,
-      title: commit.json.title,
-      all_channels: commit.json.all_channels,
-      commits: []
-    };
-  }
-  grouped[id].commits.push({
-    channel: commit.json.current_channel,
-    path: commit.json.github_file_path,
-    url: commit.json.commit_url
-  });
+  return false;
 });
 
-// Convert to array
-return Object.values(grouped).map(item => ({ json: item }));
+return toArchive.map(item => ({ json: item }));
 ```
 
-#### Node 15: Update Pipeline Record
-**Type:** Loop Over Items + Data Tables Update
-**Configuration:**
+---
 
-**Loop:**
-- Input Mode: For Each Item
+#### Node 4: Loop Items
+
+**Type:** Split In Batches
+**Config:**
 - Batch Size: 1
 
-**Update Node:**
-- Table: `content_pipeline`
-- Match By: `id` = `{{ $json.id }}`
-- Fields to Update:
-  - `status` = `generated`
-  - `github_path` = Comma-separated paths: `{{ $json.commits.map(c => c.path).join(',') }}`
-  - `github_commit_url` = First commit URL: `{{ $json.commits[0].url }}`
-  - `notes` = Append: `Generated for channels: {{ $json.all_channels }}`
+---
 
-#### Node 16: Send Notification Email
-**Type:** Email
-**Configuration:**
-- To: Your email
-- Subject: `Content Generated - {{ $json.title }}`
-- Body:
+#### Node 5: Archive Item
 
-```
-New AI draft ready for review:
+**Type:** n8n Data Tables → Update
+**Config:**
+- Table: `research_items`
+- Match By: `id = {{ $json.id }}`
+- Fields: `status = 'archived'`
 
-Title: {{ $json.title }}
-Channel: {{ $json.target_channel }}
-Word Count: {{ $json.word_count }}
+---
 
-Quality Gates:
-{{ $json.quality_summary }}
+#### Node 6: Get All for Export
 
-GitHub: {{ $json.github_commit_url }}
-File: {{ $json.github_file_path }}
+**Type:** n8n Data Tables → Read
+**Config:**
+- Table: `research_items`
+- Operation: Get Many
+- Return All: true
 
-Next Steps:
-1. Review and edit draft
-2. Update frontmatter status to 'published'
-3. Run: npm run publish
-4. Move to content/posts/ with dated filename
+---
+
+#### Node 7: Prepare Export
+
+**Type:** Code (JavaScript)
+
+```javascript
+// Export research items to JSON for Claude to read
+const allItems = items.map(i => i.json);
+
+// Only include active items (not archived)
+const activeItems = allItems.filter(i => i.status !== 'archived');
+
+// Sort by quality score
+activeItems.sort((a, b) => (b.quality_score || 0) - (a.quality_score || 0));
+
+const exportData = {
+  generated_at: new Date().toISOString(),
+  total_count: activeItems.length,
+  by_status: {
+    new: activeItems.filter(i => i.status === 'new').length,
+    reviewed: activeItems.filter(i => i.status === 'reviewed').length,
+    promoted: activeItems.filter(i => i.idea_id).length
+  },
+  by_pillar: {},
+  items: activeItems.map(item => ({
+    id: item.id,
+    title: item.title,
+    url: item.url,
+    source_name: item.source_name,
+    content_pillar: item.content_pillar,
+    quality_score: item.quality_score,
+    status: item.status,
+    created_date: item.created_date,
+    notes: item.notes,
+    idea_id: item.idea_id
+  }))
+};
+
+// Count by pillar
+activeItems.forEach(item => {
+  const pillar = item.content_pillar || 'Uncategorised';
+  exportData.by_pillar[pillar] = (exportData.by_pillar[pillar] || 0) + 1;
+});
+
+return [{ json: exportData }];
 ```
 
 ---
 
-## Common Code Snippets
+#### Node 8: Export to GitHub (Optional)
 
-### Generate UUID
-```javascript
-const { v4: uuidv4 } = require('uuid');
-const id = uuidv4();
-```
+**Type:** GitHub → Create/Update File
+**Config:**
+- Repository: xavierfuentes.com
+- Path: `automation/research_items.json`
+- Content: `{{ JSON.stringify($json, null, 2) }}`
+- Message: `chore: update research items export`
 
-### Date Formatting
+**Note:** This node is disabled by default. Enable if you want Claude to be able to read current research items.
+
+---
+
+## Common Patterns
+
+### Error Handling
+
+All HTTP requests should have `continueOnFail: true` to prevent one bad feed from stopping the entire workflow.
+
+### Date Handling
+
 ```javascript
-// Current date YYYY-MM-DD
+// Today's date in YYYY-MM-DD
 const today = new Date().toISOString().split('T')[0];
 
-// 45 days ago
-const cutoffDate = new Date();
-cutoffDate.setDate(cutoffDate.getDate() - 45);
-const cutoff = cutoffDate.toISOString().split('T')[0];
+// N days ago
+const nDaysAgo = new Date();
+nDaysAgo.setDate(nDaysAgo.getDate() - N);
+const cutoff = nDaysAgo.toISOString().split('T')[0];
 ```
 
-### Parse Frontmatter
+### UUID Generation
+
 ```javascript
-const parts = markdown.split('---\n');
-const frontmatterYaml = parts[1];
-const body = parts.slice(2).join('---\n');
+const crypto = require('crypto');
+const id = crypto.randomUUID();
 ```
-
-### Word Count
-```javascript
-const wordCount = text.split(/\s+/).filter(w => w.length > 0).length;
-```
-
----
-
-## Error Handling
-
-### HTTP Request Failures
-- Always use "Continue On Fail" option
-- Log errors to n8n console
-- Send error summary email at end of workflow
-
-### AI API Failures
-- Implement retry logic (3 attempts)
-- Fallback to default scores if scoring fails
-- Log errors and flag items for manual review
-
-### GitHub API Failures
-- Check for authentication errors (token expired)
-- Handle rate limiting (wait and retry)
-- Send notification email if commit fails
 
 ---
 
 ## Testing Checklist
 
-### rss_to_pipeline.json
+### RSS to Research
+
 - [ ] Triggers hourly
-- [ ] Fetches all active feeds
-- [ ] Handles both RSS and Atom formats
+- [ ] Fetches all active RSS sources
+- [ ] Handles both RSS 2.0 and Atom formats
 - [ ] Checks for duplicates by GUID
 - [ ] Scores articles with AI
-- [ ] Inserts new items into content_pipeline
-- [ ] Sends summary email
+- [ ] Inserts with status `new`
 
-### weekly_selection.json
-- [ ] Triggers Sunday 9 AM
-- [ ] Archives items >45 days or quality <5
-- [ ] Calculates pillar-balanced scores
-- [ ] Selects top 4-5 items
-- [ ] Updates status to 'selected'
-- [ ] Sends selection email
+### Weekly Research Digest
 
-### content_generation.json
-- [ ] Gets items with target_channel set
-- [ ] Fetches source article content
-- [ ] Generates appropriate content for channel
-- [ ] Validates quality gates
-- [ ] Generates slug from title
-- [ ] Routes to correct directory
-- [ ] Commits to GitHub
-- [ ] Updates pipeline record
-- [ ] Sends notification email
+- [ ] Triggers Sunday 9am London time
+- [ ] Gets items from last 7 days
+- [ ] Groups by pillar
+- [ ] Sends email with top 15
+- [ ] Marks included items as `reviewed`
+
+### Pipeline Maintenance
+
+- [ ] Triggers Sunday 10am London time
+- [ ] Archives items >45 days old
+- [ ] Archives items with score <5
+- [ ] Does not archive items with idea_id
+- [ ] Exports active items to JSON
 
 ---
 
-*For schema details, see `/automation/docs/data_table_schemas.md`.*
+*For table schemas, see `/automation/docs/data_table_schemas.md`*
 
-*For architecture overview, see `/automation/docs/workflow_architecture.md`.*
-
-*For quick start guide, see `/automation/docs/quick_start_guide.md`.*
+*For architecture overview, see `/automation/docs/workflow_architecture.md`*
