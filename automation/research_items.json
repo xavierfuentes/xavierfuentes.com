@@ -1,0 +1,12 @@
+{
+  "generated_at": "2024-12-24T00:00:00Z",
+  "total_count": 0,
+  "by_status": {
+    "new": 0,
+    "reviewed": 0,
+    "promoted": 0
+  },
+  "by_pillar": {},
+  "items": [],
+  "_note": "This file is updated weekly by the pipeline_maintenance n8n workflow. Claude agents can read this to query current research items."
+}
