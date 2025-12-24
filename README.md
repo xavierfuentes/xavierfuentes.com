@@ -2,7 +2,7 @@
 
 A GitHub-based content management system for my technical leadership blog at [xavierfuentes.com](https://xavierfuentes.com). This repository powers content creation and publishing using Ghost CMS with a developer-friendly Markdown workflow.
 
-> **About**: This blog serves as a professional showcase for recruiters, CTOs, tech leads, and senior engineers interested in technical leadership, career progression, and engineering insights.
+> **About**: A thought leadership platform targeting CTOs, Engineering Managers, Tech Leaders, Product Managers, and Founders interested in technology strategy, leadership, and execution.
 
 ## 🚀 Features
 
@@ -17,22 +17,35 @@ A GitHub-based content management system for my technical leadership blog at [xa
 - **✏️ Draft Support**: Keep drafts in separate folder that don't get published
 - **🔍 Update Detection**: Automatically update existing content when files are modified
 - **❌ Robust Error Handling**: Comprehensive error handling and logging
+- **🧠 Content OS**: Full content pipeline with ideas, drafts, and multi-channel projections
+- **🤖 Claude Code Integration**: AI-powered agents for drafting, projection, and editorial review
 
 ## 📁 Repository Structure
 
 ```
 /
 ├── content/
-│   ├── posts/           # Published posts
-│   ├── pages/           # Static pages  
-│   └── drafts/          # Draft content (not published)
+│   ├── ideas/           # Canonical idea files (source of truth)
+│   ├── drafts/          # Blog post drafts for Ghost preview
+│   ├── posts/           # Published Ghost posts
+│   ├── pages/           # Ghost pages (About, Work With Me)
+│   ├── linkedin/        # LinkedIn projections
+│   └── junglebrief/     # Newsletter issues
+├── .claude/
+│   ├── agents/          # Claude Code agents for content creation
+│   └── skills/          # Claude Code skills and commands
 ├── .github/
 │   └── workflows/       # GitHub Actions workflows
 ├── scripts/
 │   ├── publish.js       # Main publishing script
 │   └── validate.js      # Content validation script
+├── docs/
+│   ├── content_strategy.md
+│   ├── execution_strategy.md
+│   └── templates/       # Content templates
 ├── package.json         # Node.js dependencies
-└── README.md           # This file
+├── CLAUDE.md            # Claude Code instructions
+└── README.md            # This file
 ```
 
 ## 🛠️ Setup Instructions
@@ -84,39 +97,52 @@ A GitHub-based content management system for my technical leadership blog at [xa
 
 ## ✍️ Writing Content
 
+### Content OS Workflow (Recommended)
+
+The recommended way to create content is through the Content OS pipeline:
+
+1. **Capture idea** → Use `idea-builder` agent or create file in `content/ideas/`
+2. **Draft** → Use `drafting` agent to expand into canonical draft
+3. **Project** → Use `projection-blog` agent to create Ghost-ready post in `content/drafts/`
+4. **Publish** → Move to `content/posts/` and run `/publish`
+
+See `CLAUDE.md` for full workflow documentation.
+
 ### Post Structure
 
-Create `.md` files in `content/posts/` with the following frontmatter:
+Blog posts in `content/drafts/` or `content/posts/` use this frontmatter:
 
 ```yaml
 ---
+# Ghost Required
 title: Your Post Title                    # Required
 slug: your-post-slug                      # Required, URL-safe
-status: published                         # draft, published, scheduled
+status: draft                             # draft, published, scheduled
 visibility: public                        # public, members, paid
-featured: true                           # true/false
-meta_title: SEO Title                    # Optional SEO title
-meta_description: SEO description         # Optional SEO description
-feature_image: https://example.com/img.jpg # Optional featured image
-excerpt: Short excerpt for the post      # Optional custom excerpt
-tags:                                    # Optional tags array
+
+# Content OS Metadata (Recommended)
+idea_id: 2025-01-your-idea-slug          # Links to source idea
+pillar: technology-strategy               # Content pillar
+target_audience: founder_3_20_engineers   # Target persona
+target_outcome: inbound_leads             # Desired result
+
+# Ghost Optional
+featured: false
+meta_title: SEO Title
+meta_description: SEO description (150-160 chars)
+feature_image: https://example.com/img.jpg
+excerpt: Short excerpt for the post
+tags:
   - Technical Leadership
   - Engineering Management
-  - Career Progression
-authors:                                 # Optional authors array
+authors:
   - xavier
-created_at: 2024-01-01T00:00:00.000Z    # Optional creation date
-updated_at: 2024-01-01T12:00:00.000Z    # Optional update date
-published_at: 2024-01-01T12:00:00.000Z  # Optional publication date
+published_at: 2025-01-01T12:00:00.000Z
 ---
 
 # Your Post Content
 
 Write your post content here in **Markdown**.
-
-- Support for all standard Markdown features
-- Images, links, code blocks, etc.
-- HTML is also supported if needed
 ```
 
 ### Page Structure
@@ -125,9 +151,9 @@ Create `.md` files in `content/pages/` with similar frontmatter (pages don't sup
 
 ### Drafts
 
-- Place draft content in `content/drafts/` (any subdirectory)
-- Draft files won't be published automatically
-- Move to `content/posts/` or `content/pages/` when ready to publish
+- `content/drafts/` contains blog post drafts that sync to Ghost for preview
+- Drafts appear in Ghost Admin but are not publicly visible
+- To publish: move file to `content/posts/`, change `status: published`, run `/publish`
 
 ## 🤖 Automated Workflows
 
@@ -140,6 +166,8 @@ Create `.md` files in `content/pages/` with similar frontmatter (pages don't sup
 2. Publishes/updates content in Ghost
 3. Provides deployment summary
 
+**Manual publishing**: Run `/publish` command in Claude Code or `npm run publish` locally.
+
 ### Pull Request Validation
 
 **Trigger**: Pull request with changes in `content/`
@@ -148,6 +176,8 @@ Create `.md` files in `content/pages/` with similar frontmatter (pages don't sup
 1. Validates content changes
 2. Comments on PR with summary of what will be published
 3. Ensures content is ready before merge
+
+**Manual validation**: Run `/validate` command in Claude Code or `npm run validate` locally.
 
 ## 📋 Content Validation
 
@@ -190,9 +220,11 @@ Customize `.github/workflows/` files to:
 
 ### Organizing Content
 
-- Use descriptive filenames that match your slug
-- Group related content in subdirectories
-- Keep drafts organized in the drafts folder
+- **Ideas**: `content/ideas/YYYY-MM-slug.md` - Use date prefix for chronological ordering
+- **Drafts**: `content/drafts/YYYY-MM-slug.md` - Match the source idea's slug
+- **Posts**: `content/posts/YYYY-MM-slug.md` - Promoted from drafts when ready
+- **LinkedIn**: `content/linkedin/idea-id-linkedin.md` - One file per idea
+- **Newsletter**: `content/junglebrief/issue-XX.md` - Sequential issue numbers
 
 ### SEO Best Practices
 
@@ -200,6 +232,7 @@ Customize `.github/workflows/` files to:
 - Use descriptive, URL-safe slugs
 - Add relevant tags for content discovery
 - Include featured images for social sharing
+- Use `seo_keyword` in idea frontmatter for target keywords
 
 ### Collaboration Workflow
 
@@ -207,6 +240,46 @@ Customize `.github/workflows/` files to:
 2. **Add/edit content** in appropriate directories
 3. **Create pull request** to trigger validation
 4. **Review and merge** to publish automatically
+
+## 🤖 Claude Code Integration
+
+This repository includes a full Content OS powered by Claude Code agents, skills, and commands.
+
+### Agents (Creative Work)
+
+| Agent | Purpose |
+|-------|---------|
+| `idea-builder` | Capture new content ideas with proper structure |
+| `strategy` | Review idea backlog, enforce pillar distribution |
+| `drafting` | Expand ideas into canonical drafts |
+| `projection-blog` | Create Ghost blog posts from ideas |
+| `projection-linkedin` | Create LinkedIn posts from ideas |
+| `projection-junglebrief` | Assemble newsletter issues |
+| `editorial` | Review consistency and quality |
+
+### Commands (Operational Tasks)
+
+| Command | Purpose |
+|---------|---------|
+| `/publish` | Sync content to Ghost CMS |
+| `/validate` | Run frontmatter validation |
+| `/pipeline` | Show content status and pillar distribution |
+| `/promote [slug]` | Move draft to published |
+| `/weekly` | Generate Monday planning review |
+
+### Content Flow
+
+```
+Research → idea-builder → strategy → drafting → projection-* → editorial → /publish
+```
+
+### Configuration
+
+- **CLAUDE.md** - Main instructions for Claude Code
+- **.claude/agents/** - Agent definitions
+- **.claude/skills/content-os/** - Skill with commands and context files
+
+See `CLAUDE.md` for full documentation of the Content OS workflow.
 
 ## 🚨 Troubleshooting
 
@@ -235,18 +308,19 @@ Customize `.github/workflows/` files to:
 
 ## 👨‍💻 About
 
-**Xavier Fuentes** - Technical Leadership & Engineering Management  
-**Organization**: Mad Monkey Club  
-**Website**: [xavierfuentes.com](https://xavierfuentes.com)  
+**Xavier Fuentes** - Technology Strategy & Leadership
+**Website**: [xavierfuentes.com](https://xavierfuentes.com)
 **LinkedIn**: [linkedin.com/in/xavifuentes](https://www.linkedin.com/in/xavifuentes/)
+**Newsletter**: The Jungle Brief
 
-This blog focuses on:
-- 🎯 **Technical Leadership** - Leading engineering teams and technical strategy
-- 📈 **Career Progression** - Growing from engineer to tech lead to CTO
-- 🏗️ **Engineering Management** - Building scalable teams and processes
-- 💡 **Industry Insights** - Trends, tools, and best practices
+This blog focuses on five content pillars:
+- 🎯 **Technology Strategy** (30%) - Architecture, build-vs-buy, technical debt
+- 👥 **Leadership & Management** (25%) - Team building, culture, hiring
+- 🚀 **Execution & Delivery** (20%) - Shipping, estimation, processes
+- 💡 **Founder Lessons** (15%) - Personal stories, mistakes, lessons learned
+- 📈 **Market & AI Trends** (10%) - Industry observations, AI developments
 
-**Target Audience**: Recruiters, CEOs, CFOs, CTOs, Tech Leads, and Senior Engineers
+**Target Audience**: CTOs, Engineering Managers, Tech Leaders, Product Managers, and Founders
 
 ## 📄 License
 
