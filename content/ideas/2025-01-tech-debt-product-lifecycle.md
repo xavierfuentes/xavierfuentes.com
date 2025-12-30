@@ -69,6 +69,27 @@ This approach fails because:
 
 7. **Next Steps**: CTA to download a tech debt integration checklist; newsletter signup for ongoing engineering leadership insights
 
+## Editorial Notes
+
+### Voice & Angle Decisions
+- Strong opening: "We'll tackle tech debt next quarter" — universally relatable
+- "This is not my invention—it is a pattern I have seen repeatedly" — good credibility without arrogance
+- 15-20% rule is concrete and memorable
+- Framing as velocity protection (not engineering preference) is strategic
+
+### Case Study Opportunities
+- [NEEDED] A team that eliminated tech debt sprints — before/after metrics
+- [NEEDED] Personal experience: "I've been the engineering leader asking for health weeks. It didn't work."
+- Consider: velocity decay metrics, incident rate data to support claims
+
+### Feedback Log
+- 30/12/2024: Graded B+. Case study (lines 133-145 in idea) is another hypothetical "Consider a scenario..."
+- 30/12/2024: Slightly dry in the middle — "why the dichotomy fails" section needs energy
+- 30/12/2024: Missing natural warmth — add personal moment
+- 30/12/2024: Punch up the close
+
+---
+
 ## Canonical Notes
 
 - Target personas: CTOs and engineering managers at Series A-C startups/scaleups (50-300 engineers) who are feeling the pain of accumulated debt but struggling to get buy-in for dedicated remediation time

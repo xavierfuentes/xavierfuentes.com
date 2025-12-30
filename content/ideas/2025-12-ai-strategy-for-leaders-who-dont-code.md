@@ -82,6 +82,26 @@ Nothing exists in between: strategic AI literacy for leaders who need to evaluat
 - Requires email signup (newsletter growth)
 - Positions for coaching/fractional CTO follow-up
 
+## Editorial Notes
+
+### Voice & Angle Decisions
+- Best hook of the batch: "Welcome to the impossible position of the modern technology leader"
+- "Strategic AI literacy" framing is strong and differentiated
+- "Take the vendor's cost estimate and multiply by three" — specific, memorable, quotable
+- "AI theatre" concept is excellent — consider making this a signature term
+
+### Case Study Opportunities
+- [OPTIONAL] Brief vendor horror story if available — current example (line 168) is short enough
+- Consider: anonymised examples of AI decisions gone wrong/right
+
+### Feedback Log
+- 30/12/2024: Graded A. Nearly ready — light polish only
+- 30/12/2024: Case study brief and acceptable as hypothetical
+- 30/12/2024: Could lean harder into contrarian opinions
+- 30/12/2024: CTA (course sign-up) is soft — ensure course exists before publishing
+
+---
+
 ## Canonical Notes
 
 - Target persona: European CTO/VP Engineering, 50-500 person company, Series A-C, being asked to "do something with AI"

@@ -67,6 +67,27 @@ But most leadership transitions fail not from inaction, but from premature actio
 
 7. **Next Steps**: Download the First 90 Days as CTO Checklist — a structured approach to listening, learning, and earning the right to lead change.
 
+## Editorial Notes
+
+### Voice & Angle Decisions
+- Contrarian premise is strong: "advice optimised for consultants, not incoming leaders"
+- Phased structure (Weeks 1-4, 5-8, 9-12) works well
+- "Legitimacy isn't granted by your title" — good insight, keep
+
+### Case Study Opportunities
+- [NEEDED] A leadership transition that failed from moving too fast — Xavier's own experience?
+- [NEEDED] A transition that succeeded through restraint
+- Consider: "3 things I wish I hadn't done in my first 90 days as CTO" (LinkedIn angle)
+
+### Feedback Log
+- 30/12/2024: Graded B+. Case study (lines 142-152 in idea) is fabricated "Consider a scenario..." — needs real example or explicit hypothetical framing
+- 30/12/2024: Missing personal vulnerability — where's "I made this mistake at [company]..."?
+- 30/12/2024: Slightly academic tone — "fundamentally different", "precisely when it matters most" could be punchier
+- 30/12/2024: Punch up the hook: "Here's the problem: that advice will get you fired within 18 months"
+- 30/12/2024: Weak CTA — lead magnet is placeholder
+
+---
+
 ## Canonical Notes
 
 - Target personas: new CTOs (first-time or new company), engineering managers promoted or hired into new teams

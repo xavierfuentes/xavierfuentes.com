@@ -61,6 +61,26 @@ Technical leaders often underestimate how critical upward communication is to th
    - Implement a weekly update routine this week
    - Download the Engineering Team Health Check Scorecard to assess your communication gaps
 
+## Editorial Notes
+
+### Voice & Angle Decisions
+- Killer hook: "the problem isn't your delivery. It's your silence." — DO NOT CHANGE
+- Asymmetry insight is genuinely useful — core of the piece
+- Practical templates (5-bullet weekly update) are high-value
+
+### Case Study Opportunities
+- [NEEDED] Real example of over-communication transforming a board relationship
+- [NEEDED] CTO who was let go despite solid delivery (poor comms)
+- [NEEDED] CTO who survived a major failure (excellent comms throughout)
+- Personal angle: Xavier's own experience being the over-communicating CTO?
+
+### Feedback Log
+- 30/12/2024: Graded A-. Case study (lines 154-160 in idea) is hypothetical — mark or replace with real
+- 30/12/2024: Could be punchier in implementation section
+- 30/12/2024: Add personal voice to the close — "I've been that leader who earned 'just flag the big stuff'"
+
+---
+
 ## Canonical Notes
 
 - Examples: Contrast between a CTO who was let go despite solid technical delivery (poor stakeholder management) vs. one who survived a major project failure (excellent communication throughout)

@@ -441,6 +441,27 @@ The gap between "using Claude Code" and "using Claude Code effectively" is mostl
 
 ---
 
+## Editorial Notes
+
+### Voice & Angle Decisions
+- Strongest piece in the batch — feels most authentically "you"
+- Personal experience throughout: "I have set up fifteen Claude Code projects..."
+- Session 1/2/3/10 progression is relatable and effective — keep
+- "The prompts matter less than the architecture" — great closing insight
+
+### Case Study Opportunities
+- This repo IS the case study — reference it directly
+- Real examples of agent definitions exist in this project
+- CLAUDE.md can be abstracted as a template
+
+### Feedback Log
+- 30/12/2024: Graded A. Blog projection created, trimmed to ~1,800 words
+- 30/12/2024: Agents section shortened for non-technical readers
+- 30/12/2024: Strong LinkedIn series potential (4+ posts)
+- 30/12/2024: Lead magnet (Claude Code Project Setup Kit) well-defined
+
+---
+
 ### Canonical Notes
 
 - This framework draws directly from setting up the xavierfuentes.com Content OS, which uses the agent structure described above

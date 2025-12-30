@@ -59,6 +59,26 @@ Technical leaders consistently overestimate the strategic value of building in-h
 
 7. **Next Steps**: Provide a checklist or scorecard readers can use for their next build-vs-buy decision. CTA to download the Technology Decision Framework Template.
 
+## Editorial Notes
+
+### Voice & Angle Decisions
+- Strong contrarian hook works well: "We could build this in a weekend"
+- Framework approach (2x2 matrix) suits the topic
+- "Multiply your estimate by 3—seriously" is good Xavier voice — keep this energy
+
+### Case Study Opportunities
+- [NEEDED] A team that built auth/payments when they should have bought (and the cost)
+- [NEEDED] A successful migration from built to bought (the sunk cost trap overcome)
+- [NEEDED] A team that correctly chose to build something core
+
+### Feedback Log
+- 30/12/2024: Graded A-. Scenarios (lines 88-111 in draft) are hypothetical "Consider a scenario..." — need real examples or keep brief
+- 30/12/2024: Could punch harder in intro — add one "I" statement to ground in experience
+- 30/12/2024: "This is not an unusual story" is flat — try "I've watched this exact disaster unfold at four companies"
+- 30/12/2024: Ready as first publish candidate with minor polish
+
+---
+
 ## Canonical Notes
 
 - Reference: Wardley Mapping concepts of commodity vs genesis
