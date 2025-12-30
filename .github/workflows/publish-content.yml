@@ -44,12 +44,17 @@ jobs:
       - name: Get changed files
         id: changed-files
         run: |
-          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | grep '^content/.*\.md$' || echo "")
-          echo "files<<EOF" >> $GITHUB_OUTPUT
-          echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-          echo "Changed files:"
-          echo "$CHANGED_FILES"
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "Manual trigger - will publish all content"
+            echo "publish_all=true" >> $GITHUB_OUTPUT
+          else
+            CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | grep '^content/.*\.md$' || echo "")
+            echo "files<<EOF" >> $GITHUB_OUTPUT
+            echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+            echo "Changed files:"
+            echo "$CHANGED_FILES"
+          fi
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -61,16 +66,21 @@ jobs:
         run: npm ci
 
       - name: Publish content to Ghost
-        if: steps.changed-files.outputs.files != ''
+        if: steps.changed-files.outputs.publish_all == 'true' || steps.changed-files.outputs.files != ''
         env:
           GHOST_ADMIN_API_URL: ${{ secrets.GHOST_ADMIN_API_URL }}
           GHOST_ADMIN_API_KEY: ${{ secrets.GHOST_ADMIN_API_KEY }}
         run: |
-          FILES="${{ steps.changed-files.outputs.files }}"
-          if [ -n "$FILES" ]; then
-            node scripts/publish.js $FILES
+          if [ "${{ steps.changed-files.outputs.publish_all }}" == "true" ]; then
+            echo "Publishing all content..."
+            node scripts/publish.js
           else
-            echo "No content files changed, skipping publish"
+            FILES="${{ steps.changed-files.outputs.files }}"
+            if [ -n "$FILES" ]; then
+              node scripts/publish.js $FILES
+            else
+              echo "No content files changed, skipping publish"
+            fi
           fi
         
       - name: Create deployment summary
