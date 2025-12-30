@@ -134,7 +134,37 @@ WEEKLY RHYTHM (PRAGMATIC VERSION):
   - You review and publish when ready (no auto-publishing).
 - Weekend:
   - Compose newsletter issue (initially bi-weekly) largely from existing Ideas and published content.
-  - Light performance review (what resonated, what didn’t).
+  - Light performance review (what resonated, what didn't).
+
+PERSISTENT BACKLOG:
+- `content/BACKLOG.md` tracks tasks that persist between Claude sessions.
+- Agents should read this at session start and update it when work is completed or new tasks are discovered.
+- The backlog tracks: In Progress, Ready for Review, Next Up, and Blocked items.
+- Use this to maintain continuity across sessions and ensure nothing is forgotten.
+
+MCP MEMORY SERVER:
+- The `memory` MCP server provides persistent knowledge graph storage across sessions.
+- Data stored in `.claude/memory.json` (project-local, git-tracked).
+- Use it for: author preferences, content relationships, session context, voice/style notes.
+- NOT for task tracking (use `content/BACKLOG.md` for that).
+
+Key entities:
+- `author_profile` — Xavier's Insights Discovery profile (Type 26: Motivating Inspirer)
+  - Strengths: big-picture thinking, story-driven, energetic, democratic
+  - Tendencies to watch: detail avoidance, many starts, opinion over facts
+- `voice_preferences` — Accumulated voice/style decisions
+- `content_relationships` — Links between ideas, posts, and series
+
+Tools:
+- `mcp__memory__search_nodes` — Find entities by name/content
+- `mcp__memory__open_nodes` — Read full entity content
+- `mcp__memory__create_entities` — Create or update entities
+
+AGENT USAGE:
+- At session start: Query `author_profile` and `voice_preferences` before drafting or projecting content
+- During work: Reference memory for voice authenticity ("Does this sound like Xavier?")
+- At session end: Store any new voice decisions or content relationships discovered
+- All content agents (drafting, projection-blog, projection-linkedin, editorial) should use memory context
 
 ################################################################################
 # AGENT RESPONSIBILITIES

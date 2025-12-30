@@ -32,12 +32,21 @@
 
 **Weekly Rhythm:**
 
-- **Monday:** Review automated weekly selection (4-5 curated research items)
-- **Monday:** Route selected items to channels (blog/linkedin/newsletter)
-- **Tuesday-Friday:** AI generates drafts, manual review and editing
-- **Ongoing:** 3 LinkedIn posts/week (Tue/Wed/Thu)—auto-scheduled after quality gates
+- **Monday (9:00-9:30):** Strategy Review
+  - Review research digest email (from n8n)
+  - Run strategy-agent to check idea backlog
+  - Promote 1-2 research items to Ideas (idea-builder)
+  - Check pillar distribution health
+- **Monday (9:30-10:00):** Publishing Calendar
+  - Review what's ready to publish (status: ready_for_projection)
+  - Assign publication dates for blog posts
+  - Slot LinkedIn posts to Tue/Wed/Thu
+  - Schedule newsletter if ready
+  - Identify gaps and time-sensitive content
+- **Tuesday-Thursday:** LinkedIn post review and posting (20 mins/day)
+- **Tuesday (bi-weekly):** Blog draft editing session (1.5 hours)
 - **Ongoing:** Blog posts published when ready (2-3/month flexible)
-- **Sunday:** Weekly newsletter compilation and publishing
+- **Sunday:** Newsletter compilation and performance review (1 hour)
 
 ---
 

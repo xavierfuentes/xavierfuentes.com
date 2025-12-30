@@ -1,39 +1,75 @@
 # Writing Guide – XavierFuentes.com
 
-This guide defines the voice, style, and structural preferences for all content produced by the Content OS agents.
+Shared writing standards for all Content OS agents. Channel-specific voice and format guidance lives in each skill:
+- `.claude/skills/blog/context/` - Blog voice, structure, SEO
+- `.claude/skills/linkedin/context/` - LinkedIn voice, format, rhythm
+- `.claude/skills/newsletter/context/` - Newsletter voice, format, curation
 
 ---
 
-## Voice & Tone
-
-### Core Attributes
+## Core Voice Attributes
 
 - **British English** — colour, optimise, realise, whilst, amongst
 - **Direct and concise** — no waffle, get to the point
-- **Structured** — clear sections, numbered lists, tables where helpful
 - **Professional but approachable** — expertise without arrogance
-- **Dry wit** — occasional, understated, never forced
 - **Action-oriented** — ranked recommendations, clear next steps
-- **Multiple perspectives** — acknowledge trade-offs and context
 
-### More Of
+---
 
-- Specific examples and numbers
-- Personal failures and lessons (real ones)
-- Contrarian but well-supported opinions
-- Practical templates and frameworks
-- "Here's what I'd actually do" recommendations
+## Author Voice & Personality
 
-### Less Of
+Xavier's natural communication style (based on Insights Discovery profile: Type 26 - Motivating Inspirer). Use this to ensure content sounds authentic.
 
-- Abstract theorising
-- Obvious advice everyone gives
-- Lengthy disclaimers and caveats
-- Generic industry commentary
-- Consultant-speak ("leverage", "synergy", "stakeholder alignment")
-- Filler words and hedging ("I think", "perhaps", "it seems")
+### Natural Strengths to Lean Into
 
-### Words to Avoid
+| Trait | How It Shows in Content |
+|-------|------------------------|
+| Big-picture thinker | Lead with strategic insight, not granular how-tos |
+| Story-driven | Personal anecdotes and real examples resonate |
+| Energetic and enthusiastic | Content should feel alive, not dry or academic |
+| Democratic, involves others | Invite dialogue; use "you" language; ask questions |
+| Quick to see possibilities | Contrarian takes and "what if" thinking |
+| Warm and empathetic | Acknowledge reader struggles before solving them |
+
+### Voice Signatures
+
+**Sounds like Xavier:**
+- "Here's what actually works..."
+- "Most people get this wrong because..."
+- "I made this mistake at [company]—here's what I learned"
+- "The uncomfortable truth is..."
+- Direct opinions, stated confidently
+- Frameworks and mental models over abstract theory
+- Humour where appropriate (not forced)
+
+**Doesn't sound like Xavier:**
+- Overly hedged statements ("it could potentially perhaps...")
+- Dense, detail-heavy explainers without a clear point
+- Formal, distant, corporate tone
+- Content that reads like a textbook
+- Excessive caveats or disclaimers
+
+### Tendencies to Watch
+
+| Natural Tendency | Content Implication |
+|-----------------|---------------------|
+| Prefers verbal over written | Best ideas may come from spoken notes—capture and refine |
+| Bored by detail | Ensure important specifics aren't glossed over |
+| Starts many things | Series and multi-part content need deliberate completion |
+| Can exaggerate significance | Check claims are grounded and defensible |
+| Values opinions over pure facts | Balance conviction with evidence |
+
+### Communication Preferences (for editorial feedback)
+
+When reviewing Xavier's content or suggesting edits:
+- Be direct—don't bury feedback in qualifications
+- Focus on the "so what?"—does this land?
+- Recognise what's working before noting issues
+- Keep it lively, not dull or procedural
+
+---
+
+## Words to Avoid
 
 | Avoid | Use Instead |
 |-------|-------------|
@@ -55,7 +91,7 @@ This guide defines the voice, style, and structural preferences for all content 
 ### Case Studies
 
 **Only include case studies when:**
-1. The idea-builder prompt explicitly mentions a real case study to use, OR
+1. The idea file explicitly mentions a real case study to use, OR
 2. You frame it as clearly hypothetical
 
 **Real case studies:**
@@ -80,94 +116,6 @@ This guide defines the voice, style, and structural preferences for all content 
 
 ---
 
-## Content Length by Channel
-
-### Blog Posts (Ghost)
-
-| Content Type | Word Count | Notes |
-|--------------|------------|-------|
-| Framework/how-to | 1,500–2,000 | Sweet spot for lead generation |
-| Thought leadership | 1,800–2,200 | Authority building, SEO value |
-| Case study deep-dive | 2,000–2,500 | Only when real case study exists |
-| Opinion/hot take | 800–1,200 | Punchy, focused argument |
-
-**Default target: 1,500–1,800 words**
-
-Structure for readability:
-- Clear H2/H3 hierarchy
-- Bullet points and numbered lists
-- Short paragraphs (3-4 sentences max)
-- Bold key phrases for skimming
-
-### LinkedIn Posts
-
-| Metric | Recommendation |
-|--------|----------------|
-| Optimal length | 1,200–1,800 characters |
-| First line (hook) | Under 140 characters (before "See more") |
-| Maximum | 2,000 characters (engagement drops beyond this) |
-| Minimum | 500 characters (algorithm penalises shorter) |
-
-**Structure:**
-- Hook in first line — must compel the click
-- One idea per post
-- White space between paragraphs
-- End with question or clear CTA
-- No hashtag stuffing (3 max, at end if any)
-
-### Newsletter (Jungle Brief)
-
-| Section | Length |
-|---------|--------|
-| Deep insight | 400–600 words |
-| Template/tool intro | 200–300 words |
-| Curated link commentary | 50–100 words each |
-| Total issue | 800–1,200 words |
-
----
-
-## Structural Preferences
-
-### Blog Post Template
-
-```
-# [Title]
-
-[Hook paragraph — the problem or contrarian take, 2-3 sentences]
-
-[Context — why this matters now, 1-2 paragraphs]
-
-## [Framework/Main Argument]
-
-[Core content with subheadings, lists, practical detail]
-
-## Implementation / How to Apply This
-
-[Actionable steps, ranked if possible]
-
-## Common Mistakes / What to Avoid
-
-[Brief, punchy list]
-
-## Next Steps
-
-[Clear CTA — newsletter signup, related content, or consultation]
-```
-
-### LinkedIn Post Template
-
-```
-[Hook — provocative statement or question]
-
-[2-3 short paragraphs developing the idea]
-
-[Practical takeaway or recommendation]
-
-[Question to prompt engagement OR soft CTA]
-```
-
----
-
 ## Quality Checklist
 
 Before any content is marked `ready_for_projection`:
@@ -177,52 +125,6 @@ Before any content is marked `ready_for_projection`:
 - [ ] No fabricated case studies or fake personal anecdotes
 - [ ] Demonstrates expertise without consulting speak
 - [ ] Includes real personal insight where claimed
-- [ ] Appropriate length for channel
+- [ ] Appropriate length for channel (see skill format.md files)
 - [ ] Has a clear next step or CTA
 - [ ] British English throughout
-
----
-
-## Agent-Specific Instructions
-
-### idea-builder
-
-- Capture the author's angle verbatim — don't embellish
-- Note if a real case study exists to use
-- Flag if the idea needs author input for examples
-
-### drafting
-
-- Default to 1,500–1,800 words unless the idea specifies otherwise
-- Use hypothetical framing if no real case study is provided
-- Leave `[PLACEHOLDER]` markers for content that needs author input
-- Don't invent statistics or make up research citations
-
-### projection-blog
-
-- Adapt canonical draft to blog format
-- Trim to target length if draft is long
-- Ensure SEO fields are complete
-
-### projection-linkedin
-
-- Extract 2-3 distinct angles from the canonical draft
-- Each post should stand alone
-- Hook must work in under 140 characters
-- Keep within 1,200–1,800 character range
-
-### editorial
-
-- Flag any content that sounds fabricated
-- Check length against channel guidelines
-- Verify British English throughout
-
----
-
-## Sources
-
-Length recommendations based on 2025 research:
-- [Elementor: Blog Post Length 2025](https://elementor.com/blog/blog-post-length/)
-- [Click Intelligence: Ideal Blog Length for SEO](https://www.clickintelligence.co.uk/content-length-whats-the-ideal-length-of-a-blog-post-for-seo-in-2025/)
-- [Digital Blacksmiths: LinkedIn Post Length](https://digitalblacksmiths.io/best-linkedin-post-length-1200-to-1800-characters/)
-- [LiGo: LinkedIn Character Limits 2025](https://ligosocial.com/blog/linkedin-post-character-limit-2025-complete-guide-for-professionals)

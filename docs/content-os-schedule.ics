@@ -27,11 +27,21 @@ END:VTIMEZONE
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/London:20251222T090000
+DTEND;TZID=Europe/London:20251222T093000
+RRULE:FREQ=WEEKLY;BYDAY=MO
+SUMMARY:Content OS: Strategy Review
+DESCRIPTION:Weekly strategy review (30 mins)\n\nTasks:\n• Review new research items (RSS feeds\, ideas from the week)\n• Run strategy agent to review idea backlog\n• Propose 1-2 ideas to move to status: drafting\n• Use idea-builder to capture any new ideas\n• Check pillar distribution (30% tech-strategy\, 25% leadership\, 20% execution\, 15% founder\, 10% AI trends)\n\nAgents: strategy\, idea-builder\n\nFiles: content/ideas/*.md
+UID:content-os-monday-strategy@xavierfuentes.com
+STATUS:CONFIRMED
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20251222T093000
 DTEND;TZID=Europe/London:20251222T100000
 RRULE:FREQ=WEEKLY;BYDAY=MO
-SUMMARY:Content OS: Strategy & Planning
-DESCRIPTION:Weekly content strategy session (1 hour)\n\nTasks:\n• Review new research items (RSS feeds\, ideas from the week)\n• Run strategy agent to review idea backlog\n• Propose 1-2 ideas to move to status: drafting\n• Use idea-builder to capture any new ideas\n• Check pillar distribution (30% tech-strategy\, 25% leadership\, 20% execution\, 15% founder\, 10% AI trends)\n\nAgents: strategy\, idea-builder\n\nFiles: content/ideas/*.md
-UID:content-os-monday-strategy@xavierfuentes.com
+SUMMARY:Content OS: Publishing Calendar
+DESCRIPTION:Weekly publishing calendar planning (30 mins)\n\nTasks:\n• Review what's ready to publish (status: ready_for_projection)\n• Decide publication dates for blog posts\n• Assign LinkedIn posts to Tue/Wed/Thu slots\n• Schedule newsletter issue if ready\n• Update Ghost scheduled posts if needed\n• Review upcoming publication gaps\n\nKey questions:\n• What should publish this week?\n• What needs to be ready for next week?\n• Any time-sensitive content (trends\, events)?\n\nOutput: Clear schedule for the week's publishing\n\nFiles: content/posts/*.md\, content/linkedin/*.md\, content/junglebrief/*.md
+UID:content-os-monday-calendar@xavierfuentes.com
 STATUS:CONFIRMED
 END:VEVENT
 
