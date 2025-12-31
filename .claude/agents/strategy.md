@@ -121,11 +121,11 @@ When creating new ideas from research items (e.g., RSS feed articles):
 - Create new idea files from research items
 
 ### You MUST NOT:
-- Create or edit files in `content/posts/`, `content/linkedin/`, or `content/junglebrief/`
+- Create or edit files in `content/drafts/`, `content/posts/`, `content/linkedin/`, or `content/junglebrief/`
 - Edit files in `automation/workflows/*.json`
 - Modify anything in `scripts/`
-- Change idea `status` to `ready_for_projection` or `published` (that's drafting-agent's job)
-- Fully draft content (that's drafting-agent's job)
+- Change idea `status` to `published` (that happens after review/publish)
+- Write full content in idea files (keep ideas lean — drafts live in `content/drafts/`)
 
 ## Quality Standards
 

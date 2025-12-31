@@ -2,7 +2,7 @@
 
 A persistent task list that survives between Claude sessions. Agents should read this at the start of strategic work and update it when tasks are completed or added.
 
-**Last Updated:** 30/12/2024
+**Last Updated:** 31/12/2025
 
 ---
 
@@ -12,7 +12,7 @@ Tasks currently being worked on.
 
 | Task | Idea/File | Notes | Started |
 |------|-----------|-------|---------|
-| Prepare Build vs Buy for publication | `2025-01-build-vs-buy-framework` | Needs real case studies or shortened hypotheticals | 30/12/2024 |
+| Prepare Build vs Buy for publication | `2025-01-build-vs-buy-framework` | Needs real case studies or shortened hypotheticals | 30/12/2025 |
 
 ---
 
@@ -22,7 +22,7 @@ Content ready for human review before publishing.
 
 | Task | Idea/File | Notes | Created |
 |------|-----------|-------|---------|
-| Review Claude Code blog draft | `2025-12-claude-code-project-framework` | Blog projection created, ~1,800 words | 30/12/2024 |
+| Review Claude Code blog draft | `2025-12-claude-code-project-framework` | Blog projection created, ~1,800 words | 30/12/2025 |
 
 ---
 
@@ -32,7 +32,6 @@ Prioritised tasks to tackle next.
 
 | Priority | Task | Idea/File | Notes |
 |----------|------|-----------|-------|
-| High | Populate MCP memory with author profile | Memory server | Run after Claude Code restart |
 | High | Add real case studies to drafts | All drafts | "Consider a scenario..." examples need replacing |
 | High | Create LinkedIn projections | `2025-12-claude-code-project-framework` | 4 posts: CLAUDE.md, classification, handoff, over-engineering |
 | Medium | Polish First 90 Days draft | `2025-01-first-90-days-technical-leader` | Add personal anecdotes, punch up hook |
@@ -57,13 +56,16 @@ Keep last 10 completed tasks for context.
 
 | Task | Idea/File | Completed |
 |------|-----------|-----------|
-| Set up MCP memory server | `.mcp.json` | 30/12/2024 |
-| Create persistent backlog system | `content/BACKLOG.md` | 30/12/2024 |
-| Update agents to use Editorial Notes | `.claude/agents/` | 30/12/2024 |
-| Create Claude Code blog projection | `2025-12-claude-code-project-framework` | 30/12/2024 |
-| Add Editorial Notes to all idea files | All ideas | 30/12/2024 |
-| Add Author Voice section to writing guide | `docs/writing_guide.md` | 30/12/2024 |
-| Review all drafts and ideas | All content | 30/12/2024 |
+| Verify MCP memory author profile populated | Memory server | 31/12/2025 |
+| Fix GitHub Actions auto-publish trigger | `.github/workflows/publish-content.yml` | 31/12/2025 |
+| Fix manual workflow trigger to publish all content | `.github/workflows/publish-content.yml` | 31/12/2025 |
+| Set up MCP memory server | `.mcp.json` | 30/12/2025 |
+| Create persistent backlog system | `content/BACKLOG.md` | 30/12/2025 |
+| Update agents to use Editorial Notes | `.claude/agents/` | 30/12/2025 |
+| Create Claude Code blog projection | `2025-12-claude-code-project-framework` | 30/12/2025 |
+| Add Editorial Notes to all idea files | All ideas | 30/12/2025 |
+| Add Author Voice section to writing guide | `docs/writing_guide.md` | 30/12/2025 |
+| Review all drafts and ideas | All content | 30/12/2025 |
 
 ---
 

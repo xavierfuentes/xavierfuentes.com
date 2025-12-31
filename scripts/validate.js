@@ -81,6 +81,8 @@ class ContentValidator {
       "pillar",
       "target_audience",
       "target_outcome",
+      // Feature image
+      "unsplash_prompt",
     ];
 
     for (const field of requiredFields) {

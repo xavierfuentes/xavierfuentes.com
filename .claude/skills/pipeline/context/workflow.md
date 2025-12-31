@@ -1,107 +1,90 @@
 # Content Workflow
 
-## Status Flow
+## Simplified Status Flow
 
 ```
-idea → drafting → ready_for_projection → published → archived
+idea → drafting → published → archived
 ```
+
+### Where Content Lives
+
+| Location | Purpose | Edit here? |
+|----------|---------|------------|
+| `content/ideas/` | Lightweight planning (metadata + outline) | Planning only |
+| `content/drafts/` | Blog posts you're writing and editing | **Yes** |
+| `content/posts/` | Published blog posts | After publishing |
+| `content/linkedin/` | LinkedIn posts | Yes |
+| `content/junglebrief/` | Newsletter issues | Yes |
 
 ### Status Definitions
 
 | Status | Meaning | Next Action |
 |--------|---------|-------------|
-| idea | Captured concept, not yet developed | Review in strategy session |
-| drafting | Being developed into canonical draft | Complete draft with drafting-agent |
-| ready_for_projection | Canonical draft complete, ready for channels | Create channel projections |
-| published | All projections published | Monitor performance |
-| archived | No longer relevant or completed lifecycle | None |
+| idea | Captured concept, outline created | Pick for drafting |
+| drafting | Draft exists in `content/drafts/` | Review, edit, polish |
+| published | Blog post is live | Monitor performance |
+| archived | No longer relevant | None |
 
 ## Weekly Rhythm
 
 ### Monday: Strategy + Planning (1 hour)
 
 **Strategy Review (30 min):**
+
 - Run `/pipeline` to see current distribution
 - Review ideas in `status: idea`
-- Select 1-2 to move to `status: drafting`
-- Check for stale items (>2 weeks in drafting)
+- Pick 1-2 to work on this week
+- Check for stale items
 
 **Publishing Calendar (30 min):**
-- Schedule specific content for the week
+
+- Schedule content for the week
 - Plan: 1 blog post, 3 LinkedIn posts
-- Assign publication dates
 
 ### Tuesday-Thursday: Execution
 
-**Drafting (as needed):**
-- Work on ideas in `status: drafting`
-- Move to `ready_for_projection` when complete
+**Writing:**
 
-**Projection (as needed):**
-- Create blog post from `ready_for_projection` ideas
+- Create/edit drafts in `content/drafts/`
+- Update idea status to `drafting` when you start
+
+**LinkedIn:**
+
 - Create LinkedIn posts (Tue framework, Wed take, Thu lesson)
 
 **Publishing:**
-- Review and publish scheduled content
-- Move files to appropriate status
+
+- Review drafts, move to `content/posts/` when ready
+- Run `/publish` to sync to Ghost
 
 ### Friday: Light Touch
 
 - Quick review of week's performance
-- Capture any new ideas from the week
+- Capture any new ideas
 - No heavy writing
 
 ### Weekend: Newsletter
 
 - Assemble Jungle Brief issue (bi-weekly)
-- Draw from published content and ideas
+- Draw from published content
 - Schedule for Monday/Tuesday send
 
-## Projection Workflow
-
-When an idea reaches `ready_for_projection`:
-
-1. **Primary channel first**
-   - If `primary_channel: personal_blog` → create blog post
-   - If `primary_channel: linkedin` → create LinkedIn posts
-
-2. **Secondary channels**
-   - Work through `secondary_channels` array
-   - Each projection links back via `idea_id`
-
-3. **Update idea status**
-   - Once all projections created: `status: published`
-   - (Even if posts are still drafts in their channels)
-
-## Backlog Health Checks
-
-Run periodically:
-
-**Stale drafting (>2 weeks):**
-- Either complete or return to `idea` status
-- Consider if scope is too large
-
-**Ready but not projected (>1 week):**
-- Create projections or reconsider priority
-
-**Old ideas (>3 months in `idea` status):**
-- Validate still relevant
-- Consider archiving
-
-## Handoffs Between Agents
+## Agent Handoffs
 
 ```
-idea-builder → creates idea file with status: idea
+idea-builder → creates idea file (status: idea)
                     ↓
-strategy-agent → reviews, sets status: drafting
+strategy-agent → reviews, proposes for drafting
                     ↓
-drafting-agent → develops, sets status: ready_for_projection
+drafting-agent → creates draft in content/drafts/
                     ↓
-projection-* agents → create channel files
+projection-blog → polishes for SEO
                     ↓
-editorial-agent → reviews consistency
+editorial-agent → reviews quality
                     ↓
-You → publish (manual step)
+You → publish (move to posts/, run /publish)
 ```
 
-Each agent should only modify its designated files and statuses.
+## Key Principle
+
+**Drafts are the working document.** Ideas stay lean (metadata + outline). All blog writing and editing happens in `content/drafts/`.

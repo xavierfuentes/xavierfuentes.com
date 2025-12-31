@@ -2,6 +2,8 @@
 
 Copy to `content/ideas/YYYY-MM-your-slug.md`
 
+**Key principle:** Ideas are lightweight planning files. Full drafts live in `content/drafts/`.
+
 ## Frontmatter
 
 ```yaml
@@ -22,67 +24,34 @@ notes: |
 ---
 ```
 
-## Body Structure
+## Body Structure (Keep Lean)
 
 ```markdown
 # [Idea Title]
 
-## Core Insight
+## Problem
 
-[One paragraph capturing the central idea. What's the "so what?" that makes this worth writing about?]
+[What pain point does this address? 2-3 sentences.]
 
-## Why Now
+## Angle
 
-[Why is this relevant? What prompted this idea? Recent experience, trend, conversation?]
+[Your unique take or contrarian position. What makes this interesting?]
 
 ## Outline
 
-1. **Hook/Opening**
-   - [Opening angle or provocative statement]
+1. **Hook**: [Opening angle or provocative statement]
+2. **Context**: [What the reader needs to understand first]
+3. **Framework**: [The main thing you're teaching]
+4. **Example**: [Concrete illustration — note if real case study needed]
+5. **Implementation**: [How to apply this]
+6. **Pitfalls**: [What to watch out for]
+7. **Next Steps**: [What the reader should do]
 
-2. **Context**
-   - [What the reader needs to understand first]
+## Notes
 
-3. **Core Framework/Insight**
-   - [The main thing you're teaching]
-
-4. **Example/Story**
-   - [Concrete illustration]
-
-5. **Implementation**
-   - [How to apply this]
-
-6. **Pitfalls**
-   - [What to watch out for]
-
-7. **Next Steps**
-   - [What the reader should do now]
-
-## Canonical Draft
-
-[When status moves to `drafting`, develop the full draft here. This is channel-agnostic—longer and more detailed than final outputs. Projection agents will adapt it for specific channels.]
-
----
-
-## Editorial Notes
-
-### Voice & Angle Decisions
-- [Key decisions about tone, angle, or framing to preserve]
-- [What makes this piece distinctively "Xavier"]
-
-### Case Study Opportunities
-- [NEEDED] [Description of real case study that would strengthen this piece]
-- [Personal experience that could be included]
-
-### Feedback Log
-- [DD/MM/YYYY]: [Feedback or editorial note — add new entries at the top]
-
----
-
-## References
-
-- [Source 1]
-- [Source 2]
+- [Source/inspiration]
+- [Related ideas]
+- [Case study opportunities: NEEDED or personal experience]
 ```
 
 ## Frontmatter Reference
@@ -91,7 +60,7 @@ notes: |
 |-------|----------|--------|
 | id | Yes | YYYY-MM-slug format |
 | pillar | Yes | technology-strategy, leadership-management, execution-delivery, founder-lessons, market-ai-trends |
-| status | Yes | idea, drafting, ready_for_projection, published, archived |
+| status | Yes | idea, drafting, published, archived |
 | primary_channel | Yes | personal_blog, linkedin, newsletter |
 | secondary_channels | No | Array of channels |
 | target_audience | Yes | Audience code (see frontmatter.md) |
@@ -103,19 +72,23 @@ notes: |
 ## Status Transitions
 
 ```
-idea           → Ready for strategy review
-drafting       → Being developed (canonical draft in progress)
-ready_for_projection → Draft complete, create channel content
-published      → All projections created/published
-archived       → No longer relevant
+idea     → Ready for strategy review
+drafting → Draft exists in content/drafts/
+published → Blog post is live
+archived  → No longer relevant
 ```
+
+When status changes to `drafting`:
+1. Create a draft file in `content/drafts/YYYY-MM-slug.md`
+2. Write and edit the draft there
+3. Keep the idea file lean — don't duplicate content
 
 ## Quality Checklist for Ideas
 
 Before moving to `drafting`:
 
-- [ ] Core insight is clear and specific
-- [ ] Passes "so what?" test
+- [ ] Problem is clear and specific
+- [ ] Angle passes "so what?" test
 - [ ] Target audience would care about this
 - [ ] Pillar assignment is accurate
 - [ ] Outline has enough structure to develop

@@ -20,6 +20,9 @@ target_outcome: inbound_leads
 meta_title: "SEO Title (50-60 chars)"
 meta_description: "Compelling description for search results. 150-160 characters."
 
+# Feature Image (recommended)
+unsplash_prompt: "specific visual concept for Unsplash search"
+
 # Display (optional)
 featured: false
 excerpt: "Short excerpt for listings and social."
@@ -83,5 +86,6 @@ tags:
 | target_audience | Recommended | From idea |
 | target_outcome | Recommended | From idea |
 | meta_description | Recommended | 150-160 chars |
+| unsplash_prompt | Recommended | Specific visual concept for feature image |
 | featured | Optional | true/false |
 | tags | Optional | Array of tags |

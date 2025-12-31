@@ -25,7 +25,7 @@ notes: "Context and references"      # Optional
 |-------|----------|------|-------|
 | id | Yes | string | Format: YYYY-MM-slug |
 | pillar | Yes | enum | See pillar definitions |
-| status | Yes | enum | idea, drafting, ready_for_projection, published, archived |
+| status | Yes | enum | idea, drafting, published, archived |
 | primary_channel | Yes | enum | personal_blog, linkedin, newsletter |
 | secondary_channels | No | array | Any of the channel enums |
 | target_audience | Yes | string | Short code describing persona |
@@ -37,10 +37,11 @@ notes: "Context and references"      # Optional
 ### Status Flow
 
 ```
-idea → drafting → ready_for_projection → published → archived
-  ↑                                           |
-  └───────────── (rare rework) ───────────────┘
+idea → drafting → published → archived
 ```
+
+When an idea moves to `drafting`, create a draft file in `content/drafts/`.
+The draft file is where you write and edit — ideas stay lean.
 
 ## Blog Posts (`content/posts/*.md`, `content/drafts/*.md`)
 
@@ -56,6 +57,7 @@ target_audience: "cto_startup_scaleup"
 target_outcome: "inbound_leads"
 meta_title: "SEO title if different"
 meta_description: "150-160 char description"
+unsplash_prompt: "specific visual concept for feature image"
 feature_image: "/images/your-image.jpg"
 featured: false
 tags:
@@ -83,6 +85,7 @@ authors:
 | pillar | Yes | From parent idea |
 | target_audience | No | From parent idea |
 | target_outcome | No | From parent idea |
+| unsplash_prompt | No | Specific visual concept for Unsplash feature image search |
 
 ## LinkedIn Posts (`content/linkedin/*.md`)
 

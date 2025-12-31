@@ -35,26 +35,27 @@ All content and strategy live inside the `content/` directory of this repo.
 
 DIRECTORIES:
 - `content/ideas/`
-  - Canonical "Idea" files – the source of truth for pillar content.
-  - Each Idea contains metadata, notes, and (optionally) a canonical draft.
+  - Lightweight planning files: metadata + problem/angle/outline.
+  - Used for strategic planning and tracking pillar distribution.
+  - NOT where you write full drafts — keep these lean.
 - `content/drafts/`
-  - Blog post drafts for Ghost Admin preview.
-  - Projection agents create posts here first with `status: draft`.
-  - Move to `content/posts/` and change `status: published` when ready to go live.
+  - **Where you write and edit blog content.**
+  - Ghost-synced drafts that you review and refine.
+  - Move to `content/posts/` when ready to publish.
 - `content/posts/`
-  - Ghost-ready blog posts (published or scheduled).
-  - Only move files here when ready to publish.
+  - Published blog posts (Ghost-synced).
+  - Only move files here when ready to go live.
 - `content/pages/`
   - Ghost pages (e.g. About, Work With Me).
 - `content/linkedin/`
-  - LinkedIn projections derived from Ideas (1+ posts per Idea).
+  - LinkedIn posts derived from Ideas (1+ posts per Idea).
 - `content/junglebrief/`
-  - The Jungle Brief newsletter issues and/or sections derived from Ideas where relevant.
+  - The Jungle Brief newsletter issues.
 
 IDEA FRONTMATTER (content/ideas/*.md):
 - `id` (string, required): unique stable identifier (e.g. `2025-01-fractional-cto-positioning`).
 - `pillar` (enum, required): `technology-strategy` | `leadership-management` | `execution-delivery` | `founder-lessons` | `market-ai-trends`.
-- `status` (enum): `idea` | `drafting` | `ready_for_projection` | `published` | `archived`.
+- `status` (enum): `idea` | `drafting` | `published` | `archived`.
 - `primary_channel` (enum): `personal_blog` | `linkedin` | `newsletter`.
 - `secondary_channels` (string[]): any of `personal_blog`, `linkedin`, `newsletter`.
 - `target_audience` (string): short code (e.g. `founder_3_20_engineers`, `eng_manager_scaleup`).
@@ -64,8 +65,10 @@ IDEA FRONTMATTER (content/ideas/*.md):
 - `notes` (string, optional): freeform context and references.
 
 BODY OF IDEA FILE:
-- Canonical notes, outline, and (optionally) a neutral long-form draft.
-- This draft is channel-agnostic and may be longer/more detailed than final outputs.
+- Problem statement: what pain point does this address?
+- Angle: your unique take or contrarian position.
+- Rough outline: key sections/points to cover.
+- Keep it lean — the full draft lives in `content/drafts/`.
 
 BLOG POST FRONTMATTER (content/posts/*.md):
 - Required by Ghost tooling:
@@ -109,32 +112,35 @@ NEWSLETTER FRONTMATTER (content/junglebrief/*.md):
 ################################################################################
 
 HIGH-LEVEL FLOW:
-1. Research / inspiration (RSS, experience, audience questions).
-2. Idea creation in `content/ideas/`.
-3. Canonical draft development in the Idea file.
-4. Channel projections:
-   - Blog: `content/posts/*.md` (Ghost-ready).
-   - LinkedIn: `content/linkedin/*.md`.
-   - Newsletter: `content/junglebrief/*.md`.
-5. Manual review + editing.
-6. Publishing:
-   - Blog → via `scripts/publish.js` → Ghost.
-   - LinkedIn → manual posting/scheduling.
-   - Newsletter → current email tool of choice.
+1. **Idea capture**: Create lightweight idea file in `content/ideas/` (metadata + problem/angle/outline).
+2. **Draft creation**: Write the full blog post in `content/drafts/` (this is where you edit).
+3. **Review & refine**: Edit the draft directly — this is your working document.
+4. **Channel projections**: Create LinkedIn/newsletter versions from the draft.
+5. **Publish**: Move draft to `content/posts/` and run publish script.
+
+WHERE TO EDIT:
+- **Blog content**: Edit in `content/drafts/*.md` — this is your working document.
+- **Ideas**: Only update metadata or outline — keep lean, don't duplicate content.
+- **LinkedIn/Newsletter**: Edit in their respective directories.
+
+SIMPLIFIED STATUS FLOW:
+```
+Idea (idea) → Drafting (drafting) → Published (published)
+     ↓
+ [Create draft file in content/drafts/]
+```
 
 WEEKLY RHYTHM (PRAGMATIC VERSION):
 - Monday:
-  - Review new research and propose/update 2–3 Ideas in `content/ideas/`.
-  - Select 1–2 Ideas to move to `status: drafting`.
+  - Review new research and capture ideas in `content/ideas/`.
+  - Pick 1–2 ideas to work on this week.
 - Tuesday–Thursday:
-  - Drafting: expand selected Ideas into canonical drafts.
-  - Projection:
-    - 1 blog draft (or refine existing one) from an Idea.
-    - 2–3 LinkedIn posts from the same or neighbouring Ideas.
-  - You review and publish when ready (no auto-publishing).
+  - Write/edit blog drafts in `content/drafts/`.
+  - Create 2–3 LinkedIn posts from the same themes.
+  - Review and publish when ready.
 - Weekend:
-  - Compose newsletter issue (initially bi-weekly) largely from existing Ideas and published content.
-  - Light performance review (what resonated, what didn't).
+  - Compose newsletter issue from published content.
+  - Light performance review.
 
 PERSISTENT BACKLOG:
 - `content/BACKLOG.md` tracks tasks that persist between Claude sessions.
@@ -191,30 +197,31 @@ AGENT NAMES AND SCOPES:
   - Never edits posts, LinkedIn, Jungle Brief, or automation.
 
 - `drafting-agent`:
-  - Reads/Writes: the body and `status` of individual `content/ideas/*.md`.
-  - Responsibilities:
-    - Expand outlines into canonical drafts for Ideas with `status: drafting`.
-    - Follow long-form structure: Hook → Context → Framework → Case Study → Implementation → Pitfalls → Next Steps.
-    - Move Ideas through: `status: idea → drafting → ready_for_projection` when appropriate.
-  - Does not create or modify any channel projection files.
-
-- `projection-agent-blog`:
-  - Reads: `content/ideas/*.md`, `docs/templates/blog-post-draft.md`.
+  - Reads: `content/ideas/*.md` for context.
   - Reads/Writes: `content/drafts/*.md`.
   - Responsibilities:
-    - For Ideas with `status: ready_for_projection` and `primary_channel: personal_blog`, create or update a Ghost post draft file.
-    - Set Ghost frontmatter (`title`, `slug`, `status: draft`, `visibility`) plus OS metadata (`idea_id`, `pillar`, `target_audience`, `target_outcome`).
-    - Adapt the canonical draft into a blog article that obeys SEO + lead-gen guidance from `docs/content_strategy.md`.
-    - Files stay in `content/drafts/` until manually moved to `content/posts/` for publishing.
+    - Create blog drafts from idea outlines.
+    - Write directly in `content/drafts/` — this is where content lives.
+    - Follow structure: Hook → Context → Framework → Case Study → Implementation → Pitfalls → Next Steps.
+    - Update idea `status` to `drafting` when work begins.
+  - The draft file is the working document, not the idea file.
+
+- `projection-agent-blog`:
+  - Reads: `content/ideas/*.md` for metadata, `content/drafts/*.md` for content.
+  - Reads/Writes: `content/drafts/*.md`.
+  - Responsibilities:
+    - Polish existing drafts for SEO and lead generation.
+    - Ensure Ghost frontmatter is complete.
+    - Add `unsplash_prompt` for feature image.
+    - Files stay in `content/drafts/` until manually moved to `content/posts/`.
 
 - `projection-agent-linkedin`:
-  - Reads: `content/ideas/*.md`.
+  - Reads: `content/ideas/*.md`, `content/drafts/*.md`.
   - Reads/Writes: `content/linkedin/*.md`.
   - Responsibilities:
-    - For the same Ideas, create or update a LinkedIn projection file (typically one file per Idea or mini-series).
-    - Populate frontmatter: `idea_id`, `pillar`, `status`, optional `sequence`, `target_audience`, `target_outcome`.
-    - Produce 2–3 posts separated by `---`, each with a strong hook, high-signal body, and optional CTA.
-    - Respect cadence and tone: framework Tuesday, industry take Wednesday, lesson Thursday; no “link-only promos”.
+    - Create LinkedIn posts from ideas or blog drafts.
+    - Produce 2–3 posts per idea, each with strong hook and high-signal body.
+    - Respect cadence: framework Tuesday, industry take Wednesday, lesson Thursday.
 
 - `projection-agent-junglebrief` (later phase):
   - Reads: `content/ideas/*.md`, `content/posts/*.md`.
@@ -225,17 +232,18 @@ AGENT NAMES AND SCOPES:
     - Link sections back to `idea_id` where applicable.
 
 - `editorial-agent`:
-  - Reads: `content/ideas/*.md`, `content/posts/*.md`, `content/linkedin/*.md`, `content/junglebrief/*.md`.
-  - Writes: comments/suggestions and light edits within those files (no publishing or automation changes).
+  - Reads: `content/drafts/*.md`, `content/linkedin/*.md`, `content/junglebrief/*.md`.
+  - Writes: suggestions and light edits within draft files.
   - Responsibilities:
-    - Check consistency between canonical Ideas and channel projections.
-    - Flag where changes in a projection should be reflected back into the Idea.
-    - Suggest cross-links, CTAs, and sequencing, but leave final decisions to you.
+    - Review drafts for quality, voice consistency, and clarity.
+    - Suggest cross-links, CTAs, and improvements.
+    - Final decisions are always yours.
 
 HARD RULES FOR ALL AGENTS:
 - NEVER edit `automation/workflows/*.json`. These are managed via n8n UI.
 - DO NOT touch `scripts/publish.js` or `scripts/validate.js` unless explicitly requested.
-- Treat `content/ideas/` as the primary strategic brain; everything else is a projection.
+- `content/drafts/` is where blog content lives — edit there, not in ideas.
+- `content/ideas/` is for lightweight planning only — keep lean.
 - Preserve UK spelling, target personas, and the tone/quality guidelines below.
 
 ################################################################################
