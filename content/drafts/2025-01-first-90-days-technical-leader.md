@@ -14,9 +14,12 @@ target_outcome: inbound_leads
 meta_title: "First 90 Days as CTO: A Restraint-First Approach"
 meta_description: "Most technical leadership transitions fail from premature action, not inaction. Learn the restraint-first approach to your first 90 days as CTO."
 
+# Feature Image
+unsplash_prompt: "person standing still in busy office corridor, calm amid motion blur, contemplative leadership"
+
 # Display Options
 featured: false
-excerpt: "The pressure to prove yourself fast is real. It's also the number one reason technical leadership transitions fail. Here's why doing less in your first 90 days leads to bigger impact later."
+excerpt: "I was the fourth Director of Technology in eighteen months. I knew it was a red flag. I took the job anyway. Here's what I learned about restraint — and when it's not enough."
 
 # Categorisation
 tags:
@@ -25,9 +28,15 @@ tags:
   - CTO
 ---
 
-The pressure to prove yourself fast is real. Boards want visible progress. Founders expect a fresh perspective. Your new team is watching to see what kind of leader you are. And every "first 90 days" article you've read tells you the same thing: assess quickly, plan boldly, execute decisively.
+When I joined a supply chain SaaS startup as Director of Technology, I was the fourth person to hold the role in eighteen months. I knew it was a red flag. I took the job anyway.
 
-Here's the problem: that advice is optimised for consultants, not incoming leaders. And it's the number one reason technical leadership transitions fail.
+I told myself the story every ambitious leader tells: "I can fix this." The title was good. The offer was generous. And I was going through a divorce with two young kids — I needed the win, financially and emotionally. Pride and pressure make a dangerous combination.
+
+Seven months later, I was gone. The product still isn't live today.
+
+The pressure to prove yourself fast is real. Boards want visible progress. Founders expect transformation. And your own ego whispers that you're different, that you'll succeed where others failed. That voice is the most dangerous one of all.
+
+Here's the problem: most "first 90 days" advice is optimised for consultants, not incoming leaders. And it's the number one reason technical leadership transitions fail.
 
 ## Why the Standard Playbook Fails
 
@@ -85,19 +94,17 @@ Only now should you consider visible action. But apply strict criteria to what q
 
 **Bad first actions:** reorganising team structure, introducing new development processes, changing the technology stack, setting aggressive new targets, publicly critiquing past decisions.
 
-## When Premature Action Goes Wrong
+## When Restraint Isn't Enough: A Personal Lesson
 
-Consider a scenario where a new engineering director joins a Series B fintech. They're experienced, sharp, and full of ideas. Within the first month, they identify what they see as obvious problems: outdated deployment practices, unclear ownership boundaries, and a monolith that "should" be broken into services.
+When I joined that supply chain startup, I inherited five junior engineers, an expensive outsourced agency handling all the backend logic, and over thirty microservices for a product that wasn't close to finished. The founder — first-time, well-funded, deeply involved in every detail — wanted the product live-ready in six months.
 
-They propose a reorganisation in week six. Three teams become five. Reporting lines shift. A platform team is created from scratch. A migration to microservices kicks off.
+I wanted to practice restraint. I really did. But I was being asked to solve the problem *now*. So I did what felt strategic: I focused on team-building first, hiring thirty-five people to build a proper engineering department. Senior engineers, principal engineers, squad leads. The plan was to take over the backend from the agency so we'd finally own our own destiny.
 
-Six months later, the migration is behind schedule. The new platform team is understaffed and overwhelmed. Two senior engineers have left, citing unclear direction. The original monolith is now a hybrid mess — neither the old system nor the new architecture, just confused complexity.
+It was the right strategy. But I executed it without fully understanding the politics. The founder was hiding the depth of the dysfunction from her investors. The enterprise architect — whose poor requirements had caused half the delays — was politically protected. I was building an army to fight a war I didn't fully understand.
 
-The diagnosis wasn't wrong. The deployment practices were outdated. Ownership was unclear. The monolith had problems. But the leader hadn't understood **why** things were that way.
+Within seven months I was out. The product is still being built today, years later.
 
-The monolith existed because the team had explicitly chosen to avoid distributed systems complexity given their small size. The blurry ownership was a feature, not a bug — it allowed a small team to swarm on urgent issues. The "outdated" deployment process was actually quite reliable and well-understood by everyone.
-
-The new leader's changes were reasonable in isolation but catastrophic in context. They'd moved too fast to understand what they were breaking.
+Looking back, the mistake wasn't my first 90 days. It was ignoring what those days revealed. Four directors in eighteen months wasn't a challenge to overcome — it was a symptom of something unfixable. The restraint I needed wasn't in how I led. It was in whether I joined at all.
 
 ## Managing Upward Expectations
 
@@ -140,6 +147,21 @@ Block 60-90 minutes for each 1:1. Start with context questions, not problem-solv
 - Sets precedents you might regret
 - Could be interpreted as criticism of individuals
 
+## Before You Even Start: Reading the Red Flags
+
+Sometimes the most important restraint happens before day one.
+
+**Warning signs to take seriously:**
+
+- **High turnover in the role** — if you're the third or fourth person in two years, ask why
+- **Unrealistic timelines already set** — "we need this live in six months" before you've assessed anything
+- **Key technical decisions made by non-technical stakeholders** — especially if they're politically protected
+- **Opacity about the real state of things** — if you can't get straight answers in interviews, you won't get them later
+
+The best leaders I know have walked away from roles that looked great on paper. They understood that no amount of skill can fix an environment that doesn't want to be fixed.
+
+If you're reading this and already in the role — it's not too late to reassess. Sometimes restraint means acknowledging you're in an unwinnable situation and planning your exit, not your transformation.
+
 ## Common Mistakes to Avoid
 
 **Reorganising teams too early.** Team structures reflect history, relationships, and hard-won compromises. Changing them without understanding why they exist creates chaos and resentment.
@@ -160,4 +182,4 @@ Your first 90 days aren't about proving yourself. They're about earning the righ
 
 ---
 
-**Ready to structure your first 90 days?** Download the [First 90 Days as CTO Checklist](/lead-magnets/first-90-days-checklist) — a structured approach to listening, learning, and earning the right to lead change.
+**Navigating a leadership transition?** I write about technology leadership, team building, and the decisions that make or break technical organisations. [Subscribe to The Jungle Brief](/newsletter) for practical insights delivered to your inbox.
