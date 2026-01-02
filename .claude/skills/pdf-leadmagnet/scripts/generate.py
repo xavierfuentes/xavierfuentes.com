@@ -19,6 +19,7 @@ import argparse
 import os
 import re
 import sys
+from datetime import datetime
 from pathlib import Path
 
 try:
@@ -118,6 +119,12 @@ def parse_args():
         "--debug",
         action="store_true",
         help="Save intermediate HTML file for debugging"
+    )
+
+    parser.add_argument(
+        "--no-timestamp",
+        action="store_true",
+        help="Don't add date stamp to output filename"
     )
 
     return parser.parse_args()
@@ -342,10 +349,15 @@ def main():
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
+    # Add date stamp to filename unless --no-timestamp
+    if not args.no_timestamp:
+        date_stamp = datetime.now().strftime("%Y-%m")
+        output_path = output_path.with_stem(f"{date_stamp}-{output_path.stem}")
+
     print(f"Generating {args.template} PDF...")
     print(f"  Title: {args.title}")
     print(f"  Content: {args.content}")
-    print(f"  Output: {args.output}")
+    print(f"  Output: {output_path}")
 
     # Load and process content
     print("Processing content...")
@@ -411,7 +423,7 @@ def main():
     success = generate_pdf(html, str(output_path), args.engine, args.debug)
 
     if success:
-        print(f"\nPDF generated successfully: {args.output}")
+        print(f"\nPDF generated successfully: {output_path}")
         print(f"File size: {output_path.stat().st_size / 1024:.1f} KB")
     else:
         print("\nError: Failed to generate PDF.")
