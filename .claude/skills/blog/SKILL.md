@@ -28,6 +28,13 @@ Create authoritative, SEO-optimised blog posts for Ghost CMS at xavierfuentes.co
 - `context/seo.md` - SEO guidelines and meta descriptions
 - `context/structure.md` - Post structure and formatting
 
+## Brand Reference
+
+See `docs/brand-guide.md` for:
+- Colour palette (jungle-inspired: Deep Jungle, Golden Amber)
+- Typography (Sora + Source Sans 3)
+- Visual component styles
+
 ## Templates
 
 - `templates/post.md` - Blog post template with frontmatter

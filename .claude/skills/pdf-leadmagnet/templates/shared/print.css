@@ -1,0 +1,345 @@
+/* Print/PDF-Specific Styles
+ * Applied for PDF generation
+ */
+
+/* ============================================
+   Page Setup
+   ============================================ */
+
+@page {
+  size: A4;
+  margin: 20mm 15mm 25mm 15mm;
+
+  @bottom-left {
+    content: "Xavier Fuentes";
+    font-family: 'Sora', sans-serif;
+    font-size: 9pt;
+    color: #4a5a4a;
+  }
+
+  @bottom-center {
+    content: "xavierfuentes.com";
+    font-family: 'Sora', sans-serif;
+    font-size: 9pt;
+    color: #6a7a6a;
+  }
+
+  @bottom-right {
+    content: counter(page);
+    font-family: 'Sora', sans-serif;
+    font-size: 9pt;
+    color: #4a5a4a;
+  }
+}
+
+@page :first {
+  margin: 0;
+
+  @bottom-left { content: none; }
+  @bottom-center { content: none; }
+  @bottom-right { content: none; }
+}
+
+/* ============================================
+   Page Breaks
+   ============================================ */
+
+.page-break-before {
+  page-break-before: always;
+}
+
+.page-break-after {
+  page-break-after: always;
+}
+
+.avoid-break {
+  page-break-inside: avoid;
+}
+
+/* Keep headings with following content */
+h1, h2, h3, h4, h5, h6 {
+  page-break-after: avoid;
+}
+
+/* Keep tables, figures, callouts together */
+table, figure, .callout, blockquote {
+  page-break-inside: avoid;
+}
+
+/* Avoid orphaned list items */
+li {
+  page-break-inside: avoid;
+}
+
+/* ============================================
+   Cover Page
+   ============================================ */
+
+.cover-page {
+  page-break-after: always;
+  min-height: 297mm;
+  padding: 40mm 30mm;
+  background: var(--brand-primary);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.cover-logo {
+  text-align: right;
+}
+
+.cover-logo img {
+  max-height: 40px;
+  max-width: 120px;
+}
+
+.cover-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.cover-title {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.5rem;
+  color: white;
+}
+
+.cover-subtitle {
+  font-family: var(--font-body);
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 80%;
+}
+
+.cover-footer {
+  border-top: 2px solid var(--brand-accent);
+  padding-top: 1.5rem;
+}
+
+.cover-author {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.cover-website {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ============================================
+   Page Header/Footer
+   ============================================ */
+
+.page-header {
+  display: none; /* Use @page margin-boxes if supported */
+}
+
+/* Hide inline footer - using @page margin boxes instead */
+.page-footer {
+  display: none;
+}
+
+/* ============================================
+   Content Pages
+   ============================================ */
+
+.content-page {
+  padding-top: 1rem;
+}
+
+/* Welcome Section */
+.welcome-section {
+  page-break-after: always;
+  padding: 2rem 0;
+}
+
+.welcome-section h2 {
+  border-bottom: none;
+  color: var(--brand-primary);
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.welcome-hook {
+  font-size: 1.15rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.welcome-outcomes {
+  margin: 1.5rem 0;
+}
+
+.welcome-outcomes h3 {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.welcome-audience {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: var(--background-alt);
+  border-radius: 4px;
+}
+
+/* Chapter Dividers */
+.chapter-divider {
+  page-break-before: always;
+  padding: 3rem 0;
+  text-align: center;
+}
+
+.chapter-number {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--brand-accent);
+  margin-bottom: 1rem;
+}
+
+.chapter-title {
+  font-size: 2rem;
+  border-bottom: none;
+  margin: 0;
+}
+
+/* CTA Section */
+.cta-section {
+  page-break-before: always;
+  padding: 2rem 0;
+}
+
+.cta-section h2 {
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+}
+
+.cta-block {
+  margin: 1.5rem 0;
+  padding: 1.25rem;
+  background: var(--background-alt);
+  border-radius: 4px;
+  border-left: 4px solid var(--brand-accent);
+}
+
+.cta-block h3 {
+  font-size: 1.1rem;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: var(--brand-accent);
+}
+
+.cta-block p {
+  margin-bottom: 0;
+}
+
+/* About Author Section */
+.about-author {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: var(--brand-primary);
+  color: white;
+  border-radius: 4px;
+}
+
+.about-author h3 {
+  color: white;
+  margin-top: 0;
+}
+
+.about-author p {
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0;
+}
+
+/* ============================================
+   Table of Contents
+   ============================================ */
+
+.toc {
+  page-break-after: always;
+}
+
+.toc h2 {
+  border-bottom: none;
+  margin-bottom: 2rem;
+}
+
+.toc-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.toc-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px dotted var(--border-color);
+  padding-bottom: 0.5rem;
+}
+
+.toc-title {
+  font-weight: 500;
+}
+
+.toc-page {
+  font-family: var(--font-display);
+  color: var(--brand-accent);
+  padding-left: 0.5rem;
+  background: var(--background);
+}
+
+/* ============================================
+   Print Optimisations
+   ============================================ */
+
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Ensure backgrounds print */
+  .cover-page,
+  .callout,
+  th,
+  .about-author {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Remove shadows for cleaner print */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Ensure links are visible */
+  a {
+    text-decoration: underline;
+  }
+
+  /* Hide interactive elements */
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Weasyprint @page rules are defined at the top of this file */

@@ -1,0 +1,324 @@
+/* Ebook-Specific Styles
+ * Extended styles for multi-page ebook format
+ */
+
+/* ============================================
+   Page Setup for Ebooks
+   ============================================ */
+
+@page {
+  size: A4;
+  margin: 25mm 20mm 30mm 20mm;
+}
+
+@page :first {
+  margin: 0;
+}
+
+/* ============================================
+   Main Content
+   ============================================ */
+
+.main-content {
+  padding: 0;
+}
+
+.main-content h1 {
+  font-size: 2rem;
+  margin-top: 2rem;
+  page-break-before: always;
+}
+
+.main-content h1:first-child {
+  page-break-before: avoid;
+}
+
+.main-content h2 {
+  font-size: 1.5rem;
+  margin-top: 2rem;
+}
+
+.main-content h3 {
+  font-size: 1.15rem;
+  margin-top: 1.5rem;
+}
+
+/* ============================================
+   Chapter Styling
+   ============================================ */
+
+.chapter {
+  page-break-before: always;
+}
+
+.chapter:first-child {
+  page-break-before: avoid;
+}
+
+.chapter-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--brand-accent);
+}
+
+.chapter-number {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--brand-accent);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.chapter h1 {
+  margin-top: 0;
+  page-break-before: avoid;
+}
+
+/* ============================================
+   Content Elements
+   ============================================ */
+
+/* Subsections */
+.subsection {
+  margin-top: 2rem;
+}
+
+/* Examples */
+.example {
+  margin: 1.5rem 0;
+  padding: 1rem 1.25rem;
+  background: var(--background-alt);
+  border-radius: 4px;
+  border-left: 3px solid var(--text-light);
+  page-break-inside: avoid;
+}
+
+.example-title {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+/* Case Studies */
+.case-study {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  color: white;
+  border-radius: 4px;
+  page-break-inside: avoid;
+}
+
+.case-study h4 {
+  color: var(--brand-accent);
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.case-study p {
+  color: rgba(255, 255, 255, 0.9);
+  max-width: none;
+}
+
+.case-study strong {
+  color: white;
+}
+
+/* Frameworks */
+.framework {
+  margin: 1.5rem 0;
+  padding: 1.25rem;
+  border: 2px solid var(--brand-accent);
+  border-radius: 4px;
+  page-break-inside: avoid;
+}
+
+.framework-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--brand-accent);
+  margin-bottom: 1rem;
+}
+
+.framework-steps {
+  counter-reset: step;
+  list-style: none;
+  padding-left: 0;
+}
+
+.framework-steps li {
+  counter-increment: step;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.framework-steps li::before {
+  content: counter(step);
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  background: var(--brand-accent);
+  color: white;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================
+   Lists
+   ============================================ */
+
+/* Good/Bad Lists */
+.good-list,
+.bad-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.good-list li,
+.bad-list li {
+  position: relative;
+  padding-left: 1.75rem;
+}
+
+.good-list li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #22c55e;
+  font-weight: 700;
+}
+
+.bad-list li::before {
+  content: '✗';
+  position: absolute;
+  left: 0;
+  color: #ef4444;
+  font-weight: 700;
+}
+
+/* Numbered Process */
+.numbered-process {
+  counter-reset: process;
+  list-style: none;
+  padding-left: 0;
+}
+
+.numbered-process li {
+  counter-increment: process;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.numbered-process li:last-child {
+  border-bottom: none;
+}
+
+.numbered-process li::before {
+  content: counter(process);
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  background: var(--brand-primary);
+  color: white;
+  font-family: var(--font-display);
+  font-weight: 700;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================
+   Visual Elements
+   ============================================ */
+
+/* Highlight Box */
+.highlight-box {
+  background: var(--brand-accent);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 4px;
+  margin: 1.5rem 0;
+  text-align: center;
+  page-break-inside: avoid;
+}
+
+.highlight-box p {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin: 0;
+  max-width: none;
+}
+
+/* Divider */
+.section-divider {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.section-divider::before {
+  content: '• • •';
+  color: var(--brand-accent);
+  letter-spacing: 0.5em;
+}
+
+/* ============================================
+   Footnotes
+   ============================================ */
+
+.footnotes {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.footnotes ol {
+  padding-left: 1.5rem;
+}
+
+.footnotes li {
+  margin-bottom: 0.5rem;
+}
+
+/* ============================================
+   Welcome Section Ebook-Specific
+   ============================================ */
+
+.welcome-section {
+  padding: 0;
+}
+
+.welcome-section h2 {
+  font-size: 2rem;
+  color: var(--brand-primary);
+}
+
+.welcome-hook {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  border-left: 4px solid var(--brand-accent);
+  padding-left: 1.5rem;
+  margin: 1.5rem 0;
+}

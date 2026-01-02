@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }}</title>
+  <link rel="stylesheet" href="../shared/base.css">
+  <link rel="stylesheet" href="../shared/print.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    :root {
+      --brand-primary: {{ brand_colour | default('#1a1a2e') }};
+      --brand-secondary: {{ brand_secondary | default('#16213e') }};
+      --brand-accent: {{ accent_colour | default('#e94560') }};
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cover Page -->
+  <div class="cover-page checklist-cover">
+    <div class="cover-logo">
+      {% if logo_path %}
+      <img src="{{ logo_path }}" alt="{{ author }} logo">
+      {% endif %}
+    </div>
+
+    <div class="cover-content">
+      <div class="cover-badge">CHECKLIST</div>
+      <h1 class="cover-title">{{ title }}</h1>
+      {% if subtitle %}
+      <p class="cover-subtitle">{{ subtitle }}</p>
+      {% endif %}
+    </div>
+
+    <div class="cover-footer">
+      <p class="cover-author">{{ author | default('Xavier Fuentes') }}</p>
+      <p class="cover-website">{{ website | default('xavierfuentes.com') }}</p>
+    </div>
+  </div>
+
+  <!-- Intro Section (optional, compact) -->
+  {% if intro %}
+  <div class="checklist-intro content-page">
+    <h2>How to Use This Checklist</h2>
+    <p>{{ intro }}</p>
+  </div>
+  {% endif %}
+
+  <!-- Checklist Content -->
+  <div class="checklist-content content-page">
+    {{ content | safe }}
+  </div>
+
+  <!-- Notes Section (optional) -->
+  {% if show_notes %}
+  <div class="notes-section content-page">
+    <h2>Notes</h2>
+    <div class="notes-lines">
+      {% for i in range(10) %}
+      <div class="note-line"></div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- CTA Section (compact for checklist) -->
+  {% if cta %}
+  <div class="checklist-cta content-page">
+    <div class="cta-compact">
+      <h3>{{ cta.heading | default('Want more resources?') }}</h3>
+      <p>{{ cta.text }}</p>
+      {% if cta.url %}
+      <p class="cta-url">{{ cta.url }}</p>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Page Footer -->
+  <div class="page-footer">
+    <span class="page-footer-left">{{ author | default('Xavier Fuentes') }}</span>
+    <span class="page-footer-center">{{ website | default('xavierfuentes.com') }}</span>
+    <span class="page-footer-right"></span>
+  </div>
+
+</body>
+</html>

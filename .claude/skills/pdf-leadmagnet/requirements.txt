@@ -1,0 +1,9 @@
+# PDF Lead Magnet Generator Dependencies
+
+# Core dependencies
+markdown>=3.5
+Jinja2>=3.1
+
+# PDF generation (choose one)
+pdfkit>=1.0.0  # Requires wkhtmltopdf system package
+# weasyprint>=60.0  # Alternative, pure Python

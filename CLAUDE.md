@@ -51,6 +51,9 @@ DIRECTORIES:
   - LinkedIn posts derived from Ideas (1+ posts per Idea).
 - `content/junglebrief/`
   - The Jungle Brief newsletter issues.
+- `content/lead-magnets/`
+  - Source markdown and generated PDFs for downloadable resources.
+  - Checklists, cheatsheets, ebooks tied to blog content.
 
 IDEA FRONTMATTER (content/ideas/*.md):
 - `id` (string, required): unique stable identifier (e.g. `2025-01-fractional-cto-positioning`).
@@ -61,7 +64,7 @@ IDEA FRONTMATTER (content/ideas/*.md):
 - `target_audience` (string): short code (e.g. `founder_3_20_engineers`, `eng_manager_scaleup`).
 - `target_outcome` (string): e.g. `inbound_leads`, `newsletter_signup`, `authority`, `pipeline_warm`.
 - `seo_keyword` (string, optional): primary search term if relevant.
-- `lead_magnet` (string, optional): which lead magnet or CTA this should connect to.
+- `lead_magnet` (enum, optional): `checklist` | `cheatsheet` | `ebook` — triggers PDF creation for this idea.
 - `notes` (string, optional): freeform context and references.
 
 BODY OF IDEA FILE:
@@ -116,7 +119,20 @@ HIGH-LEVEL FLOW:
 2. **Draft creation**: Write the full blog post in `content/drafts/` (this is where you edit).
 3. **Review & refine**: Edit the draft directly — this is your working document.
 4. **Channel projections**: Create LinkedIn/newsletter versions from the draft.
-5. **Publish**: Move draft to `content/posts/` and run publish script.
+5. **Lead magnet** (optional): Create PDF companion in `content/lead-magnets/` if idea has `lead_magnet` set.
+6. **Publish**: Move draft to `content/posts/` and run publish script.
+
+LEAD MAGNETS:
+When to create a lead magnet:
+- **Checklist**: "How to" posts with clear steps (e.g., "First 90 Days as CTO")
+- **Cheatsheet**: Framework posts with decision matrices (e.g., "Build vs Buy")
+- **Ebook**: Deep-dive authority pieces or multi-part series
+
+Workflow:
+1. Set `lead_magnet: checklist|cheatsheet|ebook` in the idea frontmatter.
+2. Write lead magnet content in `content/lead-magnets/{slug}.md`.
+3. Generate PDF using `.claude/skills/pdf-leadmagnet/scripts/generate.py`.
+4. Reference the PDF in the blog post CTA.
 
 WHERE TO EDIT:
 - **Blog content**: Edit in `content/drafts/*.md` — this is your working document.

@@ -31,6 +31,10 @@ Create punchy, engaging LinkedIn posts that drive leads and build authority.
 - `context/format.md` - Length limits, hooks, structure
 - `context/rhythm.md` - Weekly posting schedule
 
+## Brand Reference
+
+See `docs/brand-guide.md` for visual guidelines when creating graphics or carousel images.
+
 ## Templates
 
 - `templates/post.md` - LinkedIn post template

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }}</title>
+  <link rel="stylesheet" href="../shared/base.css">
+  <link rel="stylesheet" href="../shared/print.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    :root {
+      --brand-primary: {{ brand_colour | default('#1a1a2e') }};
+      --brand-secondary: {{ brand_secondary | default('#16213e') }};
+      --brand-accent: {{ accent_colour | default('#e94560') }};
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cover Page -->
+  <div class="cover-page">
+    <div class="cover-logo">
+      {% if logo_path %}
+      <img src="{{ logo_path }}" alt="{{ author }} logo">
+      {% endif %}
+    </div>
+
+    <div class="cover-content">
+      <h1 class="cover-title">{{ title }}</h1>
+      {% if subtitle %}
+      <p class="cover-subtitle">{{ subtitle }}</p>
+      {% endif %}
+    </div>
+
+    <div class="cover-footer">
+      <p class="cover-author">{{ author | default('Xavier Fuentes') }}</p>
+      <p class="cover-website">{{ website | default('xavierfuentes.com') }}</p>
+    </div>
+  </div>
+
+  <!-- Table of Contents (if toc is provided) -->
+  {% if toc %}
+  <div class="toc content-page">
+    <h2>Contents</h2>
+    <ol class="toc-list">
+      {% for item in toc %}
+      <li class="toc-item">
+        <span class="toc-title">{{ item.title }}</span>
+        <span class="toc-page">{{ item.page }}</span>
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+  {% endif %}
+
+  <!-- Welcome Section (if provided) -->
+  {% if welcome %}
+  <div class="welcome-section content-page">
+    <h2>Welcome</h2>
+
+    {% if welcome.hook %}
+    <div class="welcome-hook">
+      {{ welcome.hook }}
+    </div>
+    {% endif %}
+
+    {% if welcome.outcomes %}
+    <div class="welcome-outcomes">
+      <h3>In this guide, you'll learn:</h3>
+      <ul>
+        {% for outcome in welcome.outcomes %}
+        <li>{{ outcome }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    {% if welcome.audience %}
+    <div class="welcome-audience">
+      <strong>This guide is for</strong> {{ welcome.audience }}
+    </div>
+    {% endif %}
+
+    {% if welcome.credibility %}
+    <p class="mt-2">{{ welcome.credibility }}</p>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- Main Content -->
+  <div class="main-content content-page">
+    {{ content | safe }}
+  </div>
+
+  <!-- CTA Section (if provided) -->
+  {% if cta %}
+  <div class="cta-section content-page">
+    <h2>{{ cta.title | default("What's Next?") }}</h2>
+
+    {% if cta.intro %}
+    <p>{{ cta.intro }}</p>
+    {% endif %}
+
+    {% if cta.primary %}
+    <div class="cta-block">
+      <h3>{{ cta.primary.heading }}</h3>
+      <p>{{ cta.primary.text }}</p>
+    </div>
+    {% endif %}
+
+    {% if cta.secondary %}
+    <div class="cta-block">
+      <h3>{{ cta.secondary.heading }}</h3>
+      <p>{{ cta.secondary.text }}</p>
+    </div>
+    {% endif %}
+
+    {% if cta.tertiary %}
+    <div class="cta-block">
+      <h3>{{ cta.tertiary.heading }}</h3>
+      <p>{{ cta.tertiary.text }}</p>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- About Author (if provided) -->
+  {% if about_author %}
+  <div class="about-author">
+    <h3>About the Author</h3>
+    <p>{{ about_author }}</p>
+  </div>
+  {% endif %}
+
+  <!-- Page Footer Template (for wkhtmltopdf) -->
+  <div class="page-footer">
+    <span class="page-footer-left">{{ author | default('Xavier Fuentes') }}</span>
+    <span class="page-footer-center">{{ website | default('xavierfuentes.com') }}</span>
+    <span class="page-footer-right"></span>
+  </div>
+
+</body>
+</html>

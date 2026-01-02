@@ -31,6 +31,13 @@ Create curated, high-signal newsletter issues that build subscriber loyalty.
 - `context/format.md` - Issue structure and section guidelines
 - `context/curation.md` - Link selection and commentary
 
+## Brand Reference
+
+See `docs/brand-guide.md` for:
+- Newsletter colour scheme (Deep Jungle header, Golden Amber accents)
+- Typography guidelines (Sora headings, Source Sans body)
+- Email template styling recommendations
+
 ## Templates
 
 - `templates/issue.md` - Full newsletter issue template
