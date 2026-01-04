@@ -19,7 +19,7 @@ unsplash_prompt: "person standing still in busy office corridor, calm amid motio
 
 # Display Options
 featured: false
-excerpt: "I was the fourth Director of Technology in eighteen months. I knew it was a red flag. I took the job anyway. Here's what I learned about restraint — and when it's not enough."
+excerpt: "Most technical leadership transitions fail from premature action, not inaction. Here's a restraint-first approach to your first 90 days — and how to know when a role isn't fixable."
 
 # Categorisation
 tags:
@@ -28,13 +28,13 @@ tags:
   - CTO
 ---
 
-When I joined a supply chain SaaS startup as Director of Technology, I was the fourth person to hold the role in eighteen months. I knew it was a red flag. I took the job anyway.
+Picture this: you're the fourth person to hold the role in eighteen months. You know it's a red flag. You take the job anyway.
 
-I told myself the story every ambitious leader tells: "I can fix this." The title was good. The offer was generous. And I was going through a divorce with two young kids — I needed the win, financially and emotionally. Pride and pressure make a dangerous combination.
+You tell yourself the story every ambitious leader tells: "I can fix this." The title is good. The offer is generous. Pride and pressure make a dangerous combination.
 
-Seven months later, I was gone. The product still isn't live today.
+Seven months later, you're gone.
 
-The pressure to prove yourself fast is real. Boards want visible progress. Founders expect transformation. And your own ego whispers that you're different, that you'll succeed where others failed. That voice is the most dangerous one of all.
+I've seen this pattern play out dozens of times — and I've lived versions of it myself. The pressure to prove yourself fast is real. Boards want visible progress. Founders expect transformation. And your own ego whispers that you're different, that you'll succeed where others failed. That voice is the most dangerous one of all.
 
 Here's the problem: most "first 90 days" advice is optimised for consultants, not incoming leaders. And it's the number one reason technical leadership transitions fail.
 
@@ -94,17 +94,19 @@ Only now should you consider visible action. But apply strict criteria to what q
 
 **Bad first actions:** reorganising team structure, introducing new development processes, changing the technology stack, setting aggressive new targets, publicly critiquing past decisions.
 
-## When Restraint Isn't Enough: A Personal Lesson
+## When Restraint Isn't Enough
 
-When I joined that supply chain startup, I inherited five junior engineers, an expensive outsourced agency handling all the backend logic, and over thirty microservices for a product that wasn't close to finished. The founder — first-time, well-funded, deeply involved in every detail — wanted the product live-ready in six months.
+Sometimes the problem isn't how you lead — it's whether you should have joined at all.
 
-I wanted to practice restraint. I really did. But I was being asked to solve the problem *now*. So I did what felt strategic: I focused on team-building first, hiring thirty-five people to build a proper engineering department. Senior engineers, principal engineers, squad leads. The plan was to take over the backend from the agency so we'd finally own our own destiny.
+Consider a common scenario: a new technology leader joins a well-funded startup. They inherit a small team, an expensive outsourced agency handling core systems, and an architecture that's grown far more complex than the product requires. The founder wants the product live in six months.
 
-It was the right strategy. But I executed it without fully understanding the politics. The founder was hiding the depth of the dysfunction from her investors. The enterprise architect — whose poor requirements had caused half the delays — was politically protected. I was building an army to fight a war I didn't fully understand.
+The new leader wants to practice restraint. They really do. But they're being asked to solve the problem *now*. So they do what feels strategic: focus on team-building first, scaling the engineering department significantly. Senior engineers, principal engineers, squad leads. The plan is to bring development in-house.
 
-Within seven months I was out. The product is still being built today, years later.
+It's the right strategy. But they execute it without fully understanding the politics. There are dynamics between stakeholders they haven't mapped. Key relationships and dependencies they don't see. They're building a team to solve a technical problem, but the real problems aren't technical.
 
-Looking back, the mistake wasn't my first 90 days. It was ignoring what those days revealed. Four directors in eighteen months wasn't a challenge to overcome — it was a symptom of something unfixable. The restraint I needed wasn't in how I led. It was in whether I joined at all.
+Within months, they're out.
+
+The mistake wasn't their first 90 days. It was ignoring what those days revealed. Four leaders in eighteen months isn't a challenge to overcome — it's a symptom of something deeper. Sometimes the restraint you need isn't in how you lead. It's in whether you join at all.
 
 ## Managing Upward Expectations
 
