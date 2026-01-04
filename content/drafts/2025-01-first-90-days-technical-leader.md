@@ -184,4 +184,4 @@ Your first 90 days aren't about proving yourself. They're about earning the righ
 
 ---
 
-**Navigating a leadership transition?** I write about technology leadership, team building, and the decisions that make or break technical organisations. [Subscribe to The Jungle Brief](/newsletter) for practical insights delivered to your inbox.
+**Navigating a leadership transition?** I put together a printable First 90 Days Checklist with the full framework — week-by-week actions, questions to ask, and red flags to watch for. [Subscribe to The Jungle Brief](/newsletter) and I'll send it straight to your inbox.
