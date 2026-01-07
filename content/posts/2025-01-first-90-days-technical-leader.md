@@ -1,7 +1,7 @@
 ---
 title: "The First 90 Days as a Technical Leader: Why Restraint Beats Rapid Change"
 slug: first-90-days-technical-leader
-status: draft
+status: published
 visibility: public
 
 # Content OS Linkage

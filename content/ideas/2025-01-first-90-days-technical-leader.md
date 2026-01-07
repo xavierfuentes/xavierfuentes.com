@@ -1,7 +1,7 @@
 ---
 id: 2025-01-first-90-days-technical-leader
 pillar: leadership-management
-status: ready_for_projection
+status: published
 primary_channel: personal_blog
 secondary_channels:
   - linkedin

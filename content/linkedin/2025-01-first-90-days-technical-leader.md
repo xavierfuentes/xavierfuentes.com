@@ -1,7 +1,7 @@
 ---
 idea_id: 2025-01-first-90-days-technical-leader
 pillar: leadership-management
-status: draft
+status: scheduled
 target_audience: new_cto, eng_manager_new_role
 target_outcome: inbound_leads
 ---
