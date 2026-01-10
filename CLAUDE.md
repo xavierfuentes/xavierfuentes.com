@@ -360,6 +360,23 @@ GHOST SYNC BEHAVIOUR:
   2. Change `status: draft` to `status: published` in frontmatter
   3. Push to main (or run `npm run publish`)
 
+GHOST MCP USAGE RULES:
+- The Ghost MCP server is available for **read-only operations only**.
+- **NEVER use Ghost MCP to create, edit, or delete posts/pages** — all publishing flows through Git.
+- Allowed MCP operations:
+  - Browse/read posts (check publish status, view stats)
+  - Browse/read members (subscriber counts, engagement)
+  - Browse newsletters (delivery stats, open rates)
+  - Debug issues (verify content synced correctly)
+- Forbidden MCP operations:
+  - `Add Post`, `Edit Post`, `Delete Post`
+  - `Add Page`, `Edit Page`, `Delete Page`
+  - Any write operation that bypasses the Git workflow
+- If asked to "publish directly" or "update Ghost", always use the Git workflow instead:
+  1. Edit the markdown file in `content/drafts/` or `content/posts/`
+  2. Commit and push to trigger GitHub Actions
+  3. Or run `npm run publish` locally
+
 REMINDER:
 - This repo is the source of truth for content and strategy.
 - External tools (n8n, Ghost Admin, LinkedIn, newsletter platform) should be treated as consumers of this content OS, not the other way around.
