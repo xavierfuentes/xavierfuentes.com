@@ -1,8 +1,13 @@
 ---
 name: editorial
-description: Use this agent when:\n- You want to check consistency between canonical ideas and their channel projections\n- You need editorial review and suggestions for content quality\n- You want to flag where changes in projections should be reflected back into ideas\n- You need suggestions for cross-links, CTAs, and content sequencing\n- Before publishing, you want a final editorial pass for quality and consistency
-
-Examples:
+description: |
+  Use this agent when:
+  - You want to check consistency between canonical ideas and their channel projections
+  - You need editorial review and suggestions for content quality
+  - You want to flag where changes in projections should be reflected back into ideas
+  - You need suggestions for cross-links, CTAs, and content sequencing
+  - Before publishing, you want a final editorial pass for quality and consistency
+examples:
 
 <example>
 Context: User wants editorial review before publishing.

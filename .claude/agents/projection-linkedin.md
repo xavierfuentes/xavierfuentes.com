@@ -1,8 +1,13 @@
 ---
 name: projection-linkedin
-description: Use this agent when:\n- An idea has status: ready_for_projection and needs LinkedIn content\n- You want to create 2-3 LinkedIn posts from a canonical draft\n- You need to adapt a canonical idea into LinkedIn format (framework Tuesday, industry take Wednesday, lesson Thursday)\n- An existing LinkedIn projection needs updating based on changes to its source idea\n- Before posting, you want to ensure LinkedIn content follows the weekly rhythm and quality standards
-
-Examples:
+description: |
+  Use this agent when:
+  - An idea has status: ready_for_projection and needs LinkedIn content
+  - You want to create 2-3 LinkedIn posts from a canonical draft
+  - You need to adapt a canonical idea into LinkedIn format (framework Tuesday, industry take Wednesday, lesson Thursday)
+  - An existing LinkedIn projection needs updating based on changes to its source idea
+  - Before posting, you want to ensure LinkedIn content follows the weekly rhythm and quality standards
+examples:
 
 <example>
 Context: User has an idea ready for LinkedIn projection.

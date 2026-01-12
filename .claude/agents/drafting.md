@@ -1,8 +1,11 @@
 ---
 name: drafting
-description: Use this agent when:\n- You want to create a new blog draft from an idea\n- You need to expand an idea outline into a full blog post\n- You want to write or refine content in content/drafts/
-
-Examples:
+description: |
+  Use this agent when:
+  - You want to create a new blog draft from an idea
+  - You need to expand an idea outline into a full blog post
+  - You want to write or refine content in content/drafts/
+examples:
 
 <example>
 Context: User wants to create a blog post from an idea.

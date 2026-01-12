@@ -1,8 +1,12 @@
 ---
 name: projection-blog
-description: Use this agent when:\n- You want to polish a draft for SEO and publication readiness\n- You need to ensure Ghost frontmatter is complete\n- You want to add an unsplash_prompt for feature images\n- Before publishing, you want a final review of blog formatting and SEO
-
-Examples:
+description: |
+  Use this agent when:
+  - You want to polish a draft for SEO and publication readiness
+  - You need to ensure Ghost frontmatter is complete
+  - You want to add an unsplash_prompt for feature images
+  - Before publishing, you want a final review of blog formatting and SEO
+examples:
 
 <example>
 Context: User wants to polish a draft before publishing.

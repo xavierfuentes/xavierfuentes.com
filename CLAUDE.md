@@ -164,6 +164,14 @@ PERSISTENT BACKLOG:
 - The backlog tracks: In Progress, Ready for Review, Next Up, and Blocked items.
 - Use this to maintain continuity across sessions and ensure nothing is forgotten.
 
+TRENDS HUB MCP:
+- The `trends-hub` MCP provides news/RSS aggregation for content research and curation.
+- Built-in sources: BBC, NYTimes, The Verge, 9to5Mac, InfoQ, and 20+ others.
+- Custom feeds configured via `TRENDS_HUB_CUSTOM_RSS_URL` env var in `.mcp.json`.
+- Current custom feeds: O'Reilly Radar, Martin Fowler, Joel on Software, Pragmatic Engineer.
+- To add more feeds: edit `.mcp.json` → `trends-hub` → `env` → `TRENDS_HUB_CUSTOM_RSS_URL` (comma-separated URLs).
+- Use for: Monday research, Jungle Brief curation, trend spotting, content ideas.
+
 MCP MEMORY SERVER:
 - The `memory` MCP server provides persistent knowledge graph storage across sessions.
 - Data stored in `.claude/memory.json` (project-local, git-tracked).

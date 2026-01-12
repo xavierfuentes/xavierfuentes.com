@@ -7,6 +7,34 @@
       "env": {
         "MEMORY_FILE_PATH": "/Users/xavi/Projects/xavierfuentes.com/.claude/memory.jsonl"
       }
+    },
+    "ghost-mcp": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@fanyangmeng/ghost-mcp"],
+      "env": {
+        "GHOST_API_URL": "https://xavierfuentes.com",
+        "GHOST_ADMIN_API_KEY": "${GHOST_ADMIN_API_KEY}",
+        "GHOST_API_VERSION": "v5.0"
+      }
+    },
+    "mailgun": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "/Users/xavi/.claude/mcp-servers/mailgun-mcp-server/src/mailgun-mcp.js"
+      ],
+      "env": {
+        "MAILGUN_API_KEY": "${MAILGUN_API_KEY}"
+      }
+    },
+    "trends-hub": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@baranwang/mcp-trends-hub"],
+      "env": {
+        "TRENDS_HUB_CUSTOM_RSS_URL": "https://feeds.feedburner.com/oreilly/radar,https://martinfowler.com/feed.atom,https://www.joelonsoftware.com/feed/,https://blog.pragmaticengineer.com/rss/"
+      }
     }
   }
 }

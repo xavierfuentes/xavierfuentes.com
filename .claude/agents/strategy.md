@@ -1,8 +1,14 @@
 ---
 name: strategy
-description: Use this agent when:\n- You want to review and maintain the idea backlog in content/ideas/\n- You need to ensure pillar distribution aligns with content strategy (30% technology-strategy, 25% leadership-management, 20% execution-delivery, 15% founder-lessons, 10% market-ai-trends)\n- You want to select which ideas should move from status: idea to status: drafting\n- You need to create new ideas from research items or external sources\n- You want to update idea metadata (target_audience, target_outcome, seo_keyword, lead_magnet)\n- Before running drafting-agent, you want strategy-agent to propose which ideas are ready for drafting
-
-Examples:
+description: |
+  Use this agent when:
+  - You want to review and maintain the idea backlog in content/ideas/
+  - You need to ensure pillar distribution aligns with content strategy (30% technology-strategy, 25% leadership-management, 20% execution-delivery, 15% founder-lessons, 10% market-ai-trends)
+  - You want to select which ideas should move from status: idea to status: drafting
+  - You need to create new ideas from research items or external sources
+  - You want to update idea metadata (target_audience, target_outcome, seo_keyword, lead_magnet)
+  - Before running drafting-agent, you want strategy-agent to propose which ideas are ready for drafting
+examples:
 
 <example>
 Context: User wants to review the idea backlog and select what to draft next.

@@ -1,8 +1,13 @@
 ---
 name: projection-junglebrief
-description: Use this agent when:\n- You want to assemble a Jungle Brief newsletter issue from multiple ideas and posts\n- You need to create newsletter content that incorporates blog posts and ideas\n- You want to ensure a newsletter issue follows the strategy (one deep insight, template/tool, curated links)\n- An existing newsletter issue needs updating with new content\n- Before sending, you want to ensure the newsletter aligns with The Jungle Brief format and quality standards
-
-Examples:
+description: |
+  Use this agent when:
+  - You want to assemble a Jungle Brief newsletter issue from multiple ideas and posts
+  - You need to create newsletter content that incorporates blog posts and ideas
+  - You want to ensure a newsletter issue follows the strategy (one deep insight, template/tool, curated links)
+  - An existing newsletter issue needs updating with new content
+  - Before sending, you want to ensure the newsletter aligns with The Jungle Brief format and quality standards
+examples:
 
 <example>
 Context: User wants to create a newsletter issue (automatic content detection).
