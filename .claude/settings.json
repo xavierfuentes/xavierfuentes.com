@@ -1,0 +1,102 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": "design|lead.?magnet|pdf|visual|slide|framework|template|cheat.?sheet|checklist|ebook|landing.?page",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'DESIGN TASK DETECTED: Before generating any visual assets, you MUST: (1) Read docs/brand-guide.md for colours, fonts, and style guidelines (2) Use the frontend-design skill/plugin for generating the design'"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if echo \"$CLAUDE_TOOL_INPUT\" | grep -qE '\\.html\"'; then echo 'HTML FILE DETECTED: Ensure you have reviewed docs/brand-guide.md and are using the frontend-design plugin for this design.'; fi"
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(tree:*)",
+      "Bash(find:*)",
+      "Bash(rm:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git reset:*)",
+      "Bash(git push:*)",
+      "Bash(npm run validate:*)",
+      "mcp__Notion__fetch",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__get-library-docs",
+      "Read(//Users/xavi/Downloads/**)",
+      "Bash(python3:*)",
+      "Bash(node:*)",
+      "mcp__Notion__search",
+      "WebSearch",
+      "mcp__Notion__notion-update-page",
+      "WebFetch(domain:www.notion.so)",
+      "mcp__Notion__notion-fetch",
+      "Read(//var/folders/04/xdz9ndws03g9lwvq0n7_sljr0000gn/T/TemporaryItems/NSIRD_screencaptureui_l4O5Sg/**)",
+      "WebFetch(domain:ghost.org)",
+      "WebFetch(domain:docs.ghost.org)",
+      "WebFetch(domain:github.com)",
+      "Bash(npm install:*)",
+      "Bash(curl:*)",
+      "Read(//private/etc/**)",
+      "Bash(dig:*)",
+      "Bash(npm run publish:*)",
+      "Bash(cat:*)",
+      "Bash(sudo dscacheutil:*)",
+      "Bash(sudo killall:*)",
+      "WebFetch(domain:docs.n8n.io)",
+      "WebFetch(domain:darrelltw.medium.com)",
+      "WebFetch(domain:ai-rockstars.com)",
+      "Bash(test:*)",
+      "WebFetch(domain:danielmiessler.com)",
+      "WebFetch(domain:simonwillison.net)",
+      "Bash(done)",
+      "Bash(grep:*)",
+      "Bash(npx --version:*)",
+      "mcp__memory__*",
+      "Bash(git rm:*)",
+      "Bash(gh run:*)",
+      "Bash(gh workflow run:*)",
+      "Bash(DEBUG=1 node scripts/publish.js:*)",
+      "Bash(git show:*)",
+      "Bash(ls:*)",
+      "Bash(chmod:*)",
+      "Bash(pip3 install markdown jinja2 pdfkit)",
+      "Bash(source:*)",
+      "Bash(pip install:*)",
+      "Bash(python:*)",
+      "Bash(pip3 install:*)",
+      "Bash(open:*)",
+      "Bash(git clone:*)",
+      "Bash(uv sync:*)",
+      "Bash(brew install:*)",
+      "Bash(echo:*)",
+      "Bash(~/.zshrc)",
+      "Bash(direnv allow:*)",
+      "Bash(npm test)",
+      "WebFetch(domain:www.npmjs.com)",
+      "WebFetch(domain:glama.ai)",
+      "WebFetch(domain:playbooks.com)",
+      "Bash(npm view:*)",
+      "Bash(npm search:*)"
+    ],
+    "deny": []
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "memory"
+  ]
+}

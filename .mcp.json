@@ -31,7 +31,7 @@
     "trends-hub": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@baranwang/mcp-trends-hub"],
+      "args": ["-y", "mcp-trends-hub"],
       "env": {
         "TRENDS_HUB_CUSTOM_RSS_URL": "https://feeds.feedburner.com/oreilly/radar,https://martinfowler.com/feed.atom,https://www.joelonsoftware.com/feed/,https://blog.pragmaticengineer.com/rss/"
       }
