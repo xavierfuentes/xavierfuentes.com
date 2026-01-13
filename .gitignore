@@ -28,6 +28,11 @@ coverage/
 node_modules/
 jspm_packages/
 
+# Python
+.venv/
+__pycache__/
+*.pyc
+
 # Optional npm cache directory
 .npm
 
