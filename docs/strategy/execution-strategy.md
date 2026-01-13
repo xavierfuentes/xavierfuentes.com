@@ -10,7 +10,7 @@
 - All pillar content should flow through `content/ideas/` first, then be projected into:
   - Blog posts in `content/posts/`.
   - LinkedIn posts in `content/linkedin/`.
-  - Jungle Brief issues/sections in `content/junglebrief/`.
+  - Jungle Brief issues/sections in `content/newsletter/`.
 
 ### Original Target Publishing Rhythm (North Star)
 

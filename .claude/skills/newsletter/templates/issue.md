@@ -1,6 +1,6 @@
 # Newsletter Issue Template
 
-Copy to `content/junglebrief/YYYY-MM-DD-issue-NN.md`
+Copy to `content/newsletter/YYYY-MM-DD-issue-NN.md`
 
 ## Frontmatter
 

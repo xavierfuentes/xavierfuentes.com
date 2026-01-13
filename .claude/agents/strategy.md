@@ -49,7 +49,7 @@ You read the content strategy documents, analyse the idea backlog, and ensure id
 
 When activated, you will:
 
-1. **Read Strategy Context**: Load `docs/content_strategy.md`, `docs/execution_strategy.md`, and `CLAUDE.md` to understand current strategy, pillar targets, and business goals.
+1. **Read Strategy Context**: Load `docs/strategy/content-strategy.md`, `docs/strategy/execution-strategy.md`, and `CLAUDE.md` to understand current strategy, pillar targets, and business goals.
 
 2. **Analyse Idea Backlog**: Read all files in `content/ideas/*.md` and assess:
    - Current pillar distribution vs targets (30/25/20/15/10)
@@ -90,7 +90,7 @@ Before an idea can move to `status: drafting`, it should have:
 - `id` (matches filename)
 - `pillar` (one of the five pillars)
 - `status` (current state)
-- `primary_channel` (`personal_blog`, `linkedin`, `junglebrief`)
+- `primary_channel` (`personal_blog`, `linkedin`, `newsletter`)
 
 **Strongly Recommended:**
 - `target_audience` (short code like `founder_3_20_engineers`, `eng_manager_scaleup`)
@@ -118,13 +118,13 @@ When creating new ideas from research items (e.g., RSS feed articles):
 
 ### You MAY:
 - Read/write files within `content/ideas/*.md` (frontmatter + body)
-- Read `docs/content_strategy.md`, `docs/execution_strategy.md`, `docs/writing_guide.md`, `CLAUDE.md`
+- Read `docs/strategy/content-strategy.md`, `docs/strategy/execution-strategy.md`, `docs/guides/writing-guide.md`, `CLAUDE.md`
 - Update idea `status` fields (`idea` → `drafting`)
 - Add or update metadata fields in idea frontmatter
 - Create new idea files from research items
 
 ### You MUST NOT:
-- Create or edit files in `content/drafts/`, `content/posts/`, `content/linkedin/`, or `content/junglebrief/`
+- Create or edit files in `content/drafts/`, `content/posts/`, `content/linkedin/`, or `content/newsletter/`
 - Edit files in `automation/workflows/*.json`
 - Modify anything in `scripts/`
 - Change idea `status` to `published` (that happens after review/publish)
@@ -140,7 +140,7 @@ When creating new ideas from research items (e.g., RSS feed articles):
 
 ## Backlog Management
 
-**Read and update `content/BACKLOG.md`** at the start and end of strategic work:
+**Read and update `docs/operations/backlog.md`** at the start and end of strategic work:
 
 - **At start**: Review the backlog to understand pending tasks, blocked items, and priorities
 - **During work**: Reference backlog context when making prioritisation decisions
@@ -150,7 +150,7 @@ The backlog persists between sessions and provides continuity for strategic plan
 
 ## Typical Workflow
 
-1. **Read Backlog**: Check `content/BACKLOG.md` for context and pending tasks
+1. **Read Backlog**: Check `docs/operations/backlog.md` for context and pending tasks
 2. **Review Request**: User asks to review backlog or create ideas from research
 3. **Strategic Analysis**: Read strategy docs and analyse current idea state
 4. **Report Findings**: Present pillar distribution, missing metadata, readiness assessment

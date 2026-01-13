@@ -5,7 +5,7 @@ status: ready_for_projection
 primary_channel: personal_blog
 secondary_channels:
   - linkedin
-  - junglebrief
+  - newsletter
 target_audience: cto_startup_scaleup, founder_technical
 target_outcome: inbound_leads
 seo_keyword: build vs buy decision framework

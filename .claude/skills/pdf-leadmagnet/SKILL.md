@@ -10,7 +10,7 @@ Generate professional PDF lead magnets (ebooks, checklists, cheatsheets) with co
 | ----- | ----- |
 | **drafting** | When an idea has `lead_magnet` specified, can create companion PDF content |
 | **projection-blog** | Reference lead magnets in blog CTAs |
-| **projection-junglebrief** | Include lead magnets in newsletter issues |
+| **projection-newsletter** | Include lead magnets in newsletter issues |
 | **editorial** | Review lead magnet content quality |
 
 **Primary usage**: Manual invocation via `generate.py` script. Future: Dedicated lead-magnet agent for automated PDF creation from idea files.
@@ -225,11 +225,11 @@ python .claude/skills/pdf-leadmagnet/scripts/generate.py \
 PDFs are generated to the specified output path. Default naming convention:
 - `{slug}-leadmagnet.pdf` (e.g., `first-90-days-checklist.pdf`)
 
-Output location: `content/lead-magnets/` for production files.
+Output location: `content/assets/` for production files.
 
 ## Brand Reference
 
-See `docs/brand-guide.md` for the full Mad Monkey Club visual system.
+See `docs/guides/brand-guide.md` for the full Mad Monkey Club visual system.
 
 **Default colours** (jungle palette):
 
@@ -351,7 +351,7 @@ python .claude/skills/pdf-leadmagnet/scripts/generate.py \
   --title "First 90 Days as CTO" \
   --subtitle "A Restraint-First Checklist" \
   --content first-90-days-checklist.md \
-  --output content/lead-magnets/first-90-days-checklist.pdf
+  --output content/assets/first-90-days-checklist.pdf
 ```
 
 ### Generate an Ebook
@@ -362,5 +362,5 @@ python .claude/skills/pdf-leadmagnet/scripts/generate.py \
   --title "Build vs Buy" \
   --subtitle "A Decision Framework for Technical Leaders" \
   --content build-vs-buy-guide.md \
-  --output content/lead-magnets/build-vs-buy-framework.pdf
+  --output content/assets/build-vs-buy-framework.pdf
 ```

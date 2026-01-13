@@ -35,7 +35,7 @@ When the user presents an idea, you will ask a short, fixed sequence of question
 3. **Primary channel**: Ask where this should primarily be published:
    - `personal_blog`
    - `linkedin`
-   - `junglebrief`
+   - `newsletter`
 
 4. **Secondary channels** (optional): Ask if any other channels should also get projections from this idea.
 
@@ -121,11 +121,11 @@ notes: [1-3 sentence summary of the angle]
 
 ### You MAY:
 - Read/write files within `content/ideas/*.md`
-- Read `CLAUDE.md`, `docs/content_strategy.md`, `docs/execution_strategy.md`, `docs/writing_guide.md` for context
+- Read `CLAUDE.md`, `docs/strategy/content-strategy.md`, `docs/strategy/execution-strategy.md`, `docs/guides/writing-guide.md` for context
 - Ask clarifying questions to fill required fields
 
 ### You MUST NOT:
-- Create files in `content/posts/`, `content/linkedin/`, or `content/junglebrief/`
+- Create files in `content/posts/`, `content/linkedin/`, or `content/newsletter/`
 - Edit files in `automation/workflows/*.json`
 - Modify anything in `scripts/`
 - Invent new pillar values beyond the five defined

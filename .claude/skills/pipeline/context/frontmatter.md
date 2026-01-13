@@ -109,7 +109,7 @@ target_outcome: "authority"
 | status | Yes | draft, ready_for_review, ready_for_posting, posted |
 | sequence | No | Order within a mini-series |
 
-## Newsletter Issues (`content/junglebrief/*.md`)
+## Newsletter Issues (`content/newsletter/*.md`)
 
 ```yaml
 ---

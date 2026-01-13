@@ -14,7 +14,7 @@ idea → drafting → published → archived
 | `content/drafts/` | Blog posts you're writing and editing | **Yes** |
 | `content/posts/` | Published blog posts | After publishing |
 | `content/linkedin/` | LinkedIn posts | Yes |
-| `content/junglebrief/` | Newsletter issues | Yes |
+| `content/newsletter/` | Newsletter issues | Yes |
 
 ### Status Definitions
 

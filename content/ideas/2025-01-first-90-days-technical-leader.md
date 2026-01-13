@@ -5,7 +5,7 @@ status: published
 primary_channel: personal_blog
 secondary_channels:
   - linkedin
-  - junglebrief
+  - newsletter
 target_audience: new_cto, eng_manager_new_role
 target_outcome: inbound_leads
 seo_keyword: first 90 days cto
@@ -233,4 +233,4 @@ Your first 90 days aren't about proving yourself. They're about earning the righ
 
 ---
 
-**Next Steps:** Download the [First 90 Days as CTO Checklist](/lead-magnets/first-90-days-checklist) — a structured approach to listening, learning, and earning the right to lead change.
+**Next Steps:** Download the [First 90 Days as CTO Checklist](/assets/first-90-days-checklist) — a structured approach to listening, learning, and earning the right to lead change.

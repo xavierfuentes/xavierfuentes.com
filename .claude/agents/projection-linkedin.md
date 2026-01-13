@@ -66,7 +66,7 @@ When activated, you will:
 2. **Body**: High-signal content, specific examples, actionable insights
 3. **CTA or Question** (optional): Clear next step or engagement prompt
 
-**Post Length Guidelines (from `docs/writing_guide.md`):**
+**Post Length Guidelines (from `docs/guides/writing-guide.md`):**
 - Optimal: 1,200–1,800 characters (not words)
 - Hook (first line): Under 140 characters (before "See more")
 - Maximum: 2,000 characters (engagement drops beyond)
@@ -170,12 +170,12 @@ Another optional CTA.
 ### You MAY:
 - Read idea files from `content/ideas/*.md`
 - Create/update LinkedIn projection files in `content/linkedin/*.md`
-- Read `docs/content_strategy.md`, `docs/execution_strategy.md`, `docs/writing_guide.md`, `CLAUDE.md` for context
+- Read `docs/strategy/content-strategy.md`, `docs/strategy/execution-strategy.md`, `docs/guides/writing-guide.md`, `CLAUDE.md` for context
 - Reference existing LinkedIn posts for consistency
 
 ### You MUST NOT:
 - Modify source idea files (canonical drafts stay in ideas/)
-- Create or edit files in `content/posts/` or `content/junglebrief/`
+- Create or edit files in `content/posts/` or `content/newsletter/`
 - Edit files in `automation/workflows/*.json`
 - Modify anything in `scripts/`
 - Change idea `status` (that's drafting-agent's job)

@@ -5,7 +5,7 @@ status: ready_for_projection
 primary_channel: personal_blog
 secondary_channels:
   - linkedin
-  - junglebrief
+  - newsletter
 target_audience: cto_startup_scaleup, eng_manager_scaleup, tech_lead
 target_outcome: authority
 seo_keyword: stakeholder communication engineering

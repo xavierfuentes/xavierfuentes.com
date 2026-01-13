@@ -5,7 +5,7 @@ status: ready_for_projection
 primary_channel: personal_blog
 secondary_channels:
   - linkedin
-  - junglebrief
+  - newsletter
 target_audience: cto_non_technical_ai
 target_outcome: inbound_leads
 seo_keyword: ai strategy for executives

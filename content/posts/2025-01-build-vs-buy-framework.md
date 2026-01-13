@@ -171,4 +171,4 @@ Before your next technology decision:
 
 The goal isn't to never build—some capabilities genuinely require custom solutions. The goal is to build deliberately, investing engineering time where it creates the most value, and buying ruthlessly everywhere else.
 
-**Want a structured template for running these assessments?** I've put together a Build vs Buy Decision Framework that walks through each question. [Download the framework here](/lead-magnets/build-vs-buy-decision-framework.html).
+**Want a structured template for running these assessments?** I've put together a Build vs Buy Decision Framework that walks through each question. [Download the framework here](/assets/build-vs-buy-decision-framework.html).

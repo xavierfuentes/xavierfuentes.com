@@ -33,7 +33,7 @@ Create punchy, engaging LinkedIn posts that drive leads and build authority.
 
 ## Brand Reference
 
-See `docs/brand-guide.md` for visual guidelines when creating graphics or carousel images.
+See `docs/guides/brand-guide.md` for visual guidelines when creating graphics or carousel images.
 
 ## Templates
 

@@ -30,7 +30,7 @@ A GitHub-based content management system for my technical leadership blog at [xa
 │   ├── posts/           # Published Ghost posts
 │   ├── pages/           # Ghost pages (About, Work With Me)
 │   ├── linkedin/        # LinkedIn projections
-│   └── junglebrief/     # Newsletter issues
+│   └── newsletter/      # Newsletter issues
 ├── .claude/
 │   ├── agents/          # Claude Code agents for content creation
 │   └── skills/          # Claude Code skills and commands
@@ -40,9 +40,9 @@ A GitHub-based content management system for my technical leadership blog at [xa
 │   ├── publish.js       # Main publishing script
 │   └── validate.js      # Content validation script
 ├── docs/
-│   ├── content_strategy.md
-│   ├── execution_strategy.md
-│   └── templates/       # Content templates
+│   ├── strategy/        # Content and execution strategy
+│   ├── guides/          # Writing and brand guides
+│   └── operations/      # Backlog and ops docs
 ├── package.json         # Node.js dependencies
 ├── CLAUDE.md            # Claude Code instructions
 └── README.md            # This file
@@ -224,7 +224,7 @@ Customize `.github/workflows/` files to:
 - **Drafts**: `content/drafts/YYYY-MM-slug.md` - Match the source idea's slug
 - **Posts**: `content/posts/YYYY-MM-slug.md` - Promoted from drafts when ready
 - **LinkedIn**: `content/linkedin/idea-id-linkedin.md` - One file per idea
-- **Newsletter**: `content/junglebrief/issue-XX.md` - Sequential issue numbers
+- **Newsletter**: `content/newsletter/issue-XX.md` - Sequential issue numbers
 
 ### SEO Best Practices
 
@@ -254,7 +254,7 @@ This repository includes a full Content OS powered by Claude Code agents, skills
 | `drafting` | Expand ideas into canonical drafts |
 | `projection-blog` | Create Ghost blog posts from ideas |
 | `projection-linkedin` | Create LinkedIn posts from ideas |
-| `projection-junglebrief` | Assemble newsletter issues |
+| `projection-newsletter` | Assemble newsletter issues |
 | `editorial` | Review consistency and quality |
 
 ### Commands (Operational Tasks)

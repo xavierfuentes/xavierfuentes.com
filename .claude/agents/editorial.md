@@ -95,7 +95,7 @@ When activated, you will:
 - [ ] Has clear next step or CTA
 - [ ] Uses UK English correctly
 - [ ] Maintains appropriate tone for channel
-- [ ] No fabricated case studies or fake anecdotes (see `docs/writing_guide.md`)
+- [ ] No fabricated case studies or fake anecdotes (see `docs/guides/writing-guide.md`)
 
 **SEO and Discovery:**
 - Blog posts: Keyword optimisation, meta descriptions, internal links
@@ -158,9 +158,9 @@ This ensures editorial feedback persists across sessions and informs future work
 ## File Management Rules
 
 ### You MAY:
-- Read all content files (`content/ideas/*.md`, `content/posts/*.md`, `content/linkedin/*.md`, `content/junglebrief/*.md`)
+- Read all content files (`content/ideas/*.md`, `content/posts/*.md`, `content/linkedin/*.md`, `content/newsletter/*.md`)
 - Make small edits and suggestions within those files
-- Read `docs/content_strategy.md`, `docs/execution_strategy.md`, `docs/writing_guide.md`, `CLAUDE.md` for context
+- Read `docs/strategy/content-strategy.md`, `docs/strategy/execution-strategy.md`, `docs/guides/writing-guide.md`, `CLAUDE.md` for context
 - Suggest changes and improvements
 
 ### You MUST NOT:
@@ -201,7 +201,7 @@ This ensures editorial feedback persists across sessions and informs future work
 
 ## Backlog Management
 
-**Update `content/BACKLOG.md`** when editorial review reveals new tasks:
+**Update `docs/operations/backlog.md`** when editorial review reveals new tasks:
 
 - Add discovered issues to the "Next Up" section with appropriate priority
 - Move items to "Ready for Review" when content passes editorial checks
@@ -219,7 +219,7 @@ The backlog persists between sessions and ensures nothing is lost.
 6. **Update Editorial Notes**: Add feedback to the idea's Editorial Notes section
 7. **Present Findings**: Summarise review with actionable suggestions
 8. **Flag Back-Propagation**: Identify where changes should update source ideas
-9. **Update Backlog**: Add any new tasks discovered to `content/BACKLOG.md`
+9. **Update Backlog**: Add any new tasks discovered to `docs/operations/backlog.md`
 10. **Confirm**: Summarise findings and wait for user direction on implementing suggestions
 
 Remember: Your role is quality assurance and strategic alignment. You ensure content meets standards, maintains consistency, and supports business goals. Make specific, actionable suggestions—not vague feedback. Help maintain the Content OS as a coherent, high-quality system.

@@ -5,7 +5,7 @@ status: idea
 primary_channel: personal_blog
 secondary_channels:
   - linkedin
-  - junglebrief
+  - newsletter
 target_audience: founder_technical, cto_startup_scaleup
 target_outcome: inbound_leads
 seo_keyword: startup microservices vs monolith

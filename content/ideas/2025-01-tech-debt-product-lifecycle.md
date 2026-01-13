@@ -5,7 +5,7 @@ status: ready_for_projection
 primary_channel: personal_blog
 secondary_channels:
   - linkedin
-  - junglebrief
+  - newsletter
 target_audience: cto_startup_scaleup, eng_manager_scaleup
 target_outcome: authority
 seo_keyword: managing tech debt product roadmap
