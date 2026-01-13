@@ -57,6 +57,7 @@ Keep last 10 completed tasks for context.
 
 | Task | Idea/File | Completed |
 |------|-----------|-----------|
+| Fix agent YAML frontmatter (enable 6 broken agents) | `.claude/agents/*.md` | 13/01/2026 |
 | Publish Build vs Buy article | `2025-01-build-vs-buy-framework` | 13/01/2026 |
 | Create Build vs Buy lead magnet | `content/lead-magnets/build-vs-buy-decision-framework.html` | 13/01/2026 |
 | Create Build vs Buy LinkedIn projections | `content/linkedin/2025-01-build-vs-buy-framework.md` | 13/01/2026 |
