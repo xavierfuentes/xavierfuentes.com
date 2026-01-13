@@ -9,6 +9,15 @@
             "command": "echo 'DESIGN TASK DETECTED: Before generating any visual assets, you MUST: (1) Read docs/brand-guide.md for colours, fonts, and style guidelines (2) Use the frontend-design skill/plugin for generating the design'"
           }
         ]
+      },
+      {
+        "matcher": "publish|commit.*push|done|finished|complete|ship",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'CONTENT WORK COMPLETE: Remember to update content/BACKLOG.md with completed tasks and any new items discovered.'"
+          }
+        ]
       }
     ],
     "PreToolUse": [
