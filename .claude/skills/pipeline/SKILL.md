@@ -31,6 +31,7 @@ Manage the content pipeline from idea to publication.
 - `context/pillars.md` - Content pillar definitions and targets
 - `context/frontmatter.md` - Frontmatter schemas for all file types
 - `context/workflow.md` - Status flow and weekly rhythm
+- `context/memory.md` - MCP Memory usage for author profile and voice queries
 
 ## Templates
 
@@ -38,7 +39,27 @@ Manage the content pipeline from idea to publication.
 
 ## Commands
 
-This skill powers the `/pipeline` command which shows:
-- Ideas by status
-- Pillar distribution vs targets
-- Stale items needing attention
+### /pipeline
+
+Run the pipeline status script to see the current state of all content.
+
+**Usage:**
+```bash
+npm run pipeline
+```
+
+**Output includes:**
+
+1. **Pipeline Status** - Counts of ideas by status (idea, drafting, ready_for_projection, published, archived) plus totals for drafts, posts, LinkedIn posts, and newsletter issues.
+
+2. **Pillar Distribution** - Active ideas by pillar with percentage vs target:
+   - ✓ = On target (within 10%)
+   - ⚠ = Under target (needs more ideas)
+   - ▲ = Over target (pause new ideas)
+
+3. **Stale Items** - Ideas in "drafting" status for 30+ days (based on YYYY-MM in the id)
+
+4. **Suggested Next Actions**:
+   - Ideas ready for drafting (have pillar and target_audience)
+   - Pillars needing more ideas (>10% under target)
+   - Drafts to review for publishing

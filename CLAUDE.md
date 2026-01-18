@@ -81,6 +81,49 @@ HIGH-LEVEL FLOW:
 
 See `docs/strategy/execution-strategy.md` for weekly rhythm.
 
+### Visual Workflow
+
+The diagram below shows how content flows through the system, from initial idea capture through to publication on Ghost CMS and projection to other channels.
+
+```mermaid
+graph TD
+    A[New Idea] --> B[idea-builder]
+    B --> C[content/ideas/]
+    C --> D[strategy agent]
+    D --> E{Select for drafting?}
+    E -->|Yes| F[drafting agent]
+    E -->|No| C
+    F --> G[content/drafts/]
+    G --> H[projection-blog agent]
+    H --> I[editorial agent]
+    I --> J{Quality check}
+    J -->|Needs work| G
+    J -->|Ready| K[Move to content/posts/]
+    K --> L[/publish command]
+    L --> M[Ghost CMS]
+    G --> N[projection-linkedin]
+    G --> O[projection-junglebrief]
+    N --> P[content/linkedin/]
+    O --> Q[content/newsletter/]
+```
+
+### Content Lifecycle States
+
+Content moves through a simple linear progression, with clear ownership at each stage.
+
+```mermaid
+stateDiagram-v2
+    [*] --> idea: Captured
+    idea --> drafting: Selected for work
+    drafting --> published: Quality approved
+    published --> archived: Content retired
+    archived --> [*]
+
+    note right of idea: content/ideas/
+    note right of drafting: content/drafts/
+    note right of published: content/posts/
+```
+
 PERSISTENT BACKLOG:
 - `docs/operations/backlog.md` tracks tasks across Claude sessions.
 - Read at session start, update when work completes.

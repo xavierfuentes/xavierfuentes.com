@@ -3,7 +3,7 @@
 ## Simplified Status Flow
 
 ```
-idea → drafting → published → archived
+idea → drafting → ready_for_projection → published → archived
 ```
 
 ### Where Content Lives
@@ -22,6 +22,7 @@ idea → drafting → published → archived
 |--------|---------|-------------|
 | idea | Captured concept, outline created | Pick for drafting |
 | drafting | Draft exists in `content/drafts/` | Review, edit, polish |
+| ready_for_projection | Draft complete, ready for channel adaptation | Create LinkedIn/newsletter projections |
 | published | Blog post is live | Monitor performance |
 | archived | No longer relevant | None |
 
@@ -77,12 +78,80 @@ idea-builder → creates idea file (status: idea)
 strategy-agent → reviews, proposes for drafting
                     ↓
 drafting-agent → creates draft in content/drafts/
+                 sets idea status: drafting
+                    ↓
+drafting-agent → completes draft, sets idea status: ready_for_projection
                     ↓
 projection-blog → polishes for SEO
+projection-linkedin → creates LinkedIn posts
+projection-junglebrief → assembles newsletter content
                     ↓
 editorial-agent → reviews quality
                     ↓
-You → publish (move to posts/, run /publish)
+You → publish (move to posts/, run /publish, set idea status: published)
+```
+
+## Agent Handoff Flow (Detailed)
+
+The sequence diagram below shows the detailed interaction between agents during the content creation process.
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant IB as idea-builder
+    participant SA as strategy
+    participant DA as drafting
+    participant PB as projection-blog
+    participant PL as projection-linkedin
+    participant EA as editorial
+
+    User->>IB: "I have an idea about X"
+    IB->>User: Creates content/ideas/YYYY-MM-slug.md
+    Note over IB: Status: idea
+
+    User->>SA: "What should I draft next?"
+    SA->>User: Recommends ideas for drafting
+
+    User->>DA: "Draft the X idea"
+    DA->>User: Creates content/drafts/YYYY-MM-slug.md
+    Note over DA: Status: drafting
+
+    User->>DA: "Complete the draft"
+    DA->>User: Draft finalised
+    Note over DA: Status: ready_for_projection
+
+    User->>PB: "Polish X draft for SEO"
+    PB->>User: Updates draft with SEO/frontmatter
+
+    User->>PL: "Create LinkedIn posts from X"
+    PL->>User: Creates content/linkedin/ posts
+
+    User->>EA: "Review X draft"
+    EA->>User: Provides review report
+    Note over EA: Quality gate
+
+    User->>User: Move to content/posts/
+    User->>User: Run /publish
+    Note over User: Status: published
+```
+
+## Channel Projection Flow
+
+Drafts can be projected to multiple channels simultaneously.
+
+```mermaid
+graph LR
+    D[content/drafts/] --> B[projection-blog]
+    D --> L[projection-linkedin]
+    D --> N[projection-junglebrief]
+
+    B --> P[content/posts/]
+    L --> LI[content/linkedin/]
+    N --> NL[content/newsletter/]
+
+    P --> G[Ghost CMS]
+    LI --> LP[LinkedIn Platform]
+    NL --> E[Email via Ghost]
 ```
 
 ## Key Principle

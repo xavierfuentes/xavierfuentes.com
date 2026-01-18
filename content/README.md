@@ -13,6 +13,36 @@ ideas/     →     drafts/     →     posts/
 2. **drafts/** - Full blog content (this is where you write)
 3. **posts/** - Published to Ghost (move here when ready to go live)
 
+### Visual Flow
+
+```mermaid
+graph LR
+    subgraph Planning
+        I[content/ideas/]
+    end
+
+    subgraph Writing
+        D[content/drafts/]
+    end
+
+    subgraph Published
+        P[content/posts/]
+    end
+
+    I -->|"status: idea → drafting"| D
+    D -->|"status: drafting → published"| P
+    P -->|"/publish"| G[Ghost CMS]
+```
+
+### Status to Directory Mapping
+
+| Status | Directory | Description |
+|--------|-----------|-------------|
+| `idea` | `content/ideas/` | Captured concept with outline |
+| `drafting` | `content/drafts/` | Active writing and editing |
+| `published` | `content/posts/` | Live on Ghost |
+| `archived` | `content/posts/` | Retired content |
+
 ## Projections (Derived Content)
 
 | Directory | Purpose |

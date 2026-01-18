@@ -1,7 +1,7 @@
 ---
 id: 2025-01-tech-debt-product-lifecycle
 pillar: technology-strategy
-status: ready_for_projection
+status: drafting
 primary_channel: personal_blog
 secondary_channels:
   - linkedin

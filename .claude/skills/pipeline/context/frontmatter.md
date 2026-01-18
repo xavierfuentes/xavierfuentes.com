@@ -25,7 +25,7 @@ notes: "Context and references"      # Optional
 |-------|----------|------|-------|
 | id | Yes | string | Format: YYYY-MM-slug |
 | pillar | Yes | enum | See pillar definitions |
-| status | Yes | enum | idea, drafting, published, archived |
+| status | Yes | enum | idea, drafting, ready_for_projection, published, archived |
 | primary_channel | Yes | enum | personal_blog, linkedin, newsletter |
 | secondary_channels | No | array | Any of the channel enums |
 | target_audience | Yes | string | Short code describing persona |
@@ -37,11 +37,12 @@ notes: "Context and references"      # Optional
 ### Status Flow
 
 ```
-idea → drafting → published → archived
+idea → drafting → ready_for_projection → published → archived
 ```
 
 When an idea moves to `drafting`, create a draft file in `content/drafts/`.
 The draft file is where you write and edit — ideas stay lean.
+When the draft is complete and ready for channel adaptation (LinkedIn, newsletter), set status to `ready_for_projection`.
 
 ## Blog Posts (`content/posts/*.md`, `content/drafts/*.md`)
 
@@ -155,3 +156,59 @@ Standard codes for `target_outcome`:
 | authority | Build thought leadership |
 | pipeline_warm | Nurture existing leads |
 | newsletter_engagement | Deepen subscriber relationship |
+
+## Status Taxonomy by Content Type
+
+Each content type has its own status flow, reflecting different review and publishing processes.
+
+### Ideas (`content/ideas/`)
+
+```
+idea → drafting → ready_for_projection → published → archived
+```
+
+| Status | Meaning |
+|--------|---------|
+| idea | Captured concept, outline created |
+| drafting | Draft exists in `content/drafts/`, actively being written |
+| ready_for_projection | Draft complete, ready for channel adaptation (LinkedIn, newsletter) |
+| published | Blog post is live on Ghost |
+| archived | No longer relevant |
+
+### Blog Posts (`content/drafts/`, `content/posts/`)
+
+```
+draft → published (or scheduled)
+```
+
+| Status | Meaning |
+|--------|---------|
+| draft | Work in progress in `content/drafts/` |
+| scheduled | Set to publish at a future date |
+| published | Live on Ghost |
+
+### LinkedIn (`content/linkedin/`)
+
+```
+draft → ready_for_review → ready_for_posting → posted
+```
+
+| Status | Meaning |
+|--------|---------|
+| draft | Initial creation |
+| ready_for_review | Content complete, awaiting editorial review |
+| ready_for_posting | Reviewed and approved, ready to post |
+| posted | Published on LinkedIn |
+
+### Newsletter (`content/newsletter/`)
+
+```
+draft → ready_for_review → scheduled → sent
+```
+
+| Status | Meaning |
+|--------|---------|
+| draft | Issue being assembled |
+| ready_for_review | Content complete, awaiting editorial review |
+| scheduled | Approved and scheduled for send |
+| sent | Delivered to subscribers |

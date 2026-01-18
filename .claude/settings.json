@@ -2,7 +2,7 @@
   "hooks": {
     "UserPromptSubmit": [
       {
-        "matcher": "design|lead.?magnet|pdf|visual|slide|framework|template|cheat.?sheet|checklist|ebook|landing.?page",
+        "matcher": "(?:create|design|build|generate).{0,30}(?:lead.?magnet|pdf|visual|slide|ebook|landing.?page)|html.{0,20}(?:asset|lead)",
         "hooks": [
           {
             "type": "command",
@@ -11,11 +11,11 @@
         ]
       },
       {
-        "matcher": "publish|commit.*push|done|finished|complete|ship",
+        "matcher": "/publish|npm.run.publish|ready.to.publish|commit.*push|all.done|tasks?.complete|ready.to.ship",
         "hooks": [
           {
             "type": "command",
-            "command": "echo 'CONTENT WORK COMPLETE: Remember to update content/BACKLOG.md with completed tasks and any new items discovered.'"
+            "command": "echo 'CONTENT WORK COMPLETE: Remember to update docs/operations/backlog.md with completed tasks and any new items discovered.'"
           }
         ]
       }
@@ -104,8 +104,5 @@
     ],
     "deny": []
   },
-  "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": [
-    "memory"
-  ]
+  "enableAllProjectMcpServers": true
 }

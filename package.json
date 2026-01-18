@@ -6,6 +6,8 @@
   "scripts": {
     "publish": "node scripts/publish.js",
     "validate": "node scripts/validate.js",
+    "pipeline": "node scripts/pipeline.js",
+    "sync-check": "node scripts/sync-check.js",
     "test": "node scripts/validate.js"
   },
   "keywords": [

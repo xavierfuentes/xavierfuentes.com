@@ -55,6 +55,8 @@ class ContentValidator {
       this.validateFrontmatter(frontmatterData, filePath, type);
       this.validateMarkdown(markdownContent, filePath);
       this.validateFileStructure(filePath, type);
+      this.validateLeadMagnet(frontmatterData, filePath);
+      this.validateWordCount(frontmatterData, markdownContent, filePath, type);
     } catch (error) {
       this.addError(filePath, `Failed to parse file: ${error.message}`);
     }
@@ -83,6 +85,10 @@ class ContentValidator {
       "target_outcome",
       // Feature image
       "unsplash_prompt",
+      // Lead magnet
+      "lead_magnet",
+      // Content type for word count validation
+      "content_type",
     ];
 
     for (const field of requiredFields) {
@@ -293,6 +299,121 @@ class ContentValidator {
         "Filename should contain only lowercase letters, numbers, and hyphens"
       );
     }
+  }
+
+  validateLeadMagnet(frontmatter, filePath) {
+    if (!frontmatter.lead_magnet) {
+      return;
+    }
+
+    const leadMagnetName = frontmatter.lead_magnet;
+    const slugifiedName = this.slugify(leadMagnetName);
+    const assetsDir = path.join(process.cwd(), "content/assets");
+
+    // Check for common lead magnet file extensions
+    const extensions = [".pdf", ".html", ".md"];
+    let found = false;
+
+    for (const ext of extensions) {
+      const assetPath = path.join(assetsDir, `${slugifiedName}${ext}`);
+      if (fs.existsSync(assetPath)) {
+        found = true;
+        break;
+      }
+    }
+
+    // Also check with glob for partial matches (e.g., YYYY-MM-slug.pdf)
+    if (!found) {
+      const patterns = extensions.map((ext) => `*${slugifiedName}*${ext}`);
+      for (const pattern of patterns) {
+        const matches = glob.sync(path.join(assetsDir, pattern));
+        if (matches.length > 0) {
+          found = true;
+          break;
+        }
+      }
+    }
+
+    if (!found) {
+      this.addWarning(
+        filePath,
+        `Lead magnet asset not found: expected file matching "${slugifiedName}" in content/assets/`
+      );
+    }
+  }
+
+  slugify(text) {
+    return text
+      .toString()
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "-") // Replace spaces with hyphens
+      .replace(/[^\w-]+/g, "") // Remove non-word characters
+      .replace(/--+/g, "-") // Replace multiple hyphens with single
+      .replace(/^-+/, "") // Remove leading hyphens
+      .replace(/-+$/, ""); // Remove trailing hyphens
+  }
+
+  validateWordCount(frontmatter, markdown, filePath, type) {
+    // Only validate posts, not pages
+    if (type !== "post") {
+      return;
+    }
+
+    const wordCount = this.countWords(markdown);
+    const contentType = frontmatter.content_type || "default";
+
+    // Word count ranges from .claude/content-standards.md
+    const wordCountRanges = {
+      default: { min: 1500, max: 1800 },
+      framework: { min: 1500, max: 2000 },
+      "how-to": { min: 1500, max: 2000 },
+      "thought-leadership": { min: 1800, max: 2200 },
+      "case-study": { min: 2000, max: 2500 },
+      opinion: { min: 800, max: 1200 },
+      "hot-take": { min: 800, max: 1200 },
+    };
+
+    const range = wordCountRanges[contentType] || wordCountRanges.default;
+
+    if (wordCount < range.min) {
+      this.addWarning(
+        filePath,
+        `Word count (${wordCount}) is below recommended minimum (${range.min}) for ${contentType} content`
+      );
+    } else if (wordCount > range.max) {
+      this.addWarning(
+        filePath,
+        `Word count (${wordCount}) exceeds recommended maximum (${range.max}) for ${contentType} content`
+      );
+    }
+  }
+
+  countWords(markdown) {
+    if (!markdown || markdown.trim().length === 0) {
+      return 0;
+    }
+
+    // Remove code blocks
+    let text = markdown.replace(/```[\s\S]*?```/g, "");
+    text = text.replace(/`[^`]+`/g, "");
+
+    // Remove markdown formatting
+    text = text.replace(/!\[.*?\]\(.*?\)/g, ""); // Images
+    text = text.replace(/\[([^\]]+)\]\(.*?\)/g, "$1"); // Links (keep text)
+    text = text.replace(/#{1,6}\s+/g, ""); // Headers
+    text = text.replace(/[*_]{1,3}([^*_]+)[*_]{1,3}/g, "$1"); // Bold/italic
+    text = text.replace(/>\s+/g, ""); // Blockquotes
+    text = text.replace(/[-*+]\s+/g, ""); // List markers
+    text = text.replace(/\d+\.\s+/g, ""); // Numbered list markers
+
+    // Remove extra whitespace and split into words
+    const words = text
+      .trim()
+      .split(/\s+/)
+      .filter((word) => word.length > 0);
+
+    return words.length;
   }
 
   isValidDate(dateValue) {

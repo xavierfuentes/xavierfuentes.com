@@ -5,7 +5,7 @@
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-memory"],
       "env": {
-        "MEMORY_FILE_PATH": "/Users/xavi/Projects/xavierfuentes.com/.claude/memory.jsonl"
+        "MEMORY_FILE_PATH": "${PWD}/.claude/data/memory.jsonl"
       }
     },
     "ghost-mcp": {
