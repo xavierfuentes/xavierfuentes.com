@@ -1,7 +1,7 @@
 ---
 id: 2025-01-stakeholder-comms-managing-up
 pillar: execution-delivery
-status: ready_for_projection
+status: published
 primary_channel: personal_blog
 secondary_channels:
   - linkedin

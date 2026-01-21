@@ -1,7 +1,7 @@
 ---
 title: "Why Technical Leaders Get Micromanaged (And How to Earn Autonomy Through Stakeholder Communication)"
 slug: stakeholder-comms-managing-up
-status: draft
+status: published
 visibility: public
 
 # Content OS Linkage

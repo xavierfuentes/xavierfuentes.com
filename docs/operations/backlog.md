@@ -2,7 +2,7 @@
 
 A persistent task list that survives between Claude sessions. Agents should read this at the start of strategic work and update it when tasks are completed or added.
 
-**Last Updated:** 17/01/2026
+**Last Updated:** 19/01/2026
 
 ---
 
@@ -32,7 +32,6 @@ Prioritised tasks to tackle next.
 
 | Priority | Task | Idea/File | Notes |
 |----------|------|-----------|-------|
-| High | Polish Stakeholder Comms draft | `2025-01-stakeholder-comms-managing-up` | Replace hypothetical with real story, add personal close |
 | High | Create LinkedIn projections | `2025-12-claude-code-project-framework` | 4 posts: CLAUDE.md, classification, handoff, over-engineering |
 | Medium | Polish Tech Debt draft | `2025-01-tech-debt-product-lifecycle` | Add warmth, personal moment |
 
@@ -54,6 +53,7 @@ Keep last 10 completed tasks for context.
 
 | Task | Idea/File | Completed |
 |------|-----------|-----------|
+| Publish Stakeholder Comms article + LinkedIn | `2025-01-stakeholder-comms-managing-up` | 19/01/2026 |
 | Content OS improvements round 2 | `.claude/`, `scripts/` | 17/01/2026 |
 | Major Content OS refactor: agents, skills, hooks | `.claude/` | 17/01/2026 |
 | Post Build vs Buy LinkedIn series (3/4 posted) | `content/linkedin/2025-01-build-vs-buy-framework.md` | 15/01/2026 |
