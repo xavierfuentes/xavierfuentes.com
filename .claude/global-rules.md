@@ -54,13 +54,9 @@ All content must use UK English spelling and conventions:
 - Ghost CMS is downstream and will be overwritten on publish
 - Any edits made directly in Ghost Admin will be lost
 
-### Ghost MCP Usage
+### Writing to Ghost
 
-- **NEVER use Ghost MCP to write or edit content**
-- Ghost MCP may only be used for:
-  - Reading post metadata
-  - Checking publication status
-  - Browsing existing content
+- **NEVER write to Ghost directly** (Admin UI or API) – only `scripts/publish.js` writes
 - All content changes flow through Git commits
 
 ### Publishing Flow
@@ -143,7 +139,7 @@ Every piece of content must pass these checks before publishing:
 ## Hard Rules Summary
 
 1. Repository is source of truth (Ghost is downstream)
-2. Never use Ghost MCP to write content
+2. Never write to Ghost directly; publish via `scripts/publish.js`
 3. Never edit protected directories
 4. UK English always
 5. Ideas stay lean; drafts get the full content

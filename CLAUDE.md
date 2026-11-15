@@ -175,7 +175,7 @@ Every piece must:
 ################################################################################
 
 1. **NEVER edit `workflows/n8n/*.json`** – managed via n8n UI.
-2. **NEVER use Ghost MCP to write** – all publishing flows through Git.
+2. **NEVER write to Ghost directly** (Admin UI or API) – all publishing flows through Git and `scripts/publish.js`.
 3. **Edit in `content/drafts/`** – not in ideas (keep ideas lean).
 4. **UK English always** – colour, optimise, realise, whilst, amongst.
 5. **Repo is source of truth** – Ghost is downstream, will be overwritten.
