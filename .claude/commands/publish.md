@@ -1,3 +1,7 @@
+---
+description: Sync content/drafts, posts and pages to Ghost via scripts/publish.js (npm run publish).
+---
+
 # /publish Command
 
 Sync all content from the repo to Ghost CMS.

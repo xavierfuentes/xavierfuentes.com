@@ -10,7 +10,6 @@ The following directories are managed externally and must never be modified by a
 
 | Directory | Reason |
 |-----------|--------|
-| `automation/workflows/*.json` | Managed via n8n UI |
 | `workflows/n8n/*.json` | Managed via n8n UI |
 | `scripts/` | Infrastructure code requiring manual review |
 

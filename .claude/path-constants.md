@@ -50,7 +50,6 @@ These directories are managed externally:
 
 | Path | Managed By |
 |------|------------|
-| `automation/workflows/*.json` | n8n UI |
 | `workflows/n8n/*.json` | n8n UI |
 | `scripts/` | Manual review only |
 
@@ -86,7 +85,6 @@ Track work and status:
 | Path | Purpose |
 |------|---------|
 | `docs/operations/backlog.md` | Persistent task backlog across sessions |
-| `docs/operations/content-os-audit.md` | System health and improvement notes |
 
 ---
 
@@ -101,11 +99,11 @@ Each skill has a consistent structure:
 │   ├── voice.md          # Voice and tone
 │   ├── format.md         # Format guidelines
 │   └── ...
-├── templates/            # Output templates
-│   └── {type}.md
-└── commands/             # Slash commands (optional)
-    └── {command}.md
+└── templates/            # Output templates
+    └── {type}.md
 ```
+
+Slash commands live in `.claude/commands/` (`/publish`, `/validate`, `/promote`). Claude Code does not load commands from inside a skill folder.
 
 ### Available Skills
 

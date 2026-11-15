@@ -1,3 +1,7 @@
+---
+description: Move a draft from content/drafts/ to content/posts/ and set status: published.
+---
+
 # /promote Command
 
 Move a draft to published status.

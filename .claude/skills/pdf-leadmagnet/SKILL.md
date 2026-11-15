@@ -1,3 +1,8 @@
+---
+name: pdf-leadmagnet
+description: Generate branded PDF lead magnets (ebooks, checklists, cheatsheets) from Markdown with the bundled templates and scripts/generate.py. Use when an idea has `lead_magnet` set, or when turning blog content into a gated downloadable asset.
+---
+
 # PDF Lead Magnet Generator
 
 Generate professional PDF lead magnets (ebooks, checklists, cheatsheets) with consistent branding and high-quality typography.

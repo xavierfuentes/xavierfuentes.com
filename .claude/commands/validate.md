@@ -1,3 +1,7 @@
+---
+description: Check frontmatter validity across all content files (npm run validate).
+---
+
 # /validate Command
 
 Check frontmatter validity across all content files.

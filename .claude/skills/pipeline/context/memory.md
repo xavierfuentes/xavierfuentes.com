@@ -2,7 +2,7 @@
 
 The `memory` MCP server provides persistent knowledge graph storage across Claude sessions. Use it for context that should persist but doesn't need to be in version-controlled markdown files.
 
-**Storage Location:** `.claude/memory.json` (project-local)
+**Storage Location:** `.claude/data/memory.jsonl` (project-local)
 
 You can inspect the raw graph by reading this file if needed.
 

@@ -234,7 +234,7 @@ a:hover {
 
 ## Voice & Tone (Writing Style)
 
-This brand guide focuses on visual identity. See `docs/content_strategy.md` for:
+This brand guide focuses on visual identity. See `docs/strategy/content-strategy.md` for:
 - Writing voice guidelines
 - Content pillar definitions
 - Target audience personas
@@ -290,4 +290,4 @@ This brand guide focuses on visual identity. See `docs/content_strategy.md` for:
 | PDF templates | `.claude/skills/pdf-leadmagnet/templates/` |
 | Typography guide | `.claude/skills/pdf-leadmagnet/context/typography.md` |
 | Design principles | `.claude/skills/pdf-leadmagnet/context/design-principles.md` |
-| Content strategy | `docs/content_strategy.md` |
+| Content strategy | `docs/strategy/content-strategy.md` |
