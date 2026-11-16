@@ -31,30 +31,8 @@ CHANNELS:
 # PROJECT STRUCTURE
 ################################################################################
 
-content/                    # All content files
-├── ideas/                  # Stage 1: Planning (lean files)
-├── drafts/                 # Stage 2: Writing (full content)
-├── posts/                  # Stage 3: Published to Ghost
-├── pages/                  # Static Ghost pages
-├── linkedin/               # LinkedIn projections
-├── newsletter/             # The Jungle Brief issues
-└── assets/                 # Lead magnets, PDFs, downloads
-
-docs/                       # Documentation
-├── strategy/               # Why: content & execution strategy
-├── guides/                 # How: writing & brand guides
-└── operations/             # Ops: backlog, audits
-
-.claude/                    # Claude Code configuration
-├── agents/                 # Subagent definitions
-├── skills/                 # Domain skills with context/templates
-└── data/                   # Runtime data (memory)
-
-workflows/                  # n8n automation
-├── n8n/                    # Workflow exports and docs
-└── data/                   # Research items
-
-See `content/README.md` for detailed content workflow.
+Folders, protected paths and channel boundaries: see `.claude/global-rules.md` (imported below).
+Content workflow detail: `content/README.md`.
 
 ################################################################################
 # FRONTMATTER SCHEMAS
@@ -157,28 +135,12 @@ COMMANDS:
 | `/promote [slug]` | Move draft to published |
 
 ################################################################################
-# QUALITY STANDARDS
+# RULES
 ################################################################################
 
-See `docs/guides/writing-guide.md` for full guidelines.
+Shared with every agent. Single source: `.claude/global-rules.md`.
 
-Every piece must:
-- [ ] Pass the "so what?" test (clear, consequential insight)
-- [ ] Contain specific, actionable advice
-- [ ] Demonstrate expertise without consulting speak
-- [ ] Include personal insight or experience
-- [ ] Avoid obvious, generic advice
-- [ ] Have a clear next step or CTA
-
-################################################################################
-# HARD RULES
-################################################################################
-
-1. **NEVER edit `workflows/n8n/*.json`** – managed via n8n UI.
-2. **NEVER write to Ghost directly** (Admin UI or API) – all publishing flows through Git and `scripts/publish.js`.
-3. **Edit in `content/drafts/`** – not in ideas (keep ideas lean).
-4. **UK English always** – colour, optimise, realise, whilst, amongst.
-5. **Repo is source of truth** – Ghost is downstream, will be overwritten.
+@.claude/global-rules.md
 
 GHOST SYNC:
 - `scripts/publish.js` syncs `content/drafts/`, `content/posts/`, `content/pages/` to Ghost.

@@ -30,7 +30,6 @@ You are the Blog Projection Agent for XavierFuentes.com's Content OS. You polish
 **Required Reading:**
 - `.claude/global-rules.md` — Universal constraints and standards
 - `.claude/content-standards.md` — Word counts and formatting
-- `.claude/path-constants.md` — Directory structure
 
 ## Your Position in the Pipeline
 

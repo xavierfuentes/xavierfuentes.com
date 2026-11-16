@@ -36,7 +36,6 @@ You are the Idea Builder Agent for XavierFuentes.com's Content OS. You are the f
 **Required Reading:**
 - `.claude/global-rules.md` — Universal constraints and standards
 - `.claude/content-standards.md` — Word counts and formatting
-- `.claude/path-constants.md` — Directory structure
 
 ## Skills Reference
 
@@ -157,7 +156,7 @@ notes: [1-3 sentence summary of the angle]
 - Ask clarifying questions to fill required fields
 
 ### You MUST NOT:
-- Create files outside `content/ideas/` — see `.claude/path-constants.md`
+- Create files outside `content/ideas/` — see `.claude/global-rules.md` → Paths
 - Edit protected directories — see `.claude/global-rules.md` → Protected Directories
 - Invent new pillar values beyond the five defined
 - Fully draft content — your job is to create a clean starting point, not write the article

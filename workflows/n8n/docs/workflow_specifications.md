@@ -613,7 +613,7 @@ return [{ json: exportData }];
 **Type:** GitHub → Create/Update File
 **Config:**
 - Repository: xavierfuentes.com
-- Path: `automation/research_items.json`
+- Path: `workflows/data/research-items.json`
 - Content: `{{ JSON.stringify($json, null, 2) }}`
 - Message: `chore: update research items export`
 
@@ -677,6 +677,6 @@ const id = crypto.randomUUID();
 
 ---
 
-*For table schemas, see `/automation/docs/data_table_schemas.md`*
+*For table schemas, see `workflows/n8n/docs/data_table_schemas.md`*
 
-*For architecture overview, see `/automation/docs/workflow_architecture.md`*
+*For architecture overview, see `workflows/n8n/docs/workflow_architecture.md`*

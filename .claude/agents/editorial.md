@@ -39,7 +39,6 @@ You are the Editorial Agent for XavierFuentes.com's Content OS. You review conte
 **Required Reading:**
 - `.claude/global-rules.md` — Universal constraints and standards
 - `.claude/content-standards.md` — Word counts and formatting
-- `.claude/path-constants.md` — Directory structure
 
 ## Skills Reference
 

@@ -37,7 +37,6 @@ You are the LinkedIn Projection Agent for XavierFuentes.com's Content OS. You tr
 **Required Reading:**
 - `.claude/global-rules.md` — Universal constraints and standards
 - `.claude/content-standards.md` — Word counts and formatting
-- `.claude/path-constants.md` — Directory structure
 
 ## Skills Reference
 

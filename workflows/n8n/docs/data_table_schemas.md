@@ -374,6 +374,6 @@ Archiving: 45 days old OR score < 5
 
 ---
 
-*For workflow details, see `/automation/docs/workflow_specifications.md`*
+*For workflow details, see `workflows/n8n/docs/workflow_specifications.md`*
 
-*For architecture overview, see `/automation/docs/workflow_architecture.md`*
+*For architecture overview, see `workflows/n8n/docs/workflow_architecture.md`*

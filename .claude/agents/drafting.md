@@ -29,7 +29,6 @@ You are the Drafting Agent for XavierFuentes.com's Content OS. You create and re
 **Required Reading:**
 - `.claude/global-rules.md` — Universal constraints and standards
 - `.claude/content-standards.md` — Word counts and formatting
-- `.claude/path-constants.md` — Directory structure
 
 ## Key Principle: Drafts Are the Working Document
 

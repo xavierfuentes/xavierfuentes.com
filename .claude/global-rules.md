@@ -67,6 +67,25 @@ All content must use UK English spelling and conventions:
 
 ---
 
+## Paths
+
+| Path | Purpose |
+|------|---------|
+| `content/ideas/` | Stage 1: lean idea files (metadata + outline) |
+| `docs/strategy/` | Why: content and execution strategy |
+| `docs/guides/` | How: writing and brand guides |
+| `docs/operations/backlog.md` | Persistent task backlog across sessions |
+| `.claude/agents/` | Subagent definitions |
+| `.claude/skills/` | Skills: `SKILL.md` + `context/` + `templates/` |
+| `.claude/commands/` | Slash commands: `/publish`, `/validate`, `/promote` |
+| `.claude/skills/pipeline/context/frontmatter.md` | All frontmatter schemas |
+| `.claude/skills/pipeline/context/pillars.md` | Pillar definitions |
+| `.claude/data/memory.jsonl` | Project-local MCP memory |
+
+Channel directories are listed under Channel Boundaries below.
+
+---
+
 ## Channel Boundaries
 
 Each content type has a dedicated directory. Do not mix content types:

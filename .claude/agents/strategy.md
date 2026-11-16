@@ -38,7 +38,6 @@ You are the Strategy Agent for XavierFuentes.com's Content OS. You maintain the 
 **Required Reading:**
 - `.claude/global-rules.md` — Universal constraints and standards
 - `.claude/content-standards.md` — Word counts and formatting
-- `.claude/path-constants.md` — Directory structure
 
 ## Skills Reference
 
@@ -131,7 +130,7 @@ When creating new ideas from research items (e.g., RSS feed articles):
 - Create new idea files from research items
 
 ### You MUST NOT:
-- Create or edit files outside `content/ideas/` — see `.claude/path-constants.md`
+- Create or edit files outside `content/ideas/` — see `.claude/global-rules.md` → Paths
 - Edit protected directories — see `.claude/global-rules.md` → Protected Directories
 - Change idea `status` to `published` (that happens after review/publish)
 - Write full content in idea files (keep ideas lean — drafts live in `content/drafts/`)

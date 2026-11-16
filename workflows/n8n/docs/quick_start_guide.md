@@ -237,8 +237,8 @@ This separation keeps automation simple and gives you control over what becomes 
 
 ---
 
-*For detailed schemas: `/automation/docs/data_table_schemas.md`*
+*For detailed schemas: `workflows/n8n/docs/data_table_schemas.md`*
 
-*For architecture: `/automation/docs/workflow_architecture.md`*
+*For architecture: `workflows/n8n/docs/workflow_architecture.md`*
 
-*For node specs: `/automation/docs/workflow_specifications.md`*
+*For node specs: `workflows/n8n/docs/workflow_specifications.md`*

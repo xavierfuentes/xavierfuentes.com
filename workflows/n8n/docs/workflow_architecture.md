@@ -317,9 +317,9 @@ These workflows from v4.0 have been removed:
 ## Related Documentation
 
 - `/CLAUDE.md` - Content OS specification
-- `/automation/docs/data_table_schemas.md` - Detailed table schemas
-- `/automation/docs/workflow_specifications.md` - Node-by-node specs
-- `/automation/docs/quick_start_guide.md` - Setup walkthrough
+- `workflows/n8n/docs/data_table_schemas.md` - Detailed table schemas
+- `workflows/n8n/docs/workflow_specifications.md` - Node-by-node specs
+- `workflows/n8n/docs/quick_start_guide.md` - Setup walkthrough
 
 ---
 
