@@ -80,11 +80,8 @@ A GitHub-based content management system for my technical leadership blog at [xa
    npm install
    ```
 
-2. **Create `.env` file** (for local testing):
-   ```bash
-   GHOST_ADMIN_API_URL=https://xavierfuentes.com
-   GHOST_ADMIN_API_KEY=your_admin_api_key_here
-   ```
+2. **Credentials** (for local testing) come from 1Password. `.env.op` holds `op://` references to
+   "Ghost Admin API - xavierfuentes.com" in the Private vault. No plaintext `.env` needed.
 
 3. **Test the setup**:
    ```bash
@@ -92,7 +89,7 @@ A GitHub-based content management system for my technical leadership blog at [xa
    npm run validate
    
    # Test publishing (make sure you want to publish first!)
-   npm run publish
+   op run --env-file=.env.op -- npm run publish
    ```
 
 ## ✍️ Writing Content
@@ -166,7 +163,7 @@ Create `.md` files in `content/pages/` with similar frontmatter (pages don't sup
 2. Publishes/updates content in Ghost
 3. Provides deployment summary
 
-**Manual publishing**: Run `/publish` command in Claude Code or `npm run publish` locally.
+**Manual publishing**: Run `/publish` command in Claude Code or `op run --env-file=.env.op -- npm run publish` locally.
 
 ### Pull Request Validation
 

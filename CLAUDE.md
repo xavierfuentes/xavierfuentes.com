@@ -145,7 +145,7 @@ Shared with every agent. Single source: `.claude/global-rules.md`.
 GHOST SYNC:
 - `scripts/publish.js` syncs `content/drafts/`, `content/posts/`, `content/pages/` to Ghost.
 - Ghost Admin edits will be overwritten on next publish.
-- To publish: move draft to posts/, set `status: published`, push or run `npm run publish`.
+- To publish: move draft to posts/, set `status: published`, push, or run `op run --env-file=.env.op -- npm run publish` locally (credentials from 1Password).
 
 MCP MEMORY:
 - Data in `.claude/data/memory.jsonl` (project-local).

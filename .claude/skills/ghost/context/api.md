@@ -7,8 +7,10 @@ The Ghost Admin API is used by `scripts/publish.js` to sync content from this re
 ## Authentication
 
 **Required environment variables:**
-- `GHOST_URL` - Your Ghost site URL (e.g., `https://xavierfuentes.com`)
+- `GHOST_ADMIN_API_URL` - Your Ghost site URL (e.g., `https://xavierfuentes.com`)
 - `GHOST_ADMIN_API_KEY` - Admin API key from Ghost settings
+
+Locally both come from 1Password via `.env.op`: run commands as `op run --env-file=.env.op -- <command>`. In CI they come from GitHub Secrets.
 
 **API key format:** `{id}:{secret}` (64 character hex string)
 
@@ -106,11 +108,11 @@ They're stripped during publish but preserved in the markdown files.
 ```bash
 # Get all posts
 curl -H "Authorization: Ghost ${GHOST_ADMIN_API_KEY}" \
-  "${GHOST_URL}/ghost/api/admin/posts/"
+  "${GHOST_ADMIN_API_URL}/ghost/api/admin/posts/"
 
 # Get single post by slug
 curl -H "Authorization: Ghost ${GHOST_ADMIN_API_KEY}" \
-  "${GHOST_URL}/ghost/api/admin/posts/slug/your-post-slug/"
+  "${GHOST_ADMIN_API_URL}/ghost/api/admin/posts/slug/your-post-slug/"
 ```
 
 ## Webhook Events

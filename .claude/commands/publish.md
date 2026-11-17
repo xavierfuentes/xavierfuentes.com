@@ -22,8 +22,7 @@ Sync all content from the repo to Ghost CMS.
 
 ## Prerequisites
 
-- `GHOST_URL` environment variable set
-- `GHOST_ADMIN_API_KEY` environment variable set
+- 1Password unlocked: credentials come from `.env.op` (`op://` references to "Ghost Admin API - xavierfuentes.com", Private vault)
 - Valid frontmatter in all content files
 
 ## Pre-flight Checks
@@ -59,7 +58,7 @@ If a publish fails:
 
 ## Implementation
 
-Runs: `npm run publish`
+Runs: `op run --env-file=.env.op -- npm run publish`
 Script: `scripts/publish.js`
 
 ## Related Commands
