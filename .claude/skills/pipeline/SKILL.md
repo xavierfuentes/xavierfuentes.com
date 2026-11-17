@@ -31,7 +31,7 @@ Manage the content pipeline from idea to publication.
 - `context/pillars.md` - Content pillar definitions and targets
 - `context/frontmatter.md` - Frontmatter schemas for all file types
 - `context/workflow.md` - Status flow and weekly rhythm
-- `context/memory.md` - MCP Memory usage for author profile and voice queries
+- `context/memory.md` - Author profile and voice (read before drafting)
 
 ## Templates
 

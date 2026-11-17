@@ -51,7 +51,6 @@
       "WebFetch(domain:simonwillison.net)",
       "Bash(grep:*)",
       "Bash(npx --version:*)",
-      "mcp__memory__*",
       "Bash(git rm:*)",
       "Bash(gh run:*)",
       "Bash(gh workflow run:*)",

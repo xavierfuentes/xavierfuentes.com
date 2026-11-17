@@ -147,7 +147,5 @@ GHOST SYNC:
 - Ghost Admin edits will be overwritten on next publish.
 - To publish: move draft to posts/, set `status: published`, push, or run `op run --env-file=.env.op -- npm run publish` locally (credentials from 1Password).
 
-MCP MEMORY:
-- Data in `.claude/data/memory.jsonl` (project-local).
-- Use for: author profile, voice preferences, content relationships.
-- Query `author_profile` before drafting for voice authenticity.
+AUTHOR VOICE:
+- Read `.claude/skills/pipeline/context/memory.md` before drafting for voice authenticity.

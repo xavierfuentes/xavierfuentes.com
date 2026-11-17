@@ -80,7 +80,6 @@ All content must use UK English spelling and conventions:
 | `.claude/commands/` | Slash commands: `/publish`, `/validate`, `/promote` |
 | `.claude/skills/pipeline/context/frontmatter.md` | All frontmatter schemas |
 | `.claude/skills/pipeline/context/pillars.md` | Pillar definitions |
-| `.claude/data/memory.jsonl` | Project-local MCP memory |
 
 Channel directories are listed under Channel Boundaries below.
 

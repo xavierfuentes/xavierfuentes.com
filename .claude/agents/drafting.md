@@ -173,7 +173,7 @@ See `.claude/global-rules.md` → Locale and Universal Quality Checklist.
 **Draft-specific standards:**
 - Target length: See `.claude/content-standards.md` → Blog Posts
 - Ensure each section adds unique value — no filler
-- Follow voice guidelines from MCP memory (`author_profile`, `voice_preferences`)
+- Follow voice guidelines in `.claude/skills/pipeline/context/memory.md` and `.claude/skills/blog/context/voice.md`
 
 ## Typical Workflow
 
