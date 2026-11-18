@@ -2,7 +2,7 @@
 
 A persistent task list that survives between Claude sessions. Agents should read this at the start of strategic work and update it when tasks are completed or added.
 
-**Last Updated:** 19/01/2026
+**Last Updated:** 18/11/2026
 
 ---
 
@@ -22,7 +22,7 @@ Content ready for human review before publishing.
 
 | Task | Idea/File | Notes | Created |
 |------|-----------|-------|---------|
-| Review Claude Code blog draft | `2025-12-claude-code-project-framework` | Blog projection created, ~1,800 words | 30/12/2025 |
+| — | — | — | — |
 
 ---
 
@@ -32,7 +32,6 @@ Prioritised tasks to tackle next.
 
 | Priority | Task | Idea/File | Notes |
 |----------|------|-----------|-------|
-| High | Create LinkedIn projections | `2025-12-claude-code-project-framework` | 4 posts: CLAUDE.md, classification, handoff, over-engineering |
 | Medium | Polish Tech Debt draft | `2025-01-tech-debt-product-lifecycle` | Add warmth, personal moment |
 
 ---
@@ -123,7 +122,7 @@ Major refactoring completed:
 
 ### Content Calendar Notes
 
-- **Claude Code Framework** is timely — Claude Code adoption accelerating, publish soon
+- ~~**Claude Code Framework** is timely~~ ✗ Dropped 18/11/2026 (outdated)
 - ~~**Build vs Buy** is evergreen — can publish anytime~~ ✓ Published 13/01/2026
 - **AI Strategy** aligns with Q1 2026 budget cycles — good January publish
 

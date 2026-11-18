@@ -48,7 +48,7 @@ jobs:
             echo "Manual trigger - will publish all content"
             echo "publish_all=true" >> $GITHUB_OUTPUT
           else
-            CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | grep '^content/.*\.md$' || echo "")
+            CHANGED_FILES=$(git diff --name-only --diff-filter=d HEAD~1 HEAD | grep '^content/.*\.md$' || echo "")
             echo "files<<EOF" >> $GITHUB_OUTPUT
             echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
             echo "EOF" >> $GITHUB_OUTPUT
