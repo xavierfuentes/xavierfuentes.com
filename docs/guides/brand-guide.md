@@ -6,10 +6,13 @@ The unified visual identity for Xavier Fuentes' content ecosystem.
 
 ```
 Mad Monkey Club (parent company)
-├── Infinite Monkey (blog at xavierfuentes.com)
+├── Xavi (blog at xavierfuentes.com)
 ├── The Jungle Brief (newsletter)
 └── Lead Magnets (PDFs, checklists, guides)
 ```
+
+"Infinite Monkey" was the blog's name until 18/11/2026. The name is reserved for a future
+Mad Monkey Club blog, to be built only once there is a first post written for its audience.
 
 All channels share the same visual language whilst serving different purposes.
 
@@ -120,7 +123,7 @@ All channels share the same visual language whilst serving different purposes.
 
 ### Primary: Wordmark
 
-**"Infinite Monkey"** (blog) and **"The Jungle Brief"** (newsletter) use text-based logos in Sora Bold.
+**"Xavi"** (blog) and **"The Jungle Brief"** (newsletter) use text-based logos in Sora Bold.
 
 - Primary: Deep Jungle (#0d2818) on light backgrounds
 - Reversed: Warm White (#faf9f7) on dark backgrounds
@@ -135,7 +138,7 @@ When developed, the monkey mark should be:
 
 ## Channel-Specific Applications
 
-### Infinite Monkey (Blog)
+### Xavi (Blog)
 
 **Purpose**: Long-form thought leadership, SEO, lead generation
 
@@ -243,7 +246,7 @@ This brand guide focuses on visual identity. See `docs/strategy/content-strategy
 
 **Ghost Admin → Settings → Design:**
 - Accent colour: `#d4a05e`
-- Site title: "Infinite Monkey"
+- Site title: "Xavi"
 
 **Code Injection (Settings → Code Injection → Site Header):**
 
