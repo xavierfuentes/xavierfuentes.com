@@ -82,8 +82,6 @@ Stakeholders cope with bad news. What they can't cope with is bad news that has 
 
 ## What it looks like when it works
 
-[CASE STUDY: Real example needed - theme: a time your regular updates turned a sceptical CEO or board into "just flag the big stuff"]
-
 Consider a scenario where a CTO joins a Series B start-up. Her predecessor was let go after a platform migration ran six months late, and the board heard about it last. She sends a one-paragraph email every Friday and shows the same four metrics at every board meeting.
 
 For two months the board chair reads every email and asks follow-up questions. By month three the replies get shorter. By month six the chair says: "You don't need to copy me on these any more. Just flag anything I should know about."
